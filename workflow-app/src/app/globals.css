@@ -1,26 +1,51 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --Default: #F8F9FC;
+  --Default-50: #F5F5F5;
+  --Default-100: #EFEFEF;
+  --Default-200: #EDECEE;
+
+   /* 🎯 Texto principal */
+   --text-primary: #415771;
+
+   /* 📑 Texto secundario / menos importante */
+   --text-secondary: #8E8E8E;
+ 
+   /* ✨ Texto claro sobre fondo oscuro (o viceversa si haces dark mode) */
+   --text-light: #DDE6F6;
+ 
+   /* 🧊 Texto sutil / deshabilitado */
+   --text-muted: #B8C0CA;
+ 
+   /* 📝 Títulos (fuertes, destacados) */
+   --text-heading: #112D4E;
+ 
+   /* 🔘 Botones principales */
+   --button-primary: #214E83;
+
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-default: var(--Default);
+  --color-default-50: var(--Default-50);
+  --color-default-100: var(--Default-100);
+  --color-default-200: var(--Default-200);
+  
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-light: var(--text-light);
+  --color-text-muted: var(--text-muted);
+  --color-text-heading: var(--text-heading);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-button-primary: var(--button-primary);
+  
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-default);
+}
+
+Button{
+  background-color: var(--color-button-primary);
 }
