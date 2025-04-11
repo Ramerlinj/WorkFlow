@@ -5,6 +5,8 @@
         "REGISTER_BUTTON": "Registrarse",
         "LINK_REGISTER": "/register",
         "LOGO" : {
+            "Text": "WorkFlow",
+            "Link": "/",
             "src": "/images/LogoWorkFlow.png",
             "alt": "Logo de la empresa"
         },
@@ -21,6 +23,7 @@
                 "Text" : "Contacto",
                 "LINK" : "/contacto"
             }
+            
         ]
 
     }
