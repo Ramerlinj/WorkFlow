@@ -1,0 +1,27 @@
+{
+    "NAVBAR": {
+        "LOGIN_BUTTON": "Iniciar sesión",
+        "LINK_LOGIN": "/login",
+        "REGISTER_BUTTON": "Registrarse",
+        "LINK_REGISTER": "/register",
+        "LOGO" : {
+            "src": "/images/LogoWorkFlow.png",
+            "alt": "Logo de la empresa"
+        },
+        "ITEMS": [
+            {
+                "Text" : "Empleos",
+                "LINK" : "/empleos"
+            },
+            {
+                "Text" : "Testimonios",
+                "LINK" : "/testimonios"
+            },
+            {
+                "Text" : "Contacto",
+                "LINK" : "/contacto"
+            }
+        ]
+
+    }
+}

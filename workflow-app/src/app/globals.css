@@ -11,7 +11,9 @@
 
    /* 📑 Texto secundario / menos importante */
    --text-secondary: #8E8E8E;
- 
+   /*🔵 Text azul claro */
+   --text-tertiary: #3F72AF;
+
    /* ✨ Texto claro sobre fondo oscuro (o viceversa si haces dark mode) */
    --text-light: #DDE6F6;
  
@@ -24,6 +26,10 @@
    /* 🔘 Botones principales */
    --button-primary: #214E83;
 
+   /*Tipografia*/
+
+    --font-size-medium: 1.2rem;
+
 }
 
 @theme inline {
@@ -32,20 +38,18 @@
   --color-default-100: var(--Default-100);
   --color-default-200: var(--Default-200);
   
-  --color-text-primary: var(--text-primary);
-  --color-text-secondary: var(--text-secondary);
-  --color-text-light: var(--text-light);
-  --color-text-muted: var(--text-muted);
-  --color-text-heading: var(--text-heading);
+  --text-color-primary: var(--text-primary);
+  --text-color-secondary: var(--text-secondary);
+  --text-color-light: var(--text-light);
+  --text-color-muted: var(--text-muted);
+  --text-color-heading: var(--text-heading);
+  --text-color-tertiary: var(--text-tertiary);
 
   --color-button-primary: var(--button-primary);
-  
+
+  --font-size-medium: var(--font-size-medium);
 }
 
 body {
   background: var(--color-default);
-}
-
-Button{
-  background-color: var(--color-button-primary);
 }

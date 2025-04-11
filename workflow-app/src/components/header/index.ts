@@ -1,3 +1,3 @@
-import Header from "./Header";
+import NavBar from "./Header";
 
-export default Header;
+export {NavBar as Header};

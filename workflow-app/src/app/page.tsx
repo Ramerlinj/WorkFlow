@@ -1,11 +1,8 @@
 'use client'
-import { Input } from "@heroui/react"
-
 export default function Home() {
   return (
-    <div className="">
-      <h1 className="font-bold text-text-primary">dasd</h1>
-      <Input></Input>
+    <div className="flex justify-center mx-96">
+      <h1 className="font-bold text-text-primary ">Workflow</h1>
     </div>
   );
 }
