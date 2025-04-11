@@ -1,10 +1,11 @@
 @import "tailwindcss";
 
 :root {
-  --Default: #F8F9FC;
-  --Default-50: #F5F5F5;
-  --Default-100: #EFEFEF;
-  --Default-200: #EDECEE;
+  /* 🎨 Colores por defecto */
+  --Default: #F8F9FC; /* Fondo principal */
+  --Default-50: #F5F5F5; /* Fondo claro */
+  --Default-100: #EFEFEF; /* Fondo intermedio */
+  --Default-200: #EDECEE; /* Fondo oscuro */
 
    /* 🎯 Texto principal */
    --text-primary: #415771;
