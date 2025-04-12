@@ -6,6 +6,7 @@
   --Default-50: #F5F5F5; /* Fondo claro */
   --Default-100: #EFEFEF; /* Fondo intermedio */
   --Default-200: #EDECEE; /* Fondo oscuro */
+  --Default-300: #112D4E;
 
    /* 🎯 Texto principal */
    --text-primary: #415771;
@@ -38,6 +39,7 @@
   --color-default-50: var(--Default-50);
   --color-default-100: var(--Default-100);
   --color-default-200: var(--Default-200);
+  --color-default-300: var(--Default-300);
   
   --text-color-primary: var(--text-primary);
   --text-color-secondary: var(--text-secondary);
