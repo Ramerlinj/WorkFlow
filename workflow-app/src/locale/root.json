@@ -1,4 +1,9 @@
 {
+    "WEBSITE" : {
+        "TITLE": "WorkFlow",
+        "DESCRIPTION": "La mejor plataforma para encontrar tu trabajo ideal.",
+        "KEYWORDS": "empleos, trabajos, oportunidades, carrera, desarrollo profesional"
+    },
     "NAVBAR": {
         "LOGIN_BUTTON": "Iniciar Sesión",
         "LINK_LOGIN": "/login",

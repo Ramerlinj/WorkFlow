@@ -19,7 +19,8 @@ const itemsFooter = () => {
                     <h3 className="font-bold text-default-100">WorkFlow</h3>
                 </Link>
                 <p className="text-muted text-sm px-4 max-w-60 font-semibold">Los mejores trabajos del mundo WorkFlow</p>
-                <div className="mt-4 ml-3 flex items-center">
+                {/*Optimizar */}
+                <div className="mt-4 ml-3 flex items-center">           
                     <Link href="https://www.facebook.com" className="mr-3">
                         <FaFacebook className="w-6 h-6"/>
                     </Link>
@@ -35,11 +36,6 @@ const itemsFooter = () => {
                     <Link href="https://www.x.com" className="mr-3">
                         <FaXTwitter className="w-6 h-6"/>
                     </Link>
-                    
-                    
-
-                
-
                 </div>
         </div>
 
