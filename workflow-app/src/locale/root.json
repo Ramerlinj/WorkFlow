@@ -1,30 +1,102 @@
 {
     "NAVBAR": {
-        "LOGIN_BUTTON": "Iniciar sesión",
+        "LOGIN_BUTTON": "Iniciar Sesión",
         "LINK_LOGIN": "/login",
         "REGISTER_BUTTON": "Registrarse",
         "LINK_REGISTER": "/register",
         "LOGO" : {
-            "Text": "WorkFlow",
-            "Link": "/",
-            "src": "/images/LogoWorkFlow.png",
-            "alt": "Logo de la empresa"
+            "TEXT": "WorkFlow",
+            "LINK": "/",
+            "SRC": "/images/LogoWorkFlow.png",
+            "ALT": "Logo de la empresa"
+        },
+        "LOGO_BLANK" : {
+            "TEXT": "WorkFlow",
+            "LINK": "/",
+            "SRC": "/images/LogoWorkFlowBlanco.png",
+            "ALT": "Logo de la empresa"
         },
         "ITEMS": [
             {
-                "Text" : "Empleos",
+                "TEXT" : "Empleos",
                 "LINK" : "/empleos"
             },
             {
-                "Text" : "Testimonios",
+                "TEXT" : "Testimonios",
                 "LINK" : "/testimonios"
             },
             {
-                "Text" : "Contacto",
-                "LINK" : "/contacto"
+                "TEXT" : "Sobre Nosotros",
+                "LINK" : "/nosotros"
             }
-            
         ]
+    },
+    "FOOTER" : [
+        {
+            "TITLE" : "Enlances Rápidos",
+            "ITEMS" : [            
+                {
+                    "TEXT" : "Empleos",
+                    "LINK" : "/empleos"
+                },
+                {
+                    "TEXT" : "Testimonios",
+                    "LINK" : "/testimonios"
+                },
+                {
+                    "TEXT" : "Sobre Nosotros",
+                    "LINK" : "/nosotros"
+                }
+            ]
+        },
+        {
+            "TITLE" : "Legal",
+            "ITEMS" : [            
+                {
+                    "TEXT" : "Política de Privacidad",
+                    "LINK" : "/politica-privacidad"
+                },
+                {
+                    "TEXT" : "Términos y Condiciones",
+                    "LINK" : "/terminos-condiciones"
+                }
+            ]
+        },
+        {
+            "TITLE" : "Contáctanos",
+            "ITEMS" : [            
+                {
+                    "TEXT" : "Info@woirkflow.com",
+                    "LINK" : "mailto:Info@woirkflow.com?Subject=Tengo%20problemas%20con%20mi%20cuenta"
+                },
+                {
+                    "TEXT" : "+1 (849)-433-0448",
+                    "LINK" : "tel:+18494330448"
+                }
+            ]
+        }
 
-    }
+    ],
+    "SOCIAL_MEDIA": [
+        {
+            "PLATFORM": "Facebook",
+            "LINK": "https://www.facebook.com"
+        },
+        {
+            "PLATFORM": "X",
+            "LINK": "https://www.x.com"
+        },
+        {
+            "PLATFORM": "Instagram",
+            "LINK": "https://www.instagram.com"
+        },
+        {
+            "PLATFORM": "LinkedIn",
+            "LINK": "https://www.linkedin.com"
+        },
+        {
+            "PLATFORM" : "GitHub",
+            "LINK" : "https://github.com/ramerlinj"
+        }
+    ]
 }
