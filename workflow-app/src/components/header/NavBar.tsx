@@ -1,7 +1,7 @@
 import Link from "next/link";
 import locale from "@/locale/root.json"
 
-export const NavBar = () => {
+const NavBarItems = () => {
     return(
         <nav className="flex justify-center items-center space-x-8">
             {locale.NAVBAR.ITEMS.map((item, index) => (
@@ -10,10 +10,11 @@ export const NavBar = () => {
                     key={index}
                     className="text-text-primary hover:text-primary transition-colors duration-300"
                 >
-                    {item.Text}
+                    {item.TEXT}
                 </Link>
             ))}
         </nav>
     )
 }
 
+export default NavBarItems

@@ -4,15 +4,14 @@ import locale from "@/locale/root.json"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-
-
+import NavBar from "./Navbar"
 
 const Header = () => {
 
-    const router = useRouter();
+    const router = useRouter(); 
     
     const PushLogin = () => {
-    router.push(locale.NAVBAR.LINK_LOGIN)
+        router.push(locale.NAVBAR.LINK_LOGIN)
     }
 
     const PushRegister = () => {
@@ -20,34 +19,23 @@ const Header = () => {
     }    
 
     return (
-        <header>
+        <header className="sticky top-0 z-50 opacity-95 backdrop-blur-md ">
             {/* Header */}
-            <div className="bg-default shadow-md grid grid-cols-3 items-center h-16 backdrop-blur-2xl px-10">
+            <div className="bg-default shadow-md grid grid-cols-3 items-center h-16 px-10">
                 <div className="flex items-center">
                     <Link href="/">
                         <Image
-                            src={locale.NAVBAR.LOGO.src}
-                            alt={locale.NAVBAR.LOGO.alt}
+                            src={locale.NAVBAR.LOGO.SRC}
+                            alt={locale.NAVBAR.LOGO.ALT}
                             width={64}
                             height={64}
-                            
                         />
                     </Link>
-                    <h1 className="text-text-primary font-bold text-md ml-2">{locale.NAVBAR.LOGO.Text}</h1>
+                    <h1 className="text-text-primary font-bold text-md ml-2">{locale.NAVBAR.LOGO.TEXT}</h1>
                 </div>
 
                 {/* Navbar */}
-                <nav className="flex justify-center items-center space-x-8">
-                    {locale.NAVBAR.ITEMS.map((item, index) => (
-                        <Link
-                            href={item.LINK}
-                            key={index}
-                            className="text-text-primary hover:text-primary transition-colors duration-300"
-                        >
-                            {item.Text}
-                        </Link>
-                    ))}
-                </nav>
+                <NavBar />
                 
                 <div className="flex justify-end items-center space-x-4">
                     <button onClick={PushRegister} className="rounded-md w-24 h-7 border font-semibold text-tertiary text-[13px] cursor-pointer hover:bg-default-100 transition-colors duration-300">
