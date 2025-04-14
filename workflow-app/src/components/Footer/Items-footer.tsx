@@ -47,7 +47,7 @@ const itemsFooter = () => {
                         {item.ITEMS.map((listItem, listIndex) => (
                             <li key={listIndex} className="">
                                 <Link 
-                                className="text-muted hover:text-primary hover:underline hover:decoration-primary transition-all duration-300"
+                                    className="text-muted hover:text-secondary hover:underline transition-all duration-300"
                                     href={`${listItem.LINK}`}>{listItem.TEXT}</Link>
                             </li>
                         ))}

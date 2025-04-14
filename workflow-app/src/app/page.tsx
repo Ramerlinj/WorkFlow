@@ -1,8 +1,8 @@
-'use client'
-export default function Home() {
+
+export default function NamePage() {
   return (
-    <div className="flex justify-center my-10">
-      <h1 className="font-bold text-text-primary text-5xl mb-96 ">Landing Page</h1>
+    <div>
+      <h1>Hello Page</h1>
     </div>
   );
 }

@@ -6,6 +6,8 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import NavBar from "./Navbar"
 
+import { Button } from "@/components/ui/button"
+
 const Header = () => {
 
     const router = useRouter(); 
@@ -38,12 +40,14 @@ const Header = () => {
                 <NavBar />
                 
                 <div className="flex justify-end items-center space-x-4">
-                    <button onClick={PushRegister} className="rounded-md w-24 h-7 border font-semibold text-tertiary text-[13px] cursor-pointer hover:bg-default-100 transition-colors duration-300">
-                        Register
-                    </button>
-                    <button onClick={PushLogin} className="bg-button-primary rounded-md w-24 h-7 font-semibold text-[13px] text-default-100 cursor-pointer hover:opacity-90 transition-colors duration-300">
-                        Login
-                    </button>
+                    
+                    <Button variant="bottomless" onClick={PushLogin}>
+                        {locale.NAVBAR.REGISTER_BUTTON} 
+                    </Button>
+                    <Button variant="default"  onClick={PushRegister}>
+                        {locale.NAVBAR.LOGIN_BUTTON}
+                    </Button>
+
                 </div>
             </div>
         </header>   
