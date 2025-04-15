@@ -33,6 +33,7 @@ const Header = () => {
                             height={64}
                         />
                     </Link>
+                    
                     <h1 className="text-text-primary font-bold text-md ml-2">{locale.NAVBAR.LOGO.TEXT}</h1>
                 </div>
 
@@ -41,10 +42,10 @@ const Header = () => {
                 
                 <div className="flex justify-end items-center space-x-4">
                     
-                    <Button variant="bottomless" onClick={PushLogin}>
+                    <Button variant="bottomless" onClick={PushLogin} size='sm' >
                         {locale.NAVBAR.REGISTER_BUTTON} 
                     </Button>
-                    <Button variant="default"  onClick={PushRegister}>
+                    <Button variant="default" onClick={PushRegister} size='sm'>
                         {locale.NAVBAR.LOGIN_BUTTON}
                     </Button>
 
