@@ -1,9 +1,8 @@
-import ItemsFooter from "@/components/footer/Items-footer"
-
+import ItemsFooter from "./Items-footer";
 
 const Footer = () => {
     return (
-        <footer className="bg-default-300 text-muted">
+        <footer className="bg-defaulFt-300 text-muted">
             <div className="">
                 <div className="">
                     <ItemsFooter />
