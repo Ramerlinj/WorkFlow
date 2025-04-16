@@ -4,7 +4,7 @@ import locale from "@/locale/root.json"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import NavBar from "./Navbar"
+import NavBar from "@/components/header/NavBar"
 
 import { Button } from "@/components/ui/button"
 
@@ -41,10 +41,10 @@ const Header = () => {
                 
                 <div className="flex justify-end items-center space-x-4">
                     
-                    <Button variant="bottomless" onClick={PushLogin}>
+                    <Button variant="bottomless" onClick={PushRegister}>
                         {locale.NAVBAR.REGISTER_BUTTON} 
                     </Button>
-                    <Button variant="default"  onClick={PushRegister}>
+                    <Button variant="default"  onClick={PushLogin}>
                         {locale.NAVBAR.LOGIN_BUTTON}
                     </Button>
 

@@ -1,4 +1,4 @@
-import ItemsFooter from "@/components/footer/Items-footer"
+import ItemsFooter from "././Items-footer"
 
 
 const Footer = () => {
