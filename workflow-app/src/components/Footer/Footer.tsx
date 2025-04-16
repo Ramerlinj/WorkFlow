@@ -1,5 +1,4 @@
-import ItemsFooter from "@/components/footer/Items-footer"
-
+import ItemsFooter from "././Items-footer"
 
 const Footer = () => {
     return (
@@ -13,7 +12,6 @@ const Footer = () => {
                     <p className="text-center text-muted">© WorkFlow. Todos los derechos reservados</p>
                 </div>
             </div>
-        
         </footer>
     )
 }
