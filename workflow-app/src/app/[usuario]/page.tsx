@@ -1,4 +1,7 @@
 
+
+//Reparar la ruta y ponerla con el name de la db
+
 interface Props {
     params: {
         usuario: string;
