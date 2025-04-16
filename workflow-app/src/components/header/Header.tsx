@@ -4,7 +4,7 @@ import locale from "@/locale/root.json"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import NavBar from "@/components/header/NavBar"
+import NavBar from "./Navbar"
 
 import { Button } from "@/components/ui/button"
 
