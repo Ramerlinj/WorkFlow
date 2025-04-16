@@ -6,4 +6,4 @@ app.description = "Esta es la API de Workflow"
 
 @app.get("/", tags=["Home"])
 def home ():
-    return {"message": "Hello, World!"}
+    return {"messag": "Hello, World!"}
