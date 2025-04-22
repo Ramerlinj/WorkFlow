@@ -4,9 +4,9 @@ import locale from "@/locale/root.json"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import NavBar from "./Navbar"
+import NavBar from "./NavBar"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button" 
 
 const Header = () => {
 
