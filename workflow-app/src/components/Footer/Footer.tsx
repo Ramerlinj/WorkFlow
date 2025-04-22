@@ -1,5 +1,4 @@
-import ItemsFooter from "./Items-footer"
-
+import ItemsFooter from "./Items-footer";
 
 const Footer = () => {
     return (

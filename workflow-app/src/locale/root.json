@@ -7,8 +7,8 @@
     "NAVBAR": {
         "LOGIN_BUTTON": "Iniciar Sesión",
         "LINK_LOGIN": "/login",
-        "REGISTER_BUTTON": "Registrarse",
-        "LINK_REGISTER": "/register",
+        "REGISTER_BUTTON": "Registro",
+        "LINK_REGISTER": "/registro",
         "LOGO" : {
             "TEXT": "WorkFlow",
             "LINK": "/",
