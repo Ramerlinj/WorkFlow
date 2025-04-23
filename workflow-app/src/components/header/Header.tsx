@@ -33,6 +33,7 @@ const Header = () => {
                             height={64}
                         />
                     </Link>
+                    
                     <h1 className="text-text-primary font-bold text-md ml-2">{locale.NAVBAR.LOGO.TEXT}</h1>
                 </div>
 
@@ -44,7 +45,7 @@ const Header = () => {
                     <Button variant="bottomless" onClick={PushRegister}>
                         {locale.NAVBAR.REGISTER_BUTTON} 
                     </Button>
-                    <Button variant="default"  onClick={PushLogin}>
+                    <Button variant="default" onClick={PushLogin}>
                         {locale.NAVBAR.LOGIN_BUTTON}
                     </Button>
 

@@ -2,6 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { Eye, EyeOff, Check, X } from 'lucide-react';
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button';
+import { DatePicker } from '@/components/ui/DatePicker';
+
 
 export default function RegisterForm() {
   const [formData, setFormData] = useState({
@@ -107,7 +111,7 @@ useEffect(() => {
     <div className="flex items-center justify-center min-h-screen bg-blue-50">
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-xl shadow-lg border border-gray-100 my-8">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-blue-800">Registrarse</h2>
+          <h2 className="text-3xl font-bold text-tertiary">Registrarse</h2>
         </div>
         
         <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
@@ -117,7 +121,7 @@ useEffect(() => {
               <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
                 Nombre
               </label>
-              <input
+              <Input
                 id="firstName"
                 name="firstName"
                 type="text"
@@ -134,7 +138,7 @@ useEffect(() => {
               <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
                 Apellidos
               </label>
-              <input
+              <Input
                 id="lastName"
                 name="lastName"
                 type="text"
@@ -153,7 +157,7 @@ useEffect(() => {
               Correo electrónico
             </label>
             <div className="relative">
-              <input
+              <Input
                 id="email"
                 name="email"
                 type="email"
@@ -183,15 +187,8 @@ useEffect(() => {
             <label htmlFor="birthDate" className="block text-sm font-medium text-gray-700 mb-1">
               Fecha de nacimiento
             </label>
-            <input
-              id="birthDate"
-              name="birthDate"
-              type="date"
-              value={formData.birthDate}
-              onChange={handleChange}
-              className={`block w-full px-3 py-2 border ${formData.birthDate && !isAdult ? 'border-red-300' : 'border-gray-300'} rounded-lg text-gray-900 focus:outline-none focus:ring-2 ${formData.birthDate && !isAdult ? 'focus:ring-red-500 focus:border-red-500' : 'focus:ring-blue-500 focus:border-blue-500'}`}
-              required
-            />
+            <DatePicker/>
+           
             {formData.birthDate && !isAdult && (
               <p className="mt-1 text-sm text-red-600">{errors.birthDate}</p>
             )}
@@ -203,7 +200,7 @@ useEffect(() => {
               Contraseña
             </label>
             <div className="relative">
-              <input
+              <Input
                 id="password"
                 name="password"
                 type={showPassword ? "text" : "password"}
@@ -215,9 +212,8 @@ useEffect(() => {
                 minLength={8}
               />
               <button
-                type="button"
                 onClick={togglePasswordVisibility}
-                className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700"
+                className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700 cursor-pointer"
               >
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
@@ -231,7 +227,7 @@ useEffect(() => {
               Confirmar contraseña
             </label>
             <div className="relative">
-              <input
+              <Input
                 id="confirmPassword"
                 name="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
@@ -244,7 +240,7 @@ useEffect(() => {
               <button
                 type="button"
                 onClick={toggleConfirmPasswordVisibility}
-                className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700"
+                className="absolute cursor-pointer inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700"
               >
                 {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
@@ -255,12 +251,12 @@ useEffect(() => {
           </div>
           
           <div className="mt-6">
-            <button
-              type="submit"
-              className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-700 hover:bg-blue-800 cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200`}
-            >
+            <Button
+              variant='default'
+              size='xl'
+              type="submit">
               Registrarse
-            </button>
+            </Button>
           </div>
         </form>
         
