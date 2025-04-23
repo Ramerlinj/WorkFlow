@@ -82,7 +82,8 @@ export default function RegisterForm() {
   
   
   // Validación de coincidencia de contraseñas
-  // Validación de coincidencia de contraseñas
+    // Validación de coincidencia de contraseñas
+
 useEffect(() => {
     if (formData.password && formData.confirmPassword) {
       const match = formData.password === formData.confirmPassword;
