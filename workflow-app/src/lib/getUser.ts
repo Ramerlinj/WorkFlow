@@ -1,6 +1,6 @@
 // src/lib/getUser.ts
 
-import { User } from "@/app/[usuario]/interfaces";
+import { User } from "@/types/user";
 
 /**
  * 

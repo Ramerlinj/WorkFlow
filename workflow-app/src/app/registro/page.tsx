@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Eye, EyeOff, Check, X } from 'lucide-react';
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button';
-import { DatePicker } from '@/components/ui/DatePicker';
+import { DatePicker } from '@/components/ui/datePicker';
 
 
 export default function RegisterForm() {

@@ -1,6 +1,6 @@
 // src/app/[usuario]/page.tsx
 
-import { User } from './interfaces';
+import { User } from '@/types/user';
 
 const UserPage = async ({ params }: { params: { usuario: string } }) => {
   // Usamos `fetch` para obtener los datos
