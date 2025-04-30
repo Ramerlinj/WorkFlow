@@ -13,6 +13,7 @@ export interface User {
   links: Link[];
   work_experience: WorkExperience[];
   user_config: UserConfig;
+
 }
 
 export interface Profile {
