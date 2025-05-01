@@ -1,20 +1,31 @@
 
-interface Props {
-    params: {
-        usuario: string;
-    };
-}
+import { getUser } from '@/lib/getUser';
+import Profile from './_components/profile';
 
+const UserPage = async ({ params }: { params: { usuario: string } }) => {
+  const user = await getUser(params.usuario);
 
-function PerfilUser ({ params }: Props) {
+  if (!user) {
+    return <p>Usuario no encontrado</p>;
+  }
 
-    const { usuario } = params;
+  
+  //const userProfile = user.profile || {};
+
+  
+  //const userConfig = user.user_config || {};
+
+  
+  //const skills = user.skills || [];
+  //const links = user.links || [];
+  //const workExperience = user.work_experience || [];
 
   return (
     <div>
-      <h1>Hello Page {usuario} </h1>
+      <Profile profile={user.profile} user={user} />
+
     </div>
   );
-}
+};
 
-export default PerfilUser;
+export default UserPage;
