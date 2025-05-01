@@ -8,7 +8,7 @@ interface LinksCardProps {
 
 export function LinksCard({ links }: LinksCardProps) {
     return (
-        <Card className="w-1/3 mt-10">
+        <Card className="mt-10">
             <CardTitle className="text-heading text-md ml-5">Enlaces</CardTitle>
             <CardContent className="text-secondary text-sm">
                 {links.length === 0 ? (

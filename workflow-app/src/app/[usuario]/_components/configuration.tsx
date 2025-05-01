@@ -16,37 +16,95 @@ import {
     TabsTrigger,
 } from "@/components/ui/tabs"
 
-export function TabsDemo() {
+import { WorkExperience } from "@/types/user"
+
+interface WorkExperienceTabsProps {
+    workexperience: WorkExperience[]; 
+}
+
+export function Configuracion({ workexperience }: WorkExperienceTabsProps) {
     return (
-        <Tabs defaultValue="account" className="w-[400px]">
-            <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="account">Account</TabsTrigger>
-                <TabsTrigger value="password">Password</TabsTrigger>
+        <Tabs defaultValue="Perfil" className="w-3/4 ml-12" orientation="horizontal">
+            <TabsList className="grid w-full grid-cols-4">
+                <TabsTrigger className="cursor-pointer" value="Perfil">Perfil</TabsTrigger>
+                <TabsTrigger className="cursor-pointer" value="Configuracion">Configuracion</TabsTrigger>
+                <TabsTrigger className="cursor-pointer" value="Planes">Planes</TabsTrigger>
+                <TabsTrigger className="cursor-pointer" value="Pagos">Pagos</TabsTrigger>
             </TabsList>
-            <TabsContent value="account">
+            <TabsContent value="Perfil">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Account</CardTitle>
+                        <CardTitle className="text-xl text-heading font-semibold">Experiencia Laboral</CardTitle>
                         <CardDescription>
-                            Make changes to your account here. Click save when youre done.
+                            {workexperience.length === 0 ? (
+                                <p>No tiene experiencia laboral registrada.</p>
+                            ) : (
+                                workexperience.map((experience) => (
+                                    <div key={experience.id_experience}>
+                                        <h2 className="text-sm text-heading">{experience.title}</h2>
+                                        <h3 className="text-sm ">{experience.company} • {new Date(experience.start_date).getFullYear()} - {experience.end_date ? experience.end_date : 'Presente' }</h3>
+                                        <p className="text-primary">{experience.description}</p>
+                                        
+                                    </div>
+                                ))
+                            )}
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-2">
-                        <div className="space-y-1">
-                            <Label htmlFor="name">Name</Label>
-                            <Input id="name" defaultValue="Pedro Duarte" />
-                        </div>
-                        <div className="space-y-1">
-                            <Label htmlFor="username">Username</Label>
-                            <Input id="username" defaultValue="@peduarte" />
-                        </div>
+                       <div className=""></div>
                     </CardContent>
                     <CardFooter>
                         <Button>Save changes</Button>
                     </CardFooter>
                 </Card>
             </TabsContent>
-            <TabsContent value="password">
+            <TabsContent value="Configuracion">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Password</CardTitle>
+                        <CardDescription>
+                            Change your password here. After saving, youll be logged out.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                        <div className="space-y-1">
+                            <Label htmlFor="current">Current password</Label>
+                            <Input id="current" type="password" />
+                        </div>
+                        <div className="space-y-1">
+                            <Label htmlFor="new">New password</Label>
+                            <Input id="new" type="password" />
+                        </div>
+                    </CardContent>
+                    <CardFooter>
+                        <Button>Save password</Button>
+                    </CardFooter>
+                </Card>
+            </TabsContent>
+            <TabsContent value="planes">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Password</CardTitle>
+                        <CardDescription>
+                            Change your password here. After saving, youll be logged out.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                        <div className="space-y-1">
+                            <Label htmlFor="current">Current password</Label>
+                            <Input id="current" type="password" />
+                        </div>
+                        <div className="space-y-1">
+                            <Label htmlFor="new">New password</Label>
+                            <Input id="new" type="password" />
+                        </div>
+                    </CardContent>
+                    <CardFooter>
+                        <Button>Save password</Button>
+                    </CardFooter>
+                </Card>
+            </TabsContent>
+            <TabsContent value="pagos">
                 <Card>
                     <CardHeader>
                         <CardTitle>Password</CardTitle>
@@ -70,5 +128,6 @@ export function TabsDemo() {
                 </Card>
             </TabsContent>
         </Tabs>
+        
     )
 }

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Mail } from 'lucide-react';
-import { TabsDemo } from './configuration';
+import { Configuracion } from './configuration';
 import SkillsCard  from './skillsCard';
 import { LinksCard } from './linksCard';
 
@@ -27,6 +27,7 @@ function Profile({profile,user }: ProfileFullProps) {
     const first_surname = user.first_surname || null;
     const email = user.email || null;
     const links = user.links || null;
+    const workexperience = user.work_experience || null;
     {/*const address = user.address || null;*/}
  
 
@@ -79,16 +80,24 @@ function Profile({profile,user }: ProfileFullProps) {
             </div>
         </div>
 
-            <Card className='w-1/3 mt-10'>
-                <CardTitle className='text-heading text-md ml-5'>Sobre Mí</CardTitle>
-                <CardContent className="text-secondary text-sm">
-                    {about_me}
-                </CardContent>
-            </Card>
+            <div className="flex flex-row justify-between items-start gap-4 mt-10">
+                {/* — Grupo de cartas (columna) — */}
+                <div className="flex flex-col gap-4 w-1/3">
+                    <Card className="">
+                        <CardTitle className="text-heading text-md ml-5">Sobre Mí</CardTitle>
+                        <CardContent className="text-secondary text-sm">
+                            {about_me}
+                        </CardContent>
+                    </Card>
 
-            <SkillsCard skills={skills}/>
-            <LinksCard links={links}/>
-            <TabsDemo/>
+                    <SkillsCard skills={skills} />
+                    <LinksCard links={links} />
+                </div>
+
+                {/* — TabsDemo sube arriba y se queda a la derecha — */}
+                <Configuracion workexperience={workexperience} />
+            </div>
+
         
     </div>
 
