@@ -5,6 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Mail } from 'lucide-react';
+import { TabsDemo } from './configuration';
+import SkillsCard  from './skillsCard';
+import { LinksCard } from './linksCard';
 
 interface ProfileProps {
     profile: ProfileTypes;
@@ -83,39 +86,9 @@ function Profile({profile,user }: ProfileFullProps) {
                 </CardContent>
             </Card>
 
-            <Card className='w-1/3 mt-10'>
-                <CardTitle className='text-heading text-md ml-5'>Habilidades</CardTitle>
-                <CardContent className="text-secondary text-sm">
-
-                        {skills.length === 0 ? (
-                            <p>No tiene habilidades registradas.</p>
-                        ) : (
-                            skills.map((skill) => (
-                                <Badge key={skill.id_skill} className="mr-2 mb-2">
-                                    {skill.nombre}
-                                </Badge>
-                            ))
-                        )}
-                </CardContent>
-            </Card>
-            <Card className='w-1/3 mt-10'>
-                <CardTitle className='text-heading text-md ml-5'>Enlaces</CardTitle>
-                <CardContent className="text-secondary text-sm">
-                    <ul>
-                        {links.length === 0 ? (
-                            <p>No tiene enlaces registrados.</p>
-                        ) : (
-                            links.map((link) => (
-                                <li key={link.id_links}>
-                                    <a href={link.url} target="_blank" rel="noopener noreferrer">
-                                        {link.name}
-                                    </a>
-                                </li>
-                            ))
-                        )}
-                    </ul>
-                </CardContent>
-            </Card>
+            <SkillsCard skills={skills}/>
+            <LinksCard links={links}/>
+            <TabsDemo/>
         
     </div>
 
