@@ -11,9 +11,11 @@
   --Default-200: #EDECEE; /* Fondo oscuro */
   --Default-300: #112D4E;
   --Default-400: #144C8E; /* Fondo azul oscuro */
+  --Default-500: #DDE6F6; /* Fondo azul claro */
 
   /* Colores para la paleta de colores del perfil*/
   --variant-1: #0979b0; /* Azul */
+  
 
    /* 🎯 Texto principal */
    --text-primary: #415771;
@@ -116,6 +118,7 @@
   --color-default-200: var(--Default-200);
   --color-default-300: var(--Default-300);
   --color-default-400: var(--Default-400);
+  --color-default-500: var(--Default-500);
   --color-variant-1: var(--variant-1);
 
   --text-color-primary: var(--text-primary);
