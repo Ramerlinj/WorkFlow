@@ -9,8 +9,6 @@ import { TabsDemo } from './Tabs';
 import SkillsCard from './SkillCard';
 import { LinksCard } from './LinksCard';
 
-
-
 interface ProfileProps {
     profile: ProfileTypes;
 }
@@ -30,6 +28,7 @@ function Profile({profile,user }: ProfileFullProps) {
     const email = user.email || null;
     const links = user.links || null;
     const workexperience = user.work_experience || null;
+    const configuration = user.user_config || null;
     {/*const address = user.address || null;*/}
 
     
@@ -40,7 +39,6 @@ function Profile({profile,user }: ProfileFullProps) {
                 <div className="w-full h-full bg-default-50 rounded-t-lg shadow-lg flex flex-col items-center">
                     <div className="w-full h-44 bg-variant-1 mt-2 rounded-t-lg flex relative">
                         <div className="rounded-full overflow-hidden border-6 border-white shadow-lg w-28 h-28 left-20 top-32 absolute">
-                            
                             {avatar ? (
                                 <Image
                                     src={avatar}
@@ -50,7 +48,7 @@ function Profile({profile,user }: ProfileFullProps) {
                                     className='w-full h-full object-cover'
                                 />
                             ) : (
-                                <div className='flex w-full h-full object-cover text-center items-center justify-center bg-blue-700 text-4xl text-amber-50'>R</div>
+                                    <div className='flex w-full h-full object-cover text-center items-center justify-center bg-blue-700 text-4xl text-amber-50'>{ first_name ? first_name.charAt(0) : null }</div>
                                 
                             )}
                         </div>
@@ -87,7 +85,6 @@ function Profile({profile,user }: ProfileFullProps) {
         </div>
 
             <div className="flex flex-row justify-between items-start gap-4 mt-10">
-                {/* — Grupo de cartas (columna) — */}
                 <div className="flex flex-col gap-4 w-1/3">
                     <Card className="">
                         <CardTitle className="text-heading text-md ml-5">Sobre Mí</CardTitle>
@@ -100,8 +97,9 @@ function Profile({profile,user }: ProfileFullProps) {
                     <LinksCard links={links} />
                 </div>
 
-                {/* — TabsDemo sube arriba y se queda a la derecha — */}
-                <TabsDemo workexperience={workexperience} />
+                <TabsDemo workexperience={workexperience} UserConfig={configuration} />
+                
+                
             </div>
 
         

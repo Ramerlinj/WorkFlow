@@ -16,17 +16,22 @@ import {
     TabsTrigger,
 } from "@/components/ui/tabs"
 
-import { WorkExperience } from "@/types/user"
+import { WorkExperience, UserConfig } from "@/types/user"
 import { ProfileTab } from "./ProfileTab"
 
 import ConfigurationTab  from "./ConfigurationTab"
 interface WorkExperienceTabsProps {
     workexperience: WorkExperience[]; 
 }
+interface ConfigurationTabsProps {
+    UserConfig: UserConfig; 
+}
 
-export function TabsDemo({ workexperience }: WorkExperienceTabsProps) {
+interface ConfigurationExperienceProps extends WorkExperienceTabsProps, ConfigurationTabsProps { }
+
+export function TabsDemo({ UserConfig,workexperience }: ConfigurationExperienceProps) {
     return (
-        <Tabs defaultValue="configuration" className="w-3/4 ml-12" orientation="horizontal">
+        <Tabs defaultValue="profile" className="w-3/4 ml-12" orientation="horizontal">
             <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger className="cursor-pointer " value="profile">Perfil</TabsTrigger>
                 <TabsTrigger className="cursor-pointer" value="configuration">Configuracion</TabsTrigger>
@@ -37,7 +42,7 @@ export function TabsDemo({ workexperience }: WorkExperienceTabsProps) {
                 <ProfileTab workexperience={workexperience}/>
             </TabsContent>
             <TabsContent value="configuration">
-               <ConfigurationTab/>
+               <ConfigurationTab UserConfig={UserConfig}/>
             </TabsContent>
             <TabsContent value="planes">
                 <Card>
