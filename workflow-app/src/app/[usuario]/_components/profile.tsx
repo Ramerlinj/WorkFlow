@@ -5,9 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Mail } from 'lucide-react';
-import { Configuracion } from './configuration';
-import SkillsCard  from './skillsCard';
-import { LinksCard } from './linksCard';
+import { TabsDemo } from './Tabs';
+import SkillsCard from './SkillCard';
+import { LinksCard } from './LinksCard';
+
+
 
 interface ProfileProps {
     profile: ProfileTypes;
@@ -29,10 +31,8 @@ function Profile({profile,user }: ProfileFullProps) {
     const links = user.links || null;
     const workexperience = user.work_experience || null;
     {/*const address = user.address || null;*/}
- 
 
-
-
+    
 
     return (
         <div className="@container mx-8">
@@ -40,13 +40,19 @@ function Profile({profile,user }: ProfileFullProps) {
                 <div className="w-full h-full bg-default-50 rounded-t-lg shadow-lg flex flex-col items-center">
                     <div className="w-full h-44 bg-variant-1 mt-2 rounded-t-lg flex relative">
                         <div className="rounded-full overflow-hidden border-6 border-white shadow-lg w-28 h-28 left-20 top-32 absolute">
-                            <Image
-                            src={avatar ? avatar : 'https://www.headshotpro.com/_nuxt/img/2.1ae7c7e.png'}
-                            alt="Avatar"
-                            width={128}
-                            height={128}
-                            className='w-full h-full object-cover'
-                            />
+                            
+                            {avatar ? (
+                                <Image
+                                    src={avatar}
+                                    alt="Avatar"
+                                    width={128}
+                                    height={128}
+                                    className='w-full h-full object-cover'
+                                />
+                            ) : (
+                                <div className='flex w-full h-full object-cover text-center items-center justify-center bg-blue-700 text-4xl text-amber-50'>R</div>
+                                
+                            )}
                         </div>
                     </div>
 
@@ -95,7 +101,7 @@ function Profile({profile,user }: ProfileFullProps) {
                 </div>
 
                 {/* — TabsDemo sube arriba y se queda a la derecha — */}
-                <Configuracion workexperience={workexperience} />
+                <TabsDemo workexperience={workexperience} />
             </div>
 
         

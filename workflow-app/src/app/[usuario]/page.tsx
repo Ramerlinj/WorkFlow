@@ -1,6 +1,6 @@
 
 import { getUser } from '@/lib/getUser';
-import Profile from './_components/profile';
+import Profile from './_components/Profile';
 
 const UserPage = async ({ params }: { params: { usuario: string } }) => {
   const user = await getUser(params.usuario);

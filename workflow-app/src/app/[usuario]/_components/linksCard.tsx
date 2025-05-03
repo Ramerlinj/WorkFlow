@@ -1,4 +1,4 @@
-// Importa la interfaz 'Link' desde 'user.ts' o donde la hayas definido
+
 import { Link } from '@/types/user';
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 
