@@ -91,6 +91,5 @@ export function TabsDemo({ UserConfig,workexperience }: ConfigurationExperienceP
                 </Card>
             </TabsContent>
         </Tabs>
-        
     )
 }
