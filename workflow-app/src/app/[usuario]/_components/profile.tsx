@@ -12,6 +12,8 @@ import { LinksCard } from './LinksCard';
 import { Dialog, DialogTitle, DialogContent, DialogClose, DialogDescription, DialogHeader, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Popover, PopoverContent, PopoverTrigger } from '@radix-ui/react-popover';
+import { Input } from '@/components/ui/input';
 
 interface ProfileProps {
     profile: ProfileTypes;
@@ -25,7 +27,6 @@ interface ProfileFullProps extends ProfileProps, UserProps { }
 function Profile({profile,user }: ProfileFullProps) {
 
     {/*const cv = profile.cv || null*/}
-    const avatar = profile.avatar || null;
     const about_me = profile.about_me || null;
     const skills = user.skills || null;
     const first_name = user.first_name || null;
@@ -38,6 +39,9 @@ function Profile({profile,user }: ProfileFullProps) {
 
     const [IsOpen, setIsOpen] = useState(false);
     const [IsOpenPerfil, setIsOpenPerfil] = useState(false);
+    const [avatar, setAvatar] = useState(profile.avatar);
+
+
     const handleClick = () => {
         if (profile.cv) {
             window.open(profile.cv, '_blank');
@@ -46,6 +50,19 @@ function Profile({profile,user }: ProfileFullProps) {
             setIsOpen(true);
         }
     }
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            const imageUrl = reader.result as string;
+            setAvatar(imageUrl);
+            
+        };
+        reader.readAsDataURL(file);
+    };
     return (
         <div className="@container mx-8">
             <div className="h-96 w-full box-border">
@@ -125,34 +142,55 @@ function Profile({profile,user }: ProfileFullProps) {
                                             </DialogDescription>
                                         </DialogHeader>
 
-                                        
-                                        <div className="w-full bg-amber-400 h-32 rounded-t-2xl"></div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="">
+                                                <h4>sd</h4>
+                                            
+                                            </div>
+                                            <div className="">
+                                                <h4 className='font-semibold text-sm'>Vista previa</h4>
+                                                <div  className="w-72 h-72 bg-default-50 mt-2 rounded-lg shadow-lg">
+                                                    
+                                                    <div className="bg-red-300 w-full h-32 rounded-t-lg relative">
+                                                        <div className="absolute rounded-full h-24 w-24 bg-default-50 mb-10 top-18 ml-5">
+                                                            <Popover>
 
-                                        
-                                        <div className="mt-4 text-center">
-                                            <h4 className="text-heading font-semibold">Cambiar foto de perfil</h4>
-                                            <Avatar className="w-28 h-28 mt-2 mx-auto">
-                                                <AvatarImage src={avatar || 'https://pbs.twimg.com/media/FjU2lkcWYAgNG6d.jpg'} alt="Avatar" className="w-full h-full object-cover" />
-                                                <AvatarFallback>{first_name ? first_name.charAt(0) : null}</AvatarFallback>
-                                            </Avatar>
+                                                            <PopoverTrigger asChild>
+                                                            <Avatar className='w-22 h-22 mt-1 mx-auto cursor-pointer hover:shadow-lg hover:opacity-80 transition-all duration-200 ease-in-out'>
+                                                                <AvatarImage  src={avatar ?? undefined} className='w-full h-full object-cover'></AvatarImage>
+                                                                <AvatarFallback className='bg-amber-500 text-3xl w-full h-full object-cover'>{first_name ? first_name.charAt(0) : null}</AvatarFallback>
+                                                            </Avatar>
+                                                            </PopoverTrigger>
+                                                            <PopoverContent className="w-72 p-4 bg-default-100 shadow-lg rounded-lg">
+                                                                <div className="flex flex-col gap-2">
+                                                                    <h4 className="text-heading text-md">Cambiar foto de perfil</h4>
+                                                                    <p className="text-secondary text-sm">Sube una nueva foto de perfil para actualizar tu imagen.</p>
+                                                                    <Input 
+                                                                    className='cursor-pointer'
+                                                                    type='file'
+                                                                    accept='image/*'
+                                                                    onChange={handleImageChange}
+                                                                    placeholder='Sube una nueva foto de perfil'
+                                                                    />
+
+                                                                </div>
+                                                            </PopoverContent>
+
+                                                            </Popover>
+
+                                                        </div>
+
+                                                    </div>
+
+                                                </div >
+
+                                            </div>
+
                                         </div>
-
-                                        
-                                        <h4 className="text-heading font-semibold mt-6">Seleccione el color deseado</h4>
-                                        <div className="flex space-x-2 mt-2">
-                                            <button className="bg-amber-200 w-14 h-14 rounded-lg cursor-pointer hover:opacity-90">A</button>
-                                            <button className="bg-blue-200 w-14 h-14 rounded-lg cursor-pointer hover:opacity-90">B</button>
-                                            <button className="bg-red-200 w-14 h-14 rounded-lg cursor-pointer hover:opacity-90">C</button>
-                                            <button className="bg-gray-200 w-14 h-14 rounded-lg cursor-pointer hover:opacity-90">D</button>
+                                        <div className="flex flex-col w-44 gap-2 mt-4">
+                                            {/*<Button>Guardar cambios</Button>
+                                            <Button>Cancelar</Button>*/}
                                         </div>
-
-                                        {/* Botones adicionales */}
-                                        <div className="flex flex-col gap-2 mt-4">
-                                            <Button className="w-full">Guardar cambios</Button>
-                                            <Button className="w-full">Cancelar</Button>
-                                        </div>
-
-                                        
                                         <DialogFooter>
                                             <DialogClose asChild>
                                                 <Button variant="outline">Cerrar</Button>
@@ -186,6 +224,7 @@ function Profile({profile,user }: ProfileFullProps) {
 
         
     </div>
+    
 
 
 
