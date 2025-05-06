@@ -75,7 +75,7 @@ function Profile({ profile, user }: ProfileFullProps) {
                                     className="w-full h-full object-cover"
                                 />
                             ) : (
-                                <div className="flex w-full h-full object-cover text-center items-center justify-center bg-blue-700 text-4xl text-amber-50">
+                                <div className="flex w- h-full object-cover text-center items-center justify-center bg- text-4xl text-amber-50">
                                     {first_name ? first_name.charAt(0) : null}
                                 </div>
                             )}
