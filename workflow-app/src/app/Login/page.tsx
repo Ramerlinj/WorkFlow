@@ -1,4 +1,4 @@
-/* eslint-disable @next/next/no-img-element */
+
 'use client';
 import React, { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
@@ -96,7 +96,7 @@ export default function LoginForm() {
           </div>
           
           <div className="relative my-4">
-            <div className="absolute inset-0 flex items-center">
+            <div className="absolute inset-0 flex items-center ">
               <div className="w-full border-t border-gray-300"></div>
             </div>
             <div className="relative flex justify-center text-sm">
@@ -121,7 +121,7 @@ export default function LoginForm() {
             </Button>
           </div>
         </form>
-        
+
         <div className="text-center mt-4">
           <p className="text-sm text-gray-600">
             ¿No tienes cuenta? <a href="#" className="font-medium text-blue-600 hover:text-blue-800">Regístrate</a>
