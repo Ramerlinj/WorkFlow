@@ -15,7 +15,6 @@
 
   /* Colores para la paleta de colores del perfil*/
   --variant-1: #0979b0; /* Azul */
-  
 
    /* 🎯 Texto principal */
    --text-primary: #415771;
@@ -33,8 +32,6 @@
 
    /* 📝 Títulos (fuertes, destacados) */
    --text-heading: #112D4E;
-
-   
 
    /* 🔘 Botones principales */
    --button-primary: #214E83;
@@ -131,7 +128,6 @@
   --color-button-primary: var(--button-primary);
 
   --text-size-medium: var(--font-size-medium);
-
 
   /*Shadcn*/
 

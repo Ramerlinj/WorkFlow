@@ -49,14 +49,14 @@ function ConfigurationTab({ UserConfig }: ConfigurationTabsProps) {
                 <form>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <Label>Usuario</Label>
-                            <Input
-                                placeholder="Usuario"
-                                className="w-full mb-4 mt-2"
-                            />
                             <Label>Nombre</Label>
                             <Input
                                 placeholder="Nombre"
+                                className="w-full mb-4 mt-2"
+                            />
+                            <Label>Apellido</Label>
+                            <Input
+                                placeholder="Apellido"
                                 className="w-full mb-4 mt-2"
                             />
                         </div>
@@ -66,9 +66,9 @@ function ConfigurationTab({ UserConfig }: ConfigurationTabsProps) {
                                 placeholder="Correo Electrónico"
                                 className="w-full mb-4 mt-2"
                             />
-                            <Label className="mt-2">Apellidos</Label>
+                            <Label className="mt-2">Dirección</Label>
                             <Input
-                                placeholder="Apellidos"
+                                placeholder="Dirección"
                                 className="w-full mb-4 mt-2"
                             />
                         </div>

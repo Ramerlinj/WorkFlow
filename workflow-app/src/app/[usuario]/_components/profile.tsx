@@ -11,6 +11,7 @@ import { TabsDemo } from './Tabs';
 import SkillsCard from './SkillCard';
 import { ModalEditProfile } from './ModalEditProfile';
 import { LinksCard } from './LinksCard';
+import avatarColors from './ColorAvatar';
 import {
     Dialog,
     DialogTitle,
@@ -21,7 +22,6 @@ import {
     DialogTrigger,
 } from '@/components/ui/dialog';
 
-
 interface ProfileProps {
     profile: ProfileTypes;
 }
@@ -30,9 +30,10 @@ interface UserProps {
     user: User;
 }
 
-interface ProfileFullProps extends ProfileProps, UserProps {}
+interface ProfileFullProps extends ProfileProps, UserProps { }
 
 function Profile({ profile, user }: ProfileFullProps) {
+    const username = user.username || null;
     const about_me = profile.about_me || null;
     const skills = user.skills || null;
     const first_name = user.first_name || null;
@@ -50,7 +51,8 @@ function Profile({ profile, user }: ProfileFullProps) {
         setIsOpenEditProfile(true);
     };
 
-
+    const initial = first_name ? first_name.charAt(0).toUpperCase() : ""
+    const backgroundColor = avatarColors[initial] || "#9999"
 
     const handleClick = () => {
         if (profile.cv) {
@@ -58,6 +60,11 @@ function Profile({ profile, user }: ProfileFullProps) {
         } else {
             setIsOpen(true);
         }
+    };
+
+    // Función para actualizar el avatar desde el modal
+    const handleAvatarChange = (newAvatar: string) => {
+        setAvatar(newAvatar); // Actualiza el avatar cuando se guarda en el modal
     };
 
     return (
@@ -75,8 +82,8 @@ function Profile({ profile, user }: ProfileFullProps) {
                                     className="w-full h-full object-cover"
                                 />
                             ) : (
-                                <div className="flex w- h-full object-cover text-center items-center justify-center bg- text-4xl text-amber-50">
-                                    {first_name ? first_name.charAt(0) : null}
+                                <div style={{ backgroundColor }} className="flex w- h-full  object-cover text-center items-center justify-center bg- text-4xl text-amber-50">
+                                    {initial}
                                 </div>
                             )}
                         </div>
@@ -135,11 +142,14 @@ function Profile({ profile, user }: ProfileFullProps) {
                                 </Button>
                                 <ModalEditProfile
                                     avatar={avatar}
-                                    first_name={first_name}
-                                    open={IsOpenEdirProfile}
-                                    setOpen={setIsOpenEditProfile}
+                                    firstName={first_name}
+                                    firstSurname={first_surname}
+                                    username={username}
+                                    aboutMe={about_me} 
+                                    isOpen={IsOpenEdirProfile}
+                                    setIsOpen={setIsOpenEditProfile}
+                                    onAvatarChange={handleAvatarChange}
                                 />
-
                             </div>
                         </div>
                     </div>
@@ -157,7 +167,7 @@ function Profile({ profile, user }: ProfileFullProps) {
                     <LinksCard links={links} />
                 </div>
 
-                <TabsDemo workexperience={workexperience} UserConfig={configuration}  />
+                <TabsDemo workexperience={workexperience} UserConfig={configuration} />
             </div>
         </div>
     );
