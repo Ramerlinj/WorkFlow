@@ -3,10 +3,10 @@ from sqlalchemy.orm import relationship
 from app.database.conexion import Base
 
 class UserSkill(Base):
-    __tablename__ = 'USER_SKILL'
+    __tablename__ = 'USER_SKILLS'
 
-    id_user = Column(Integer, ForeignKey('USERS.id_user', ondelete='CASCADE'), primary_key=True)
-    id_skill = Column(Integer, ForeignKey('SKILLS.id_skill', ondelete='CASCADE'), primary_key=True)
+    id_user = Column('ID_USER', Integer, ForeignKey('USERS.ID_USER', ondelete='CASCADE'), primary_key=True)
+    id_skill = Column('ID_SKILL', Integer, ForeignKey('SKILLS.ID_SKILL', ondelete='CASCADE'), primary_key=True)
 
-    user = relationship('User', back_populates='skills')
-    skill = relationship('Skill', back_populates='users')
+    user = relationship('User', back_populates='skill')
+    skill = relationship('Skill', back_populates='user')
