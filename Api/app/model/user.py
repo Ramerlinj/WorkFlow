@@ -4,7 +4,7 @@ from datetime import datetime
 from app.database.conexion import Base
 
 class User(Base):
-    __tablename__ = 'USERS'
+    __tablename__ = 'USER'
 
     id_user = Column(Integer, primary_key=True, autoincrement=True)
     username = Column(String(50), nullable=False, unique=True)

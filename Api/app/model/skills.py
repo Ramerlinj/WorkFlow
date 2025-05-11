@@ -3,7 +3,7 @@ from app.database.conexion import Base
 from sqlalchemy.orm import relationship
 
 class Skill(Base):
-    __tablename__ = 'SKILLS'
+    __tablename__ = 'SKILL'
 
     id_skill = Column(Integer, primary_key=True, autoincrement=True)
     nombre = Column(String(50), unique=True, nullable=False)

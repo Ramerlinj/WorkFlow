@@ -32,9 +32,9 @@ try:
     rows = cursor.fetchall()
     for row in rows:
         print(row)
-    print("✅ Conexión exitosa y consulta realizada")
+    print(" Conexión exitosa y consulta realizada")
 except Exception as e:
-    print(f"❌ Error al ejecutar la consulta: {e}")
+    print(f" Error al ejecutar la consulta: {e}")
 finally:
     if conn:
         conn.close()
