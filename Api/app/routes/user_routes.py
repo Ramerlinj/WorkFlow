@@ -3,14 +3,22 @@ from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import func
 
 from app.database.conexion import SessionLocal
-from app.model.user import User
-from app.model.skills import Skill  # Importa el modelo Skill
+from app.models.user import User
+from app.models.skill import Skill
+from app.models.testimonial import Testimonial
+
 from app.schemas.user_full import UserFullResponse
-from app.schemas.skills import SkillResponse
+from app.schemas.professions import ProfessionRead
+from app.schemas.country import CountryRead
+from app.schemas.location import LocationRead
 from app.schemas.profile import ProfileResponse
+from app.schemas.skills import SkillResponse
 from app.schemas.link import LinkResponse
 from app.schemas.workexperience import WorkExperienceResponse
 from app.schemas.userconfig import UserConfigResponse
+from app.schemas.notification_settings import NotificationSettingsRead
+from app.schemas.job_applications import JobApplicationRead
+from app.schemas.testimonials import TestimonialRead
 
 router = APIRouter()
 
@@ -23,37 +31,31 @@ def get_db():
 
 @router.get("/user/{username}", response_model=UserFullResponse)
 def get_user_full(username: str, db: Session = Depends(get_db)):
-    user = db.query(User).options(
-        joinedload(User.profile),
-        joinedload(User.skills),
-        joinedload(User.links),
-        joinedload(User.work_experience),
-        joinedload(User.user_config)
-    ).filter(func.lower(User.username) == username.lower()).first()
+    # 1) Query con joinedload de todas las relaciones
+    user = (
+        db.query(User)
+        .options(
+            joinedload(User.profession),
+            joinedload(User.profile),
+            joinedload(User.skills).joinedload('skill'),
+            joinedload(User.links),
+            joinedload(User.work_experience),
+            joinedload(User.user_config),
+            joinedload(User.notification_settings),
+            joinedload(User.testimonials_received),
+            joinedload(User.testimonials_given),
+            # si el modelo User tuviera location:
+            # joinedload(User.location).joinedload(Location.country)
+        )
+        .filter(func.lower(User.username) == username.lower())
+        .first()
+    )
 
     if not user:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
-    # Aquí hacemos la conversión correcta a los Response
-    skills = []
-    for user_skill in user.skills:
-        skill = db.query(Skill).filter(Skill.id_skill == user_skill.id_skill).first()
-        if skill:
-            skills.append(SkillResponse.model_validate(skill, from_attributes=True))
-
-    profile = None
-    if user.profile:
-        profile = ProfileResponse.model_validate(user.profile, from_attributes=True)
-
-    links = [LinkResponse.model_validate(link, from_attributes=True) for link in user.links]
-
-    work_experience = [WorkExperienceResponse.model_validate(exp, from_attributes=True) for exp in user.work_experience]
-
-    user_config = None
-    if user.user_config:
-        user_config = UserConfigResponse.model_validate(user.user_config, from_attributes=True)
-
-    return UserFullResponse(
+    # 2) Mapeo de campos escalares
+    resp = UserFullResponse(
         id_user=user.id_user,
         username=user.username,
         first_name=user.first_name,
@@ -63,9 +65,55 @@ def get_user_full(username: str, db: Session = Depends(get_db)):
         email=user.email,
         date_of_birth=user.date_of_birth,
         creation_date=user.creation_date,
-        profile=profile,
-        skills=skills,
-        links=links,
-        work_experience=work_experience,
-        user_config=user_config,
+        # Relaciones 1:1
+        profession=(ProfessionRead.model_validate(user.profession, from_attributes=True)
+                    if user.profession else None),
+        profile=(ProfileResponse.model_validate(user.profile, from_attributes=True)
+                 if user.profile else None),
+        user_config=(UserConfigResponse.model_validate(user.user_config, from_attributes=True)
+                     if user.user_config else None),
+        notification_settings=(NotificationSettingsRead.model_validate(user.notification_settings, from_attributes=True)
+                               if user.notification_settings else None),
+        # Si tuvieras location y country:
+        # location=(LocationRead.model_validate(user.location, from_attributes=True)
+        #           if user.location else None),
+        # country=(CountryRead.model_validate(user.location.country, from_attributes=True)
+        #          if user.location and user.location.country else None),
     )
+
+    # 3) Listas (mapeo de colecciones)
+    # Skills a través de user.skills → each.user_skill.skill
+    resp.skills = [
+        SkillResponse.model_validate(us.skill, from_attributes=True)
+        for us in user.skills
+    ]
+
+    # Links
+    resp.links = [
+        LinkResponse.model_validate(link, from_attributes=True)
+        for link in user.links
+    ]
+
+    # Experiencia laboral
+    resp.work_experience = [
+        WorkExperienceResponse.model_validate(exp, from_attributes=True)
+        for exp in user.work_experience
+    ]
+
+    # Solicitudes de empleo (si lo incluyes)
+    resp.applications = [
+        JobApplicationRead.model_validate(app, from_attributes=True)
+        for app in user.applications
+    ]
+
+    # Testimonios recibidos y dados
+    resp.testimonials_received = [
+        TestimonialRead.model_validate(t, from_attributes=True)
+        for t in user.testimonials_received
+    ]
+    resp.testimonials_given = [
+        TestimonialRead.model_validate(t, from_attributes=True)
+        for t in user.testimonials_given
+    ]
+
+    return resp
