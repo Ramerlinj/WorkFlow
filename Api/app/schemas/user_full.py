@@ -28,7 +28,6 @@ class UserFullResponse(BaseModel):
     date_of_birth: date
     creation_date: datetime
 
-    # Related one-to-one / one-to-many
     profession: Optional[ProfessionRead] = None
     country: Optional[CountryRead] = None
     location: Optional[LocationRead] = None
@@ -36,7 +35,7 @@ class UserFullResponse(BaseModel):
     user_config: Optional[UserConfigRead] = None
     notification_settings: Optional[NotificationSettingsRead] = None
 
-    # Collections
+    # Colecciones
     skills: List[SkillRead] = []
     user_skills: List[UserSkillRead] = []
     links: List[LinkRead] = []
