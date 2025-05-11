@@ -1,27 +1,24 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, Field
 from datetime import date, datetime
+from typing import Optional
 
-class UserCreate(BaseModel):
-    username: str
-    first_name: str
-    middle_name: str | None = None
-    first_surname: str
-    second_surname: str | None = None
-    email: EmailStr
-    password: str
+class UserBase(BaseModel):
+    id_profession: int
+    username: str = Field(..., max_length=50)
+    email: str = Field(..., max_length=100)
+    first_name: str = Field(..., max_length=50)
+    middle_name: Optional[str] = Field(None, max_length=50)
+    first_surname: str = Field(..., max_length=50)
+    second_surname: Optional[str] = Field(None, max_length=50)
     date_of_birth: date
+    address: Optional[str] = Field(None, max_length=100)
 
-class UserResponse(BaseModel):
+class UserCreate(UserBase):
+    hash_password: str = Field(..., max_length=255)
+
+class UserRead(UserBase):
     id_user: int
-    username: str
-    first_name: str
-    middle_name: str | None
-    first_surname: str
-    second_surname: str | None
-    email: EmailStr
-    date_of_birth: date
     creation_date: datetime
 
     class Config:
         from_attributes = True
-

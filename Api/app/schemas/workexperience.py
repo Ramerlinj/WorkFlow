@@ -1,17 +1,20 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import date
+from typing import Optional
 
-class WorkExperienceCreate(BaseModel):
+class WorkExperienceBase(BaseModel):
     id_user: int
-    title: str
-    company: str
+    title: str = Field(..., max_length=100)
+    company: str = Field(..., max_length=100)
     start_date: date
-    end_date: date | None = None
-    description: str | None = None
+    end_date: Optional[date] = None
+    description: Optional[str] = Field(None, max_length=255)
 
-class WorkExperienceResponse(WorkExperienceCreate):
+class WorkExperienceCreate(WorkExperienceBase):
+    pass
+
+class WorkExperienceRead(WorkExperienceBase):
     id_experience: int
 
     class Config:
         from_attributes = True
-

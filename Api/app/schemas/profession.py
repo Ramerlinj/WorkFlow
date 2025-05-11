@@ -1,13 +1,13 @@
 from pydantic import BaseModel, Field
 
-class SkillBase(BaseModel):
+class ProfessionBase(BaseModel):
     name: str = Field(..., max_length=50)
 
-class SkillCreate(SkillBase):
+class ProfessionCreate(ProfessionBase):
     pass
 
-class SkillRead(SkillBase):
-    id_skill: int
+class ProfessionRead(ProfessionBase):
+    id_profession: int
 
     class Config:
         from_attributes = True
