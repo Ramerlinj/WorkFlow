@@ -9,7 +9,7 @@ class NotificationSettingsBase(BaseModel):
 class NotificationSettingsCreate(NotificationSettingsBase):
     pass
 
-class NotificationSettingsRead(NotificationSettingsBase):
+class NotificationSettingsResponse(NotificationSettingsBase):
     id_notif: int
 
     class Config:

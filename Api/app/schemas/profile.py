@@ -9,7 +9,7 @@ class ProfileBase(BaseModel):
 class ProfileCreate(ProfileBase):
     id_user: int
 
-class ProfileRead(ProfileBase):
+class ProfileResponse(ProfileBase):
     id_profile: int
     id_user: int
 

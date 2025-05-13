@@ -5,7 +5,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from app.database.conexion import get_db
-from app.model.user import User
+from app.models.user import User
 from app.utils.hashing import Hash
 
 # Configuración del esquema de autenticación OAuth2

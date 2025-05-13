@@ -16,7 +16,7 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     hash_password: str = Field(..., max_length=255)
 
-class UserRead(UserBase):
+class UserResponse(UserBase):
     id_user: int
     creation_date: datetime
 

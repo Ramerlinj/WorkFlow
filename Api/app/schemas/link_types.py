@@ -6,7 +6,7 @@ class LinkTypeBase(BaseModel):
 class LinkTypeCreate(LinkTypeBase):
     pass
 
-class LinkTypeRead(LinkTypeBase):
+class LinkTypeResponse(LinkTypeBase):
     id_link_type: int
 
     class Config:

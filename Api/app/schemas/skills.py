@@ -6,7 +6,7 @@ class SkillBase(BaseModel):
 class SkillCreate(SkillBase):
     pass
 
-class SkillRead(SkillBase):
+class SkillResponse(SkillBase):
     id_skill: int
 
     class Config:

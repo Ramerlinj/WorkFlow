@@ -6,7 +6,7 @@ class TypeJobBase(BaseModel):
 class TypeJobCreate(TypeJobBase):
     pass
 
-class TypeJobRead(TypeJobBase):
+class TypeJobResponse(TypeJobBase):
     id_type_job: int
 
     class Config:

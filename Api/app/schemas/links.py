@@ -8,7 +8,7 @@ class LinkBase(BaseModel):
 class LinkCreate(LinkBase):
     pass
 
-class LinkRead(LinkBase):
+class LinkResponse(LinkBase):
     id_link: int
 
     class Config:

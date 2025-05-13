@@ -10,7 +10,7 @@ class UserConfigBase(BaseModel):
 class UserConfigCreate(UserConfigBase):
     pass
 
-class UserConfigRead(UserConfigBase):
+class UserConfigResponse(UserConfigBase):
     id_config: int
 
     class Config:

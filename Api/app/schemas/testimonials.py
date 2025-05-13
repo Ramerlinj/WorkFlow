@@ -11,7 +11,7 @@ class TestimonialBase(BaseModel):
 class TestimonialCreate(TestimonialBase):
     pass
 
-class TestimonialRead(TestimonialBase):
+class TestimonialResponse(TestimonialBase):
     id_testimonial: int
     created_at: datetime
 
