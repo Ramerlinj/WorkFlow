@@ -5,20 +5,21 @@ from sqlalchemy import func
 from app.database.conexion import SessionLocal
 from app.models.user import User
 from app.models.skill import Skill
-from app.models.testimonial import Testimonial
+from app.models.testimonials import Testimonial
+from app.models.user_skills import UserSkill
 
 from app.schemas.user_full import UserFullResponse
-from app.schemas.professions import ProfessionRead
-from app.schemas.country import CountryRead
-from app.schemas.location import LocationRead
+from app.schemas.professions import ProfessionResponse
+from app.schemas.countries import CountryResponse
+from app.schemas.locations import LocationResponse
 from app.schemas.profile import ProfileResponse
 from app.schemas.skills import SkillResponse
-from app.schemas.link import LinkResponse
-from app.schemas.workexperience import WorkExperienceResponse
-from app.schemas.userconfig import UserConfigResponse
-from app.schemas.notification_settings import NotificationSettingsRead
-from app.schemas.job_applications import JobApplicationRead
-from app.schemas.testimonials import TestimonialRead
+from app.schemas.links import LinkResponse
+from app.schemas.work_experience import WorkExperienceResponse
+from app.schemas.user_config import UserConfigResponse
+from app.schemas.notification_settings import NotificationSettingsResponse
+from app.schemas.job_applications import JobApplicationResponse
+from app.schemas.testimonials import TestimonialResponse
 
 router = APIRouter()
 
@@ -37,7 +38,7 @@ def get_user_full(username: str, db: Session = Depends(get_db)):
         .options(
             joinedload(User.profession),
             joinedload(User.profile),
-            joinedload(User.skills).joinedload('skill'),
+            joinedload(User.skills).joinedload(UserSkill.skill),
             joinedload(User.links),
             joinedload(User.work_experience),
             joinedload(User.user_config),
@@ -66,18 +67,18 @@ def get_user_full(username: str, db: Session = Depends(get_db)):
         date_of_birth=user.date_of_birth,
         creation_date=user.creation_date,
         # Relaciones 1:1
-        profession=(ProfessionRead.model_validate(user.profession, from_attributes=True)
+        profession=(ProfessionResponse.model_validate(user.profession, from_attributes=True)
                     if user.profession else None),
         profile=(ProfileResponse.model_validate(user.profile, from_attributes=True)
                  if user.profile else None),
         user_config=(UserConfigResponse.model_validate(user.user_config, from_attributes=True)
                      if user.user_config else None),
-        notification_settings=(NotificationSettingsRead.model_validate(user.notification_settings, from_attributes=True)
+        notification_settings=(NotificationSettingsResponse.model_validate(user.notification_settings, from_attributes=True)
                                if user.notification_settings else None),
         # Si tuvieras location y country:
-        # location=(LocationRead.model_validate(user.location, from_attributes=True)
+        # location=(LocationResponse.model_validate(user.location, from_attributes=True)
         #           if user.location else None),
-        # country=(CountryRead.model_validate(user.location.country, from_attributes=True)
+        # country=(CountryResponse.model_validate(user.location.country, from_attributes=True)
         #          if user.location and user.location.country else None),
     )
 
@@ -102,17 +103,17 @@ def get_user_full(username: str, db: Session = Depends(get_db)):
 
     # Solicitudes de empleo (si lo incluyes)
     resp.applications = [
-        JobApplicationRead.model_validate(app, from_attributes=True)
+        JobApplicationResponse.model_validate(app, from_attributes=True)
         for app in user.applications
     ]
 
     # Testimonios recibidos y dados
     resp.testimonials_received = [
-        TestimonialRead.model_validate(t, from_attributes=True)
+        TestimonialResponse.model_validate(t, from_attributes=True)
         for t in user.testimonials_received
     ]
     resp.testimonials_given = [
-        TestimonialRead.model_validate(t, from_attributes=True)
+        TestimonialResponse.model_validate(t, from_attributes=True)
         for t in user.testimonials_given
     ]
 
