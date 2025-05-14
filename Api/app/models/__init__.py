@@ -1,3 +1,5 @@
+# app/models/__init__.py
+
 from app.models.user import User
 from app.models.profile import Profile
 from app.models.skill import Skill
@@ -15,3 +17,11 @@ from app.models.testimonials import Testimonial
 from app.models.notification_settings import NotificationSettings
 from app.models.type_job import TypeJob
 
+from app.models.testimonial_comment import TestimonialComment
+
+from sqlalchemy.orm import relationship
+Testimonial.comments = relationship(
+    "TestimonialComment",
+    back_populates="testimonial",
+    cascade="all, delete-orphan"
+)

@@ -33,18 +33,19 @@ class User(Base):
     notification_settings = relationship('NotificationSettings', back_populates='user', uselist=False, cascade='all, delete-orphan')
 
     testimonials_received = relationship(
-        'Testimonial',
-        foreign_keys='Testimonial.id_user_target',
-        back_populates='target',
-        cascade='all, delete-orphan'
-    )
+    'Testimonial',
+    foreign_keys='Testimonial.id_user_target',
+    back_populates='target',
+    cascade='all, delete-orphan'
+)
 
     testimonials_given = relationship(
-        'Testimonial',
-        foreign_keys='Testimonial.id_user_source',
-        back_populates='source',
-        cascade='all, delete-orphan'
-    )
+    'Testimonial',
+    foreign_keys='Testimonial.id_user_source',
+    back_populates='source',
+    cascade='all, delete-orphan'
+)
+
 
     applications = relationship(
     'JobApplication',
