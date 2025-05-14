@@ -1,11 +1,13 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
-class SkillCreate(BaseModel):
-    nombre: str
+class SkillBase(BaseModel):
+    name: str = Field(..., max_length=50)
 
-class SkillResponse(SkillCreate):
+class SkillCreate(SkillBase):
+    pass
+
+class SkillResponse(SkillBase):
     id_skill: int
 
     class Config:
         from_attributes = True
-

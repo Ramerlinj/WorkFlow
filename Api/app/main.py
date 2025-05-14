@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from app.routes import user_routes
-
+from app.routes import testimonials_routes
 
 app = FastAPI(
     title="Mi API de Usuarios",
@@ -9,3 +9,4 @@ app = FastAPI(
 )
 
 app.include_router(user_routes.router, tags=["Usuarios"])
+app.include_router(testimonials_routes.router, tags=["testimonials"])

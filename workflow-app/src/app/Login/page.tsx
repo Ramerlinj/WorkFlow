@@ -1,7 +1,8 @@
-/* eslint-disable @next/next/no-img-element */
+
 'use client';
 import React, { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
+import  Link  from 'next/link';
 import { Input } from '@/components/ui/input';
 import { FaGoogle } from "react-icons/fa6";
 import { Button } from "@/components/ui/button"
@@ -79,9 +80,9 @@ export default function LoginForm() {
                 </button>
               </div>
               <div className="flex justify-end mt-1">
-                <a href="#" className="text-sm text-blue-600 hover:text-blue-800">
+                <Link href="#" className="text-sm text-blue-600 hover:text-blue-800">
                   ¿Olvidaste tu contraseña?
-                </a>
+                </Link>
               </div>
             </div>
           </div>
@@ -96,7 +97,7 @@ export default function LoginForm() {
           </div>
           
           <div className="relative my-4">
-            <div className="absolute inset-0 flex items-center">
+            <div className="absolute inset-0 flex items-center ">
               <div className="w-full border-t border-gray-300"></div>
             </div>
             <div className="relative flex justify-center text-sm">
@@ -121,10 +122,10 @@ export default function LoginForm() {
             </Button>
           </div>
         </form>
-        
+
         <div className="text-center mt-4">
           <p className="text-sm text-gray-600">
-            ¿No tienes cuenta? <a href="#" className="font-medium text-blue-600 hover:text-blue-800">Regístrate</a>
+            ¿No tienes cuenta? <Link href={'/registro'} className='font-medium text-blue-600 hover:text-blue-800'>Registrate</Link>
           </p>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import * as React from "react"
+
 import { format } from "date-fns"
 import { Calendar as CalendarIcon } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -12,7 +13,7 @@ export function DatePicker() {
         <Popover>
             <PopoverTrigger asChild>
                 <Button
-                    
+
                     variant={"outline"}
                     className={`justify-start text-left font-normal ${!date ? "text-muted-foreground" : ""}`}
                     size='xl'
@@ -27,7 +28,7 @@ export function DatePicker() {
                     selected={date}
                     onSelect={setDate}
                     initialFocus
-                    
+
                 />
             </PopoverContent>
         </Popover>
