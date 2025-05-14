@@ -4,6 +4,7 @@ import "./globals.css";
 import Header  from "@/components/header/Header";
 import Footer  from "@/components/footer/Footer";
 
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -20,7 +21,6 @@ export default function RootLayout({
     <html lang="es">
       <body className={`${inter.className} antialiased`}>
         <Header />
-
         {children}
         <Footer />
       </body>
