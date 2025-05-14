@@ -18,7 +18,7 @@ const Header = () => {
 
     return (
         <header className="sticky top-0 z-50 bg-default/90 backdrop-blur-md shadow-md">
-            <div className="grid grid-cols-[auto_1fr_auto] items-center h-20 px-6 md:px-10 gap-4">
+            <div className="grid grid-cols-[auto_1fr_auto] items-center h-18 px-6 md:px-10 gap-4">
 
                 <div className="flex items-center gap-2">
                     <Link href="/" aria-label="Ir al inicio">

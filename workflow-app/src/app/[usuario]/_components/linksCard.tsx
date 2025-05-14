@@ -1,8 +1,9 @@
-import type { Link } from "@/types/user"
+import type { Link as UserLink } from "@/types/user"
 import { Card, CardContent, CardTitle } from "@/components/ui/card"
+import Link from "next/link"
 
 interface LinksCardProps {
-  links: Link[]
+  links: UserLink[]
 }
 
 export function LinksCard({ links }: LinksCardProps) {
@@ -16,9 +17,9 @@ export function LinksCard({ links }: LinksCardProps) {
           <ul className="list-disc ml-5">
             {links.map((link) => (
               <li key={link.id_links}>
-                <a href={link.url} target="_blank" rel="noopener noreferrer" className="text-secondary hover:underline">
+                <Link href={link.url} target="_blank" rel="noopener noreferrer" className="text-secondary hover:underline">
                   {link.name}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
