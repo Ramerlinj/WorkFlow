@@ -61,7 +61,6 @@ def get_user_full(username: str, db: Session = Depends(get_db)):
     if not user:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
-    # 2) Mapeo de campos escalares
     resp = UserFullResponse(
         id_user=user.id_user,
         username=user.username,
@@ -72,6 +71,7 @@ def get_user_full(username: str, db: Session = Depends(get_db)):
         email=user.email,
         date_of_birth=user.date_of_birth,
         creation_date=user.creation_date,
+        direction=user.direction,
         profession=(ProfessionResponse.model_validate(user.profession, from_attributes=True)
                     if user.profession else None),
         profile=(ProfileResponse.model_validate(user.profile, from_attributes=True)
@@ -132,7 +132,7 @@ def create_user(data: UserCreate, db: Session = Depends(get_db)):
         first_surname=data.first_surname,
         second_surname=data.second_surname,
         date_of_birth=data.date_of_birth,
-        address=data.address,
+        direction=data.direction,
         creation_date=func.now()
     )
 
@@ -148,7 +148,7 @@ def update_user(username: str, data: UserUpdate, db: Session = Depends(get_db)):
     if not user:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
-    for key, value in data.dict(exclude_unset=True).items():
+    for key, value in data.model_dump(exclude_unset=True).items():
         setattr(user, key, value)
 
     db.commit()

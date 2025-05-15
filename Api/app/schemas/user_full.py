@@ -14,7 +14,6 @@ from app.schemas.job_applications import JobApplicationResponse
 from app.schemas.testimonials import TestimonialResponse
 
 class UserFullResponse(BaseModel):
-    # Basica user info
     id_user: int
     username: str
     email: str
@@ -24,14 +23,13 @@ class UserFullResponse(BaseModel):
     second_surname: Optional[str] = None
     date_of_birth: date
     creation_date: datetime
-    address: Optional[str] = None
+    direction: Optional[str] = None
 
     profession: Optional[ProfessionResponse] = None
     profile: Optional[ProfileResponse] = None
     user_config: Optional[UserConfigResponse] = None
     notification_settings: Optional[NotificationSettingsResponse] = None
 
-    # Colecciones
     skills: List[SkillResponse] = []
     user_skills: List[UserSkillResponse] = []
     links: List[LinkResponse] = []

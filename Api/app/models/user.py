@@ -3,11 +3,6 @@ from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.database.conexion import Base
 
-# model/user.py
-from sqlalchemy import Column, Integer, String, Date, DateTime, ForeignKey
-from sqlalchemy.orm import relationship
-from datetime import datetime
-from app.database.conexion import Base
 class User(Base):
     __tablename__ = 'USERS'
 
@@ -22,7 +17,7 @@ class User(Base):
     second_surname = Column('SECOND_SURNAME', String(50), nullable=True)
     date_of_birth = Column('DATE_OF_BIRTH', Date, nullable=False)
     creation_date = Column('CREATION_DATE', DateTime, default=datetime.utcnow, nullable=False)
-    address = Column('ADDRESS', String(100), nullable=True)
+    direction = Column('DIRECTION', String(100), nullable=True)
 
     profession = relationship('Profession', back_populates='users')
     profile = relationship('Profile', back_populates='user', uselist=False, cascade='all, delete-orphan')
