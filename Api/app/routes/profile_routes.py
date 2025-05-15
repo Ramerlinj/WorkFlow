@@ -16,14 +16,14 @@ def get_db():
     finally:
         db.close()
 
-@router.get("/{profile_id}", response_model=ProfileResponse)
+@router.get("/profile/{profile_id}", response_model=ProfileResponse)
 def get_profile(profile_id: int, db: Session = Depends(get_db)):
     profile = db.query(Profile).filter(Profile.id_profile == profile_id).first()
     if not profile:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Perfil no encontrado.")
     return profile
 
-@router.put("/{profile_id}", response_model=ProfileResponse)
+@router.put("/profile/{profile_id}", response_model=ProfileResponse)
 def update_profile(profile_id: int, profile_data: ProfileBase, db: Session = Depends(get_db)):
     profile = db.query(Profile).filter(Profile.id_profile == profile_id).first()
     if not profile:

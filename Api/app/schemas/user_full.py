@@ -8,10 +8,7 @@ from app.schemas.links import LinkResponse
 from app.schemas.work_experience import WorkExperienceResponse
 from app.schemas.user_config import UserConfigResponse
 from app.schemas.notification_settings import NotificationSettingsResponse
-from app.schemas.users import UserResponse
 from app.schemas.professions import ProfessionResponse
-from app.schemas.locations import LocationResponse
-from app.schemas.countries import CountryResponse
 from app.schemas.user_skills import UserSkillResponse
 from app.schemas.job_applications import JobApplicationResponse
 from app.schemas.testimonials import TestimonialResponse
@@ -27,10 +24,9 @@ class UserFullResponse(BaseModel):
     second_surname: Optional[str] = None
     date_of_birth: date
     creation_date: datetime
+    address: Optional[str] = None
 
     profession: Optional[ProfessionResponse] = None
-    country: Optional[CountryResponse] = None
-    location: Optional[LocationResponse] = None
     profile: Optional[ProfileResponse] = None
     user_config: Optional[UserConfigResponse] = None
     notification_settings: Optional[NotificationSettingsResponse] = None
