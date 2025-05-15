@@ -1,10 +1,10 @@
 'use client'
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Eye, EyeOff, Check, X } from 'lucide-react';
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button';
-import { DatePicker } from '@/components/ui/datePicker';
+
 import Link from "next/link"
 
 
@@ -187,7 +187,6 @@ useEffect(() => {
             <label htmlFor="birthDate" className="block text-sm font-medium text-gray-700 mb-1">
               Fecha de nacimiento
             </label>
-            <DatePicker/>
            
             {formData.birthDate && !isAdult && (
               <p className="mt-1 text-sm text-red-600">{errors.birthDate}</p>
@@ -211,12 +210,12 @@ useEffect(() => {
                 required
                 minLength={8}
               />
-              <button
+              <Button
                 onClick={togglePasswordVisibility}
                 className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700 cursor-pointer"
               >
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-              </button>
+              </Button>
             </div>
             <p className="mt-1 text-xs text-gray-500">La contraseña debe tener al menos 8 caracteres</p>
           </div>

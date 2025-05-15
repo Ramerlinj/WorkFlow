@@ -1,6 +1,5 @@
-// src/lib/getUser.ts
 
-import { User } from "@/types/user";
+import type { User } from "@/types/user";
 
 /**
  * 
@@ -10,7 +9,7 @@ import { User } from "@/types/user";
 
 export async function getUser(username: string): Promise<User | null> {
   try {
-    const response = await fetch(`http://localhost:5000/user/${username}`, {
+    const response = await fetch(`http://localhost:8000/user/${username}`, {
       cache: 'no-store' 
     });
 

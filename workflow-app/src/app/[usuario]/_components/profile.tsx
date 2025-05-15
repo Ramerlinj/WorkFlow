@@ -9,7 +9,7 @@ import { Card, CardContent, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { ProfileTab } from "./WorkExperience"
 import SkillsCard from "./SkillCard"
-import { LinksCard } from "./LinksCard"
+import { LinksCard } from "./linksCard"
 import avatarColors from "@/lib/colors/avatar-colors"
 import { ConfigurationPanel } from "./configuration/configuration-panel"
 import {
@@ -37,11 +37,15 @@ function Profile({ profile, user }: ProfileFullProps) {
   const about_me = profile.about_me || null
   const skills = user.skills || null
   const first_name = user.first_name || null
+  const last_name = user.middle_name || null
   const first_surname = user.first_surname || null
+  const second_surname = user.second_surname || null
   const email = user.email || null
   const links = user.links || null
   const workexperience = user.work_experience || null
   const configuration = user.user_config || null
+  const profession = user.profession.name || null
+  const addres = user.address || null
 
   const [isOpenCvDialog, setIsOpenCvDialog] = useState(false)
   const [avatar, setAvatar] = useState(profile.avatar)
@@ -111,16 +115,16 @@ function Profile({ profile, user }: ProfileFullProps) {
           <div className="w-full p-4 mt-16">
             <div className="flex items-center ml-5">
               <h2 className="text-2xl font-bold text-default-400">
-                {firstName} {firstSurname}
+                {firstName} {last_name} {firstSurname} {second_surname}
               </h2>
-              <Badge variant="default" className="ml-3 align-middle leading-none translate-y-[2px]">
-                Senior Developer
+              <Badge variant="default" className="ml-3 p-[4.3px] align-middle leading-none translate-y-[2px]">
+                {profession}
               </Badge>
             </div>
             <div className="flex justify-between items-center">
               <div className="flex flex-row gap-0.5 ml-4">
                 <MapPin className="text-light w-5 h-auto" />
-                <p className="text-light text-size-medium mr-5">Agregar a la db direccion addres</p>
+                <p className="text-light text-size-medium mr-5">{addres}</p>
                 <Mail className="text-light w-5 h-auto" />
                 <p className="text-light">{email}</p>
               </div>
@@ -150,7 +154,9 @@ function Profile({ profile, user }: ProfileFullProps) {
                   user={user}
                   avatar={avatar}
                   firstName={firstName}
+                  lastName={last_name}
                   firstSurname={firstSurname}
+                  secondSurname={second_surname}
                   username={username}
                   aboutMe={aboutMe}
                   email={email}
