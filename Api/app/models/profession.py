@@ -9,4 +9,4 @@ class Profession(Base):
     name = Column('NAME', String(50), nullable=False, unique=True)
 
     users = relationship('User', back_populates='profession')
-    employments = relationship('Employment', back_populates='profession')  # ← Nueva relación
+    employments = relationship('Employment', back_populates='profession')  

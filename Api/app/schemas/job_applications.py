@@ -6,7 +6,7 @@ class JobApplicationBase(BaseModel):
     id_user: int
     id_employment: int
     application_date: Optional[datetime] = None
-    status: Literal['Pending', 'Accepted', 'Rejected'] = 'Pending'
+    status: Literal['Pending', 'Accepted'] = 'Pending'
 
 class JobApplicationCreate(JobApplicationBase):
     pass

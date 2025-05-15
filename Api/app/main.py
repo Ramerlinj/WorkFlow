@@ -5,6 +5,8 @@ from app.routes import profile_routes
 from app.routes import skill_routes
 from app.routes import work_experience_routes
 from app.routes import employment_routes
+from app.routes import link_routes
+from app.routes import profession_routes
 
 app = FastAPI(
     title="Mi API workflow",
@@ -18,5 +20,7 @@ app.include_router(profile_routes.router, tags=["profiles"])
 app.include_router(skill_routes.router, tags=["skills y user_skills"])
 app.include_router(work_experience_routes.router, tags=["work_experience"])
 app.include_router(employment_routes.router, tags=["employments"])
+app.include_router(link_routes.router, tags=["links"])
+app.include_router(profession_routes.router, tags=["professions"])
 
 

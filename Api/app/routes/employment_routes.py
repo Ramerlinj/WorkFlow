@@ -23,25 +23,19 @@ def create_employment(employment: EmploymentCreate, db: Session = Depends(get_db
     db.refresh(db_employment)
     return db_employment
 
-@router.get("/employments", response_model=List[EmploymentResponse])
-def get_employments(profession_id: Optional[int] = Query(None), db: Session = Depends(get_db)):
-    query = db.query(Employment)
-    if profession_id:
-        query = query.filter(Employment.id_profession == profession_id)
-    return query.all()
 
 @router.get("/employment/{employment_id}", response_model=EmploymentResponse)
 def get_employment_by_id(employment_id: int, db: Session = Depends(get_db)):
     employment = db.query(Employment).filter(Employment.id_employment == employment_id).first()
     if not employment:
-        raise HTTPException(status_code=404, detail="Employment not found")
+        raise HTTPException(status_code=404, detail="Employment no encontrado")
     return employment
 
 @router.put("/employment/{employment_id}", response_model=EmploymentResponse)
 def update_employment(employment_id: int, updated_data: EmploymentCreate, db: Session = Depends(get_db)):
     employment = db.query(Employment).filter(Employment.id_employment == employment_id).first()
     if not employment:
-        raise HTTPException(status_code=404, detail="Employment not found")
+        raise HTTPException(status_code=404, detail="Employment no encontrado")
     
     for key, value in updated_data.dict().items():
         setattr(employment, key, value)
@@ -58,3 +52,4 @@ def delete_employment(employment_id: int, db: Session = Depends(get_db)):
     
     db.delete(employment)
     db.commit()
+    return {"detail": "Employment deleted successfully. The data will be removed from the database after a while."}
