@@ -3,10 +3,21 @@ import { Card, CardContent, CardTitle } from "@/components/ui/card"
 import type { Skill } from "@/types/user"
 
 interface SkillsCardProps {
-  skills: Skill[]
+  skills: Skill[] | null
 }
 
 export default function SkillsCard({ skills }: SkillsCardProps) {
+  if (!skills) {
+    return (
+      <Card className="mt-10">
+        <CardTitle className="text-heading text-md ml-5">Habilidades</CardTitle>
+        <CardContent className="text-secondary text-sm">
+          <p>No tiene habilidades registradas.</p>
+        </CardContent>
+      </Card>
+    )
+  }
+
   return (
     <Card className="mt-10">
       <CardTitle className="text-heading text-md ml-5">Habilidades</CardTitle>

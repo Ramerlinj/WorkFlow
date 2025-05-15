@@ -3,7 +3,9 @@
 import { useState } from "react"
 import Image from "next/image"
 import { MapPin, Mail, FileText } from "lucide-react"
-import type { Profile as ProfileTypes, User } from "@/types/user"
+import { useRouter } from "next/navigation"
+import type { Profile as ProfileTypes, User, Skill, Link } from "@/types/user"
+import { updateUserSkills, updateUserLinks } from "@/lib/userServices"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -23,7 +25,7 @@ import {
 } from "@/components/ui/dialog"
 
 interface ProfileProps {
-  profile: ProfileTypes
+  profile: ProfileTypes | null
 }
 
 interface UserProps {
@@ -33,39 +35,47 @@ interface UserProps {
 interface ProfileFullProps extends ProfileProps, UserProps {}
 
 function Profile({ profile, user }: ProfileFullProps) {
+  const router = useRouter()
   const username = user.username || null
-  const about_me = profile.about_me || null
+  const about_me = profile?.about_me || null
   const skills = user.skills || null
   const first_name = user.first_name || null
-  const last_name = user.middle_name || null
+  const middle_name = user.middle_name || null
+  // No existe la propiedad last_name en el tipo User
   const first_surname = user.first_surname || null
   const second_surname = user.second_surname || null
   const email = user.email || null
   const links = user.links || null
   const workexperience = user.work_experience || null
-  const configuration = user.user_config || null
+  const configuration = user.user_config || {
+    id_config: 0,
+    public_profile: true,
+    notification_by_mail: true,
+    job_alert: true,
+    language: "es"
+  }
   const profession = user.profession.name || null
-  const addres = user.address || null
+  const direction = user.direction || null
 
   const [isOpenCvDialog, setIsOpenCvDialog] = useState(false)
-  const [avatar, setAvatar] = useState(profile.avatar)
+  const [avatar, setAvatar] = useState(profile?.avatar || null)
   const [bannerColor, setBannerColor] = useState<string>("#FF5733")
   const [aboutMe, setAboutMe] = useState(about_me)
   const [firstName, setFirstName] = useState(first_name)
+  const [secondName, setSecondName] = useState(middle_name)
   const [firstSurname, setFirstSurname] = useState(first_surname)
 
   const initial = firstName ? firstName.charAt(0).toUpperCase() : ""
   const backgroundColor = avatarColors[initial] || "#9999"
 
   const handleClick = () => {
-    if (profile.cv) {
-      window.open(profile.cv, "_blank")
+    if (profile?.cv) {
+      window.open(profile?.cv, "_blank")
     } else {
       setIsOpenCvDialog(true)
     }
   }
 
-  // Funciones para actualizar el perfil
   const handleAvatarChange = (newAvatar: string) => {
     setAvatar(newAvatar)
   }
@@ -83,8 +93,45 @@ function Profile({ profile, user }: ProfileFullProps) {
     setFirstName(newName)
   }
 
+  const handleSecondNameChange = (newSecondName: string) => {
+    setSecondName(newSecondName)
+  }
+
   const handleSurnameChange = (newSurname: string) => {
     setFirstSurname(newSurname)
+  }
+
+  const handleSkillsChange = async (newSkills: Skill[]) => {
+    if (!user.id_user) return
+    
+    console.log('Actualizando habilidades:', newSkills)
+    try {
+      await updateUserSkills(user.id_user, newSkills)
+      // Actualizar la UI o mostrar mensaje de éxito
+      console.log('Habilidades actualizadas correctamente')
+      // Refrescar la página para mostrar los cambios
+      router.refresh()
+    } catch (error) {
+      // Mostrar mensaje de error
+      console.error('Error al actualizar las habilidades', error)
+    }
+  }
+
+  const handleLinksChange = async (newLinks: Link[]) => {
+    if (!user.id_user) return
+    
+    console.log('Actualizando enlaces:', newLinks)
+    try {
+      await updateUserLinks(user.id_user, newLinks)
+      
+      // Actualizar la UI o mostrar mensaje de éxito
+      console.log('Enlaces actualizados correctamente')
+      // Refrescar la página para mostrar los cambios
+      router.refresh()
+    } catch (error) {
+      // Mostrar mensaje de error
+      console.error('Error al actualizar los enlaces:', error)
+    }
   }
 
   return (
@@ -115,7 +162,7 @@ function Profile({ profile, user }: ProfileFullProps) {
           <div className="w-full p-4 mt-16">
             <div className="flex items-center ml-5">
               <h2 className="text-2xl font-bold text-default-400">
-                {firstName} {last_name} {firstSurname} {second_surname}
+                {firstName} {secondName} {firstSurname} {second_surname}
               </h2>
               <Badge variant="default" className="ml-3 p-[4.3px] align-middle leading-none translate-y-[2px]">
                 {profession}
@@ -124,7 +171,7 @@ function Profile({ profile, user }: ProfileFullProps) {
             <div className="flex justify-between items-center">
               <div className="flex flex-row gap-0.5 ml-4">
                 <MapPin className="text-light w-5 h-auto" />
-                <p className="text-light text-size-medium mr-5">{addres}</p>
+                <p className="text-light text-size-medium mr-5">{direction}</p>
                 <Mail className="text-light w-5 h-auto" />
                 <p className="text-light">{email}</p>
               </div>
@@ -154,7 +201,7 @@ function Profile({ profile, user }: ProfileFullProps) {
                   user={user}
                   avatar={avatar}
                   firstName={firstName}
-                  lastName={last_name}
+                  secondName={secondName}
                   firstSurname={firstSurname}
                   secondSurname={second_surname}
                   username={username}
@@ -166,7 +213,11 @@ function Profile({ profile, user }: ProfileFullProps) {
                   onBannerColorChange={handleBannerColorChange}
                   onAboutMeChange={handleAboutMeChange}
                   onNameChange={handleNameChange}
+                  onSecondNameChange={handleSecondNameChange}
                   onSurnameChange={handleSurnameChange}
+                  onSecondSurnameChange={(newSecondSurname) => console.log(newSecondSurname)}
+                  onSkillsChange={handleSkillsChange}
+                  onLinksChange={handleLinksChange}
                 />
               </div>
             </div>
