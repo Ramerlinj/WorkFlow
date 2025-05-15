@@ -15,7 +15,6 @@ def get_db():
     finally:
         db.close()
 
-# Obtener todos los testimonios de un usuario
 @router.get("/user/{id_user_source}/testimonials", response_model=list[TestimonialResponse])
 def get_testimonials(id_user_source: int, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id_user == id_user_source).first()
@@ -25,9 +24,13 @@ def get_testimonials(id_user_source: int, db: Session = Depends(get_db)):
     testimonials = db.query(Testimonial).filter(Testimonial.id_user_source == id_user_source).all()
 
     return testimonials
-    # Crear un testimonio
     
-
+@router.get("/testimonials/{testimonial_id}", response_model=TestimonialResponse)
+def get_testimonial(testimonial_id: int, db: Session = Depends(get_db)):
+    testimonial = db.query(Testimonial).filter(Testimonial.id_testimonial == testimonial_id).first()
+    if not testimonial:
+        raise HTTPException(status_code=404, detail="Testimonio no encontrado")
+    return testimonial
 
 # Editar un testimonio
 @router.put("/testimonials/{testimonial_id}", response_model=TestimonialResponse)
@@ -53,7 +56,7 @@ def update_testimonial(testimonial_id: int, data: TestimonialUpdate, db: Session
 
 
 
-@router.post("/user/testimonials", response_model=TestimonialResponse)
+@router.post("/testimonials", response_model=TestimonialResponse)
 def create_testimonial(data: TestimonialCreate, db: Session = Depends(get_db)):
 
     # Usamos el id_user_source enviado en el cuerpo del request
