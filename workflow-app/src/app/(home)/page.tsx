@@ -1,5 +1,5 @@
 import Hero from "./_components/hero"
-import AboutOs from "./_components/aboutOs"
+import AboutUs from "./_components/aboutUs"
 import Services from "./_components/services"
 import WorkProcess from "./_components/workProcess"
 import Category from "./_components/category"
@@ -11,7 +11,7 @@ export default function Home() {
   return (
     <main className="flex flex-col items-center">
      <Hero />
-     <AboutOs />
+     <AboutUs />
       <Services />
       <WorkProcess/>
       <Category/>

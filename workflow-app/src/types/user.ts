@@ -84,7 +84,6 @@ export interface TypeJob {
 export interface Location {
   id_location: number;
   name: string;
-  // agrega aquí más campos si tu tabla LOCATIONS tiene otros (ej. country, state, etc.)
 }
 
 export interface Employment {

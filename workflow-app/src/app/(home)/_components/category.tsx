@@ -9,10 +9,10 @@ export default function Category(){
             >
               <span className="text-sm font-medium">Categorías</span>
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-6" style={{ color: "#112D4E" }}>
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-heading">
               Explora oportunidades por sector
             </h2>
-            <p className="text-lg" style={{ color: "#415771" }}>
+            <p className="text-lg text-tertiary">
               Encuentra empleos en las industrias más demandadas y con mejores perspectivas de crecimiento.
             </p>
           </div>

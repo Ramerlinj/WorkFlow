@@ -6,36 +6,36 @@
         "IMAGES":[
             {
                 "id":1,
-                "SRC": "/images/avatars/avatar-1.jpg",
-                "ALT": "XX",
+                "SRC": "/avatars/avatar-1.jpg",
+                "ALT": "Avatar",
                 "WIDTH": 40,
                 "HEIGHT": 40
             },
             {
                 "id":2,
-                "SRC": "/images/avatars/avatar-2.jpg",
-                "ALT": "XX",
+                "SRC": "/avatars/avatar-2.jpg",
+                "ALT": "Avatar",
                 "WIDTH": 40,
                 "HEIGHT": 40
             },
             {
                 "id":3,
-                "SRC": "/images/avatars/avatar-3.jpg",
-                "ALT": "XX",
+                "SRC": "/avatars/avatar-3.jpg",
+                "ALT": "Avatar",
                 "WIDTH": 40,
                 "HEIGHT": 40
             },
             {
                 "id":4,
-                "SRC": "/images/avatars/avatar-4.jpg",
-                "ALT": "XX",
+                "SRC": "/avatars/avatar-4.jpg",
+                "ALT": "Avatar",
                 "WIDTH": 40,
                 "HEIGHT": 40
             },
             {
                 "id":5,
-                "SRC": "/images/avatars/avatar-5.jpg",
-                "ALT": "XX",
+                "SRC": "/avatars/avatar-5.jpg",
+                "ALT": "Avatar",
                 "WIDTH": 40,
                 "HEIGHT": 40
             }
@@ -53,9 +53,76 @@
         ]
     },
     "ABOUT_US": {
-        "TITLE": "",
-        "DESCRIPTION": ""
+        "BADGE": "Sobre WorkFlow",
+        "TITLE": "Conectamos talento con oportunidades laborales excepcionales",
+        "DESCRIPTION": "En Workflow, nos dedicamos a transformar la manera en que las personas encuentran empleo y las empresas descubren talento.",
+        "MISION":[
+            {
+                "TITLE":"Misión",
+                "TEXT": "Nuestra misión es conectar a profesionales talentosos con las mejores oportunidades laborales, facilitando el crecimiento profesional y empresarial."
+            }
+        ],
+        "VISION":[
+            {
+                "TITLE":"Visión",
+                "TEXT": "Ser la plataforma líder en la conexión de talento y oportunidades, transformando positivamente el mercado laboral global."
+            }
+        ],
+        "VALUES":[
+            {
+                "TITLE":"Valores",
+                "TEXT": "Excelencia, transparencia, innovación y compromiso con el éxito de candidatos y empresas son los valores que guían cada acción que tomamos."
+            }
+        ]
     },
+    "SERVICES": {
+        "DATA":[
+            {
+                "BADGE": "Nuestros Servicios",
+                "TITLE": "Soluciones completas para tu carrera profesional",
+                "DESCRIPTION": "Ofrecemos servicios integrales tanto para candidatos como para empresas que buscan talento."
+            }
+        ],
+        "ITEMS":[
+            {
+              "ID": 1,
+              "ICON": "Search",
+              "TITLE": "Búsqueda de Empleo",
+              "DESCRIPTION": "Accede a miles de ofertas laborales filtradas según tus habilidades y preferencias profesionales."
+            },
+            {
+              "ID": 2,
+              "ICON": "FileText",
+              "TITLE": "Optimización de CV",
+              "DESCRIPTION": "Mejora tu currículum para destacar entre los candidatos y aumentar tus posibilidades."
+            },
+            {
+              "ID": 3,
+              "ICON": "Award",
+              "TITLE": "Evaluación de Habilidades",
+              "DESCRIPTION": "Evalúa y certifica tus competencias para demostrar tu valía a potenciales empleadores."
+            },
+            {
+              "ID": 4,
+              "ICON": "Users",
+              "TITLE": "Reclutamiento", 
+              "DESCRIPTION": "Servicios especializados para empresas que buscan el mejor talento para sus equipos."
+            },
+            {
+              "ID": 5,
+              "ICON": "Building",
+              "TITLE": "Employer Branding",
+              "DESCRIPTION": "Ayudamos a las empresas a construir una marca empleadora atractiva para el talento."
+            },
+            {
+              "ID": 6,
+              "ICON": "MessageSquare",
+              "TITLE": "Coaching Profesional",
+              "DESCRIPTION": "Asesoramiento personalizado para impulsar tu carrera y alcanzar tus metas profesionales."
+            }
+        ]
+    },
+
     "WORK_PROCESS": {
         "TITLE": "",
         "DESCRIPTION": ""

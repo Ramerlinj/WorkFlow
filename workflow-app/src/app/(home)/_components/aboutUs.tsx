@@ -1,6 +1,7 @@
 import { Search, Layers, Star } from "lucide-react"
+import locale from "@/locale/landing.json"
 
-export default function AboutOs(){
+export default function AboutUs(){
     return(
         <section className="w-full py-20 bg-default" >
         <div className="container mx-auto px-4">
@@ -8,14 +9,13 @@ export default function AboutOs(){
             <div
               className="inline-flex items-center px-4 py-2 rounded-full mb-4 bg-default-500 text-tertiary"
             >
-              <span className="text-sm font-medium">Sobre Workflow</span>
+              <span className="text-sm font-medium">{locale.ABOUT_US.BADGE}</span>
             </div>
             <h2 className="text-3xl md:text-4xl font-bold mb-6 text-heading" >
-              Conectamos talento con oportunidades laborales excepcionales
+              {locale.ABOUT_US.TITLE}
             </h2>
             <p className="text-lg text-primary">
-              En Workflow, nos dedicamos a transformar la manera en que las personas encuentran empleo y las empresas
-              descubren talento.
+              {locale.ABOUT_US.DESCRIPTION}
             </p>
           </div>
 
@@ -27,11 +27,10 @@ export default function AboutOs(){
                 <Search className="h-6 w-6 text-variant-1"/>
               </div>
               <h3 className="text-xl font-bold mb-3 text-heading">
-                Misión
+                {locale.ABOUT_US.MISION[0].TITLE}
               </h3>
               <p className="text-primary">
-                Nuestra misión es conectar a profesionales talentosos con las mejores oportunidades laborales,
-                facilitando el crecimiento profesional y empresarial.
+                {locale.ABOUT_US.MISION[0].TEXT}
               </p>
             </div>
             <div className="bg-white p-8 rounded-xl shadow-sm border border-default-500">
@@ -41,11 +40,10 @@ export default function AboutOs(){
                 <Layers className="h-6 w-6 text-variant-1" />
               </div>
               <h3 className="text-xl font-bold mb-3 text-heading">
-                Visión
+                {locale.ABOUT_US.VISION[0].TITLE}
               </h3>
               <p className='text-primary'>
-                Ser la plataforma líder en la conexión de talento y oportunidades, transformando positivamente el
-                mercado laboral global.
+                {locale.ABOUT_US.VISION[0].TEXT}
               </p>
             </div>
             <div className="bg-white p-8 rounded-xl shadow-sm border border-default-500">
@@ -55,11 +53,10 @@ export default function AboutOs(){
                 <Star className="h-6 w-6 text-variant-1" />
               </div>
               <h3 className="text-xl font-bold mb-3 text-heading">
-                Valores
+                {locale.ABOUT_US.VALUES[0].TITLE}
               </h3>
               <p className="text-primary">
-                Excelencia, transparencia, innovación y compromiso con el éxito de candidatos y empresas son los valores
-                que guían cada acción que tomamos.
+                {locale.ABOUT_US.VALUES[0].TEXT}
               </p>
             </div>
           </div>
