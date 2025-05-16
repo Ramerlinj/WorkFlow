@@ -11,7 +11,7 @@ const itemsFooter = () => {
             <div className="w-1/4 mt-14 flex flex-col items-start">
                 <Link href="/" className="flex items-center">
                     <Image 
-                    src={locale.NAVBAR.LOGO_BLANK.SRC} 
+                    src="/images/LogoWorkFlowBlanco.png"
                     alt={locale.NAVBAR.LOGO_BLANK.ALT}
                     width={82}
                     height={82}
