@@ -42,7 +42,7 @@ export function CommentsDialog({ open, onOpenChange, testimonial, onAddComment }
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle className="text-[#112D4E]">Comentarios sobre "{testimonial.title}"</DialogTitle>
+          <DialogTitle className="text-[#112D4E]">Comentarios sobre &quot;{testimonial.title}&quot;</DialogTitle>
         </DialogHeader>
 
         <div className="flex flex-col gap-4">
