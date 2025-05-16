@@ -4,7 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { Eye, EyeOff, Check, X } from 'lucide-react';
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button';
-import { DatePicker } from '@/components/ui/DatePicker';
+import { DatePicker } from '@/components/ui/datePicker';
+import Link from "next/link"
 
 
 export default function RegisterForm() {
@@ -262,7 +263,7 @@ useEffect(() => {
         
         <div className="text-center mt-4">
           <p className="text-sm text-gray-600">
-            ¿Ya tienes una cuenta? <a href="#" className="font-medium text-blue-600 hover:text-blue-800">Iniciar sesión</a>
+            ¿Ya tienes una cuenta? <Link href="#" className="font-medium text-blue-600 hover:text-blue-800">Iniciar sesión</Link>
           </p>
         </div>
       </div>
