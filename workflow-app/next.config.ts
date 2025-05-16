@@ -4,7 +4,7 @@ const nextConfig: NextConfig = {
   /* config options here */
   devIndicators: false,
   images: {
-    domains: ['www.headshotpro.com'],
+    domains: ['www.headshotpro.com','ui-avatars.com']
   },
 };
 
