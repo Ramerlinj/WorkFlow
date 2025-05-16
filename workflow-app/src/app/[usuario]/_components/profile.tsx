@@ -142,7 +142,7 @@ function Profile({ profile, user }: ProfileFullProps) {
             <div className="rounded-full overflow-hidden border-6 border-white shadow-lg w-28 h-28 left-20 top-32 absolute">
               {avatar ? (
                 <Image
-                  src={avatar || "/placeholder.svg"}
+                  src={avatar}
                   alt="Avatar"
                   width={128}
                   height={128}
