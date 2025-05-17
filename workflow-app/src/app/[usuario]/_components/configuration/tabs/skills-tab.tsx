@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Label, Button, DialogTitle, DialogDescription, Badge, Combobox } from "@/components/ui/"
 import { X, Save, ArrowUp, ArrowDown, Loader2, CheckCircle } from "lucide-react"
 import { AnimatePresence, motion } from "framer-motion"
-import type { Skill } from "@/types/user"
+import type { Skill } from "@/types/interfaces"
 import { getAllSkills } from "@/lib/userServices"
 
 interface SkillsTabProps {

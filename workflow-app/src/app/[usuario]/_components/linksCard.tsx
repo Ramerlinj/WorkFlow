@@ -1,4 +1,4 @@
-import type { Link as UserLink } from "@/types/user"
+import type { Link as UserLink } from "@/types/interfaces"
 import { Card, CardContent, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
 

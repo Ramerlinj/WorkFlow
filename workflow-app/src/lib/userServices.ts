@@ -1,4 +1,4 @@
-import type { Skill, Link, LinkType, User } from "@/types/user";
+import type { Skill, Link, LinkType, User } from "@/types/interfaces";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 

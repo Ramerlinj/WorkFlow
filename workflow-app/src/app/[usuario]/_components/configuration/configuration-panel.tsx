@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Settings, User, Shield, Bell, Palette, Link2, BookText } from "lucide-react"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
-import type { User as UserType, UserConfig, Skill, Link as UserLink } from "@/types/user"
+import type { User as UserType, UserConfig, Skill, Link as UserLink } from "@/types/interfaces"
 
 // Importación de los componentes de pestañas
 import { ProfileTab } from "./tabs/profile-tab"

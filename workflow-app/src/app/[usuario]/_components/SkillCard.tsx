@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardTitle } from "@/components/ui/card"
-import type { Skill } from "@/types/user"
+import type { Skill } from "@/types/interfaces"
 
 interface SkillsCardProps {
   skills: Skill[] | null

@@ -19,7 +19,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
-import type { Link as UserLink, LinkType } from "@/types/user";
+import type { Link as UserLink, LinkType } from "@/types/interfaces";
 import { getAllLinkTypes } from "@/lib/userServices";
 
 interface LinksTabProps {
