@@ -23,6 +23,9 @@ def create_employment(employment: EmploymentCreate, db: Session = Depends(get_db
     db.refresh(db_employment)
     return db_employment
 
+@router.get("/employments", response_model=List[EmploymentResponse])
+def get_all_employments(db: Session = Depends(get_db)):
+    return db.query(Employment).all()
 
 @router.get("/employment/{employment_id}", response_model=EmploymentResponse)
 def get_employment_by_id(employment_id: int, db: Session = Depends(get_db)):
@@ -48,7 +51,7 @@ def update_employment(employment_id: int, updated_data: EmploymentCreate, db: Se
 def delete_employment(employment_id: int, db: Session = Depends(get_db)):
     employment = db.query(Employment).filter(Employment.id_employment == employment_id).first()
     if not employment:
-        raise HTTPException(status_code=404, detail="Employment not found")
+        raise HTTPException(status_code=404, detail="Employment no encontrado")
     
     db.delete(employment)
     db.commit()
