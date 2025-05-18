@@ -44,19 +44,13 @@ export async function fetchJobById(id: string): Promise<Employment> {
 export async function createJob(
   jobData: CreateEmploymentDTO
 ): Promise<Employment> {
-  // Construye el payload, añadiendo sólo lo que falta:
-  const payload = {
-    ...jobData,
-    publication_date: new Date().toISOString(),
-    status: "Open",
-  };
-
   return fetchWithTimeout<Employment>(`${BASE_URL}/employment`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
+    body: JSON.stringify(jobData),  // sólo lo que pide el DTO
   });
 }
+
 
 // Actualizar un trabajo existente
 export async function updateJob(id: string, jobData: Employment): Promise<Employment> {
@@ -97,34 +91,3 @@ export async function applyToJob(
     return { success: true, message: "Aplicación simulada enviada con éxito" };
   }
 }
-
-// Mapeos de IDs a descripciones legibles
-export const jobTypeMap: Record<number, string> = {
-  0: "Tiempo completo",
-  1: "Medio tiempo",
-  2: "Freelancer",
-  3: "Prácticas",
-  4: "Temporal",
-};
-
-export const professionMap: Record<number, string> = {
-  0: "Desarrollo web",
-  1: "Diseño",
-  2: "Marketing",
-  3: "Análisis de datos",
-  4: "Infraestructura",
-  5: "Administración",
-  6: "Ventas",
-  7: "Atención al cliente",
-};
-
-export const locationMap: Record<number, string> = {
-  0: "Madrid",
-  1: "Barcelona",
-  2: "Valencia",
-  3: "Sevilla",
-  4: "Bilbao",
-  5: "Zaragoza",
-  6: "Málaga",
-  7: "Murcia",
-};

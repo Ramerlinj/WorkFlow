@@ -145,7 +145,18 @@ export interface TestimonialComment {
   created_at: string;
 }
 
-export type CreateEmploymentDTO = Omit<
-  Employment,
-  "id_employment" | "publication_date" | "type_job" | "profession" | "location"
->;
+// src/types/interfaces.ts
+
+export interface CreateEmploymentDTO {
+  id_type_job: number;
+  id_profession: number;
+  title: string;
+  description: string;
+  company: string;
+  salary_min: number;
+  salary_max: number;
+  // publication_date ha sido eliminada
+  status: "Open" | "Closed";
+  id_location: number;
+}
+
