@@ -20,6 +20,7 @@ class Employment(Base):
 
     # Relaciones
     type_job = relationship('TypeJob', back_populates='employments')
-    profession = relationship('Profession', back_populates='employments')  # ← Nueva relación
+    profession = relationship('Profession', back_populates='employments') 
     location = relationship('Location')
     applications = relationship('JobApplication', back_populates='employment', cascade='all, delete-orphan')
+    location = relationship('Location', back_populates='employments') 

@@ -10,3 +10,4 @@ class Location(Base):
     city = Column('CITY', String(50), nullable=False)
 
     country = relationship('Country', back_populates='locations')
+    employments = relationship('Employment', back_populates='location')

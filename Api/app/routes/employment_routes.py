@@ -5,6 +5,7 @@ from typing import List, Optional
 from app.database.conexion import SessionLocal
 from app.models.employment import Employment
 from app.schemas.employments import EmploymentCreate, EmploymentResponse
+from sqlalchemy.orm import joinedload
 
 router = APIRouter()
 
@@ -25,14 +26,27 @@ def create_employment(employment: EmploymentCreate, db: Session = Depends(get_db
 
 @router.get("/employments", response_model=List[EmploymentResponse])
 def get_all_employments(db: Session = Depends(get_db)):
-    return db.query(Employment).all()
+    return db.query(Employment)\
+        .options(
+            joinedload(Employment.type_job),
+            joinedload(Employment.profession),
+            joinedload(Employment.location)
+        ).all()
+
 
 @router.get("/employment/{employment_id}", response_model=EmploymentResponse)
 def get_employment_by_id(employment_id: int, db: Session = Depends(get_db)):
-    employment = db.query(Employment).filter(Employment.id_employment == employment_id).first()
+    employment = db.query(Employment)\
+        .options(
+            joinedload(Employment.type_job),
+            joinedload(Employment.profession),
+            joinedload(Employment.location)
+        ).filter(Employment.id_employment == employment_id).first()
+    
     if not employment:
         raise HTTPException(status_code=404, detail="Employment no encontrado")
     return employment
+
 
 @router.put("/employment/{employment_id}", response_model=EmploymentResponse)
 def update_employment(employment_id: int, updated_data: EmploymentCreate, db: Session = Depends(get_db)):
