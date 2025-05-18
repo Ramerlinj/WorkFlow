@@ -168,7 +168,7 @@ export function JobBoard() {
         <AddJobModal
           isOpen={isAddJobModalOpen}
           onClose={() => setIsAddJobModalOpen(false)}
-          onAddJob={handleAddJob}
+          onAddJob={handleAddJob} 
         />
         <ApplicationModal
           isOpen={isApplicationModalOpen}

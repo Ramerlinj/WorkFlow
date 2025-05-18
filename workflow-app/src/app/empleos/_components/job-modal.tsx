@@ -5,7 +5,6 @@ import { es } from "date-fns/locale"
 import { Briefcase, MapPin, DollarSign, Building, Tag, Calendar, ExternalLink, Trash2 } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import {
   AlertDialog,
@@ -70,7 +69,9 @@ export function JobModal({ job, isOpen, onClose, onApply, onDelete }: JobModalPr
 
               <div className="flex items-center gap-2 bg-[#F5F5F5] p-3 rounded-md">
                 <DollarSign className="w-5 h-5 text-[#0979b0]" />
-                <span className="text-[#415771] font-medium">{job.salary_min}€ - {job.salary_max}€</span>
+                <span className="text-[#415771] font-medium">{job.salary_min ? Number(job.salary_min).toFixed(2) : "0.00"}$ - {job.salary_max ? Number(job.salary_max).toFixed(2) : "0.00"}$
+
+                </span>
               </div>
 
               <div className="flex items-center gap-2 bg-[#F5F5F5] p-3 rounded-md">
@@ -104,16 +105,6 @@ export function JobModal({ job, isOpen, onClose, onApply, onDelete }: JobModalPr
             </div>
 
             <Separator className="bg-[#EDECEE]" />
-
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-[#112D4E]">Beneficios</h3>
-              <div className="flex flex-wrap gap-2">
-                <Badge className="bg-[#DDE6F6] text-[#144C8E] hover:bg-[#DDE6F6]/80">Horario flexible</Badge>
-                <Badge className="bg-[#DDE6F6] text-[#144C8E] hover:bg-[#DDE6F6]/80">Teletrabajo parcial</Badge>
-                <Badge className="bg-[#DDE6F6] text-[#144C8E] hover:bg-[#DDE6F6]/80">Seguro médico</Badge>
-                <Badge className="bg-[#DDE6F6] text-[#144C8E] hover:bg-[#DDE6F6]/80">Formación continua</Badge>
-              </div>
-            </div>
 
             <div className="pt-4 flex flex-col sm:flex-row gap-3 justify-center sm:justify-between">
               <div className="flex gap-2">

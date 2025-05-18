@@ -8,6 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Briefcase, MapPin, Tag, Filter, Banknote, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
+import { locations } from "@/data/location"
+import { type_jobs } from "@/data/type-job"
+import { professions } from "@/data/profession"
 
 interface JobSidebarProps {
   filters: {
@@ -33,9 +36,12 @@ interface JobSidebarProps {
 }
 
 export function JobSidebar({ filters, setFilters }: JobSidebarProps) {
-  const cities = ["Todas", "Madrid", "Barcelona", "Valencia", "Sevilla", "Bilbao"]
-  const jobTypes = ["Todos", "Tiempo completo", "Medio tiempo", "Freelancer", "Prácticas"]
-  const categories = ["Todas", "Desarrollo web", "Diseño", "Marketing", "Análisis de datos", "Infraestructura"]
+
+  //agregarle otra, todos 
+  const cities = [...locations.map(location => location.name), "Todos"]
+
+  const jobTypes = [...type_jobs.map((jobType) => jobType.name), "Todos"]
+  const profession = [...professions.map((profession) => profession.name), "Todos"]
 
   const formatSalary = (value: number) => {
     return `${value.toLocaleString("es-ES")}€`
@@ -43,9 +49,9 @@ export function JobSidebar({ filters, setFilters }: JobSidebarProps) {
 
   const resetFilters = () => {
     setFilters({
-      city: "all",
-      jobType: "all",
-      category: "all",
+      city: "Todos",
+      jobType: "Todos",
+      category: "Todos",
       salaryMin: 0,
       salaryMax: 100000,
       search: "",
@@ -54,7 +60,7 @@ export function JobSidebar({ filters, setFilters }: JobSidebarProps) {
   };
   return (
     <Sidebar className="border-r border-[#EDECEE]">
-      <SidebarHeader className="flex items-center justify-between p-4 border-b border-[#EDECEE]">
+      <SidebarHeader className="mt-20 flex items-center justify-between p-4 border-b border-[#EDECEE]">
         <div className="flex items-center gap-2">
           <Filter className="w-5 h-5 text-[#0979b0]" />
           <h2 className="text-xl font-bold text-[#112D4E]">Filtros</h2>
@@ -71,12 +77,12 @@ export function JobSidebar({ filters, setFilters }: JobSidebarProps) {
               </Label>
             </div>
             <Select value={filters.city} onValueChange={(value) => setFilters({ ...filters, city: value })}>
-              <SelectTrigger id="city" className="bg-white border-[#EDECEE]">
+              <SelectTrigger id="city" className="bg-white w-full border-[#EDECEE]">
                 <SelectValue placeholder="Selecciona una ciudad" />
               </SelectTrigger>
               <SelectContent>
                 {cities.map((city) => (
-                  <SelectItem key={city} value={city === "Todas" ? "all" : city}>
+                  <SelectItem key={city} value={city === "Todos" ? "all" : city}>
                     {city}
                   </SelectItem>
                 ))}
@@ -92,7 +98,7 @@ export function JobSidebar({ filters, setFilters }: JobSidebarProps) {
               </Label>
             </div>
             <Select value={filters.jobType} onValueChange={(value) => setFilters({ ...filters, jobType: value })}>
-              <SelectTrigger id="jobType" className="bg-white border-[#EDECEE]">
+              <SelectTrigger id="jobType" className="bg-white w-full border-[#EDECEE]">
                 <SelectValue placeholder="Selecciona tipo de empleo" />
               </SelectTrigger>
               <SelectContent>
@@ -113,13 +119,13 @@ export function JobSidebar({ filters, setFilters }: JobSidebarProps) {
               </Label>
             </div>
             <Select value={filters.category} onValueChange={(value) => setFilters({ ...filters, category: value })}>
-              <SelectTrigger id="category" className="bg-white border-[#EDECEE]">
+              <SelectTrigger id="category" className="bg-white w-full border-[#EDECEE]">
                 <SelectValue placeholder="Selecciona una categoría" />
               </SelectTrigger>
               <SelectContent>
-                {categories.map((category) => (
-                  <SelectItem key={category} value={category === "Todas" ? "all" : category}>
-                    {category}
+                {profession.map((profession) => (
+                  <SelectItem key={profession} value={profession === "Todos" ? "all" : profession}>
+                    {profession}
                   </SelectItem>
                 ))}
               </SelectContent>

@@ -5,6 +5,8 @@ import { es } from "date-fns/locale"
 import { Briefcase, MapPin, DollarSign, Calendar } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import type { Employment } from "@/types/interfaces"
+import { locations } from "@/data/location"
+import { professions } from "@/data/profession"
 
 interface JobCardProps {
   job: Employment
@@ -12,17 +14,20 @@ interface JobCardProps {
 }
 
 export function JobCard({ job, onClick }: JobCardProps) {
-  // Convertimos publication_date a Date
+
   const pubDate = job.publication_date
     ? new Date(job.publication_date)
     : new Date()
 
-  // Fallbacks
-  const city = job.location?.city ?? "—"
-  const typeName = job.type_job?.name ?? "—"
-  const minSalary = job.salary_min != null ? `${job.salary_min}€` : "—"
-  const maxSalary = job.salary_max != null ? `${job.salary_max}€` : "—"
-  const description = job.description ?? ""
+  const location = locations.find((loc) => loc.id_location === job.id_location);
+  const profession = professions.find((prof) => prof.id_profession === job.id_profession);
+
+  const city = location?.name ?? "Anonima"
+  const typeName = job.type_job?.name ?? "Anonima"
+  const minSalary = job.salary_min != null ? `${Number(job.salary_min).toFixed(2)}$` : "Anonimo";
+  const maxSalary = job.salary_max != null ? `${Number(job.salary_max).toFixed(2)}$` : "Anonimo";
+  const description = job.description ?? "Anonimo"
+  const professionName = profession?.name ?? "Anonimo"
 
   return (
     <div
@@ -58,7 +63,7 @@ export function JobCard({ job, onClick }: JobCardProps) {
 
       <div className="flex justify-between items-center">
         <Badge variant="outline" className="bg-[#DDE6F6] text-[#144C8E] border-none">
-          {job.profession?.name ?? "—"}
+          {professionName}
         </Badge>
         <span className="text-sm text-[#0979b0] font-medium hover:underline">Ver detalles →</span>
       </div>
