@@ -3,7 +3,7 @@ from datetime import datetime
 
 class TestimonialCommentBase(BaseModel):
     id_user: int
-    comment_text: str = Field(..., max_length=500)
+    comment: str = Field(..., max_length=500)
 
 class TestimonialCommentCreate(TestimonialCommentBase):
     pass

@@ -10,7 +10,8 @@ class EmploymentBase(BaseModel):
     title: str = Field(..., max_length=100)
     description: Optional[str] = Field(None, max_length=1000)
     company: str = Field(..., max_length=100)
-    salary: Optional[Decimal] = None
+    salary_min: Optional[Decimal] = None
+    salary_max: Optional[Decimal] = None
     publication_date: Optional[datetime] = None
     status: Literal['Open', 'Closed'] = 'Open'
     id_location: Optional[int] = None

@@ -5,11 +5,11 @@ import { JobCard } from "./job-card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import type { Job } from "@/lib/types"
+import type { Employment } from "@/types/interfaces"
 import { Plus, Search, Briefcase } from "lucide-react"
 
 interface JobListProps {
-  jobs: Job[]
+  jobs: Employment[]
   filters: {
     city: string
     jobType: string
@@ -30,18 +30,19 @@ interface JobListProps {
       sortBy: string
     }>
   >
-  onJobClick: (job: Job) => void
+  onJobClick: (job: Employment) => void
   onAddJobClick: () => void
 }
 
 export function JobList({ jobs, filters, setFilters, onJobClick, onAddJobClick }: JobListProps) {
   const filteredJobs = jobs.filter((job) => {
-    const matchesCity = filters.city === "all" || job.city === filters.city
-    const matchesJobType = filters.jobType === "all" || job.jobType === filters.jobType
-    const matchesCategory = filters.category === "all" || job.category === filters.category
+    const matchesCity = filters.city === "all" || job.location?.city === filters.city
+    const matchesJobType = filters.jobType === "all" || job.type_job?.name === filters.jobType
+    const matchesCategory = filters.category === "all" || job.type_job?.name === filters.category
 
-    const salary = Number.parseInt(job.salary.split("-")[0])
-    const matchesSalary = salary >= filters.salaryMin && salary <= filters.salaryMax
+    const salary_min = Number.parseInt(job.salary_min?.toString() || "0")
+    const salary_max = Number.parseInt(job.salary_max?.toString() || "0")
+    const matchesSalary = salary_min >= filters.salaryMin && salary_max <= filters.salaryMax
 
     const matchesSearch =
       !filters.search ||
@@ -53,9 +54,9 @@ export function JobList({ jobs, filters, setFilters, onJobClick, onAddJobClick }
 
   const sortedJobs = [...filteredJobs].sort((a, b) => {
     if (filters.sortBy === "newest") {
-      return b.createdAt.getTime() - a.createdAt.getTime()
+      return new Date(b.publication_date).getTime() - new Date(a.publication_date).getTime()
     } else {
-      return a.createdAt.getTime() - b.createdAt.getTime()
+      return new Date(a.publication_date).getTime() - new Date(b.publication_date).getTime()
     }
   })
 
@@ -106,7 +107,7 @@ export function JobList({ jobs, filters, setFilters, onJobClick, onAddJobClick }
 
         <div className="grid grid-cols-1 gap-4">
           {sortedJobs.length > 0 ? (
-            sortedJobs.map((job) => <JobCard key={job.id} job={job} onClick={() => onJobClick(job)} />)
+            sortedJobs.map((job) => <JobCard key={job.id_employment} job={job} onClick={() => onJobClick(job)} />)
           ) : (
             <div className="text-center py-12 bg-white rounded-lg border border-[#EDECEE]">
               <p className="text-[#8E8E8E]">No se encontraron ofertas de trabajo con los filtros seleccionados.</p>

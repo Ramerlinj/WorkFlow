@@ -1,237 +1,113 @@
-import { Job } from "@/types/interfaces"
+import type { CreateApplicationDTO, CreateEmploymentDTO, Employment } from "@/types/interfaces";
 
+// URL base de la API
+const BASE_URL = "http://localhost:8000";
 
-export async function fetchJobs() {
+// Función auxiliar para manejar respuestas
+async function handleResponse<T>(response: Response): Promise<T> {
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Error ${response.status}: ${response.statusText} - ${errorText}`);
+  }
+  return response.json();
+} 
+
+// lib/api.ts
+export async function fetchWithTimeout<T>(
+  url: string,
+  options: RequestInit = {},
+  timeout = 5000
+): Promise<T> {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
   try {
-    // Añadir un timeout para evitar esperas largas si la API no responde
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 5000) // 5 segundos de timeout
-
-    const response = await fetch("http://127.0.0.1:8000/employment", {
-      signal: controller.signal,
-      method: "GET",
-      mode: "cors",
-      headers: {
-        Accept: "application/json",
-      },
-    })
-
-    clearTimeout(timeoutId)
-
-    if (!response.ok) {
-      throw new Error(`Error al cargar los trabajos: ${response.status} ${response.statusText}`)
-    }
-
-    return await response.json()
+    const response = await fetch(url, { ...options, signal: controller.signal });
+    return await handleResponse<T>(response);
   } catch (error) {
-    if (error.name === "AbortError") {
-      throw new Error("La solicitud a la API ha excedido el tiempo de espera")
-    }
-    console.error("Error fetching jobs:", error)
-    throw error
+    throw error;
+  } finally {
+    clearTimeout(id);
   }
 }
 
-export async function fetchJobById(id: string) {
-  try {
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 5000)
 
-    const response = await fetch(`http://127.0.0.1:8000/employment/${id}`, {
-      signal: controller.signal,
-      mode: "cors",
-      headers: {
-        Accept: "application/json",
-      },
-    })
-
-    clearTimeout(timeoutId)
-
-    if (!response.ok) {
-      throw new Error(`Error al cargar el trabajo: ${response.status} ${response.statusText}`)
-    }
-
-    return await response.json()
-  } catch (error) {
-    if (error.name === "AbortError") {
-      throw new Error("La solicitud a la API ha excedido el tiempo de espera")
-    }
-    console.error(`Error fetching job ${id}:`, error)
-    throw error
-  }
+// Obtener todos los trabajos
+export async function fetchJobs(): Promise<Employment[]> {
+  return fetchWithTimeout<Employment[]>(`${BASE_URL}/employments`);
 }
 
-export async function createJob(jobData: any) {
-  try {
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 5000)
-
-    // Adaptar el formato de datos al que espera la API
-    const apiJobData = {
-      id_type_job: jobData.id_type_job || 0, // Mapear según los tipos disponibles
-      id_profession: jobData.id_profession || 0, // Mapear según las profesiones disponibles
-      title: jobData.title,
-      description: jobData.description,
-      company: jobData.company,
-      salary: jobData.salary,
-      publication_date: new Date().toISOString(),
-      status: "Open",
-      id_location: jobData.id_location || 0, // Mapear según las ubicaciones disponibles
-    }
-
-    const response = await fetch("http://127.0.0.1:8000/employment", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify(apiJobData),
-      signal: controller.signal,
-      mode: "cors",
-    })
-
-    clearTimeout(timeoutId)
-
-    if (!response.ok) {
-      throw new Error(`Error al crear el trabajo: ${response.status} ${response.statusText}`)
-    }
-
-    return await response.json()
-  } catch (error) {
-    if (error.name === "AbortError") {
-      throw new Error("La solicitud a la API ha excedido el tiempo de espera")
-    }
-    console.error("Error creating job:", error)
-    throw error
-  }
+// Obtener trabajo por ID
+export async function fetchJobById(id: string): Promise<Employment> {
+  return fetchWithTimeout<Employment>(`${BASE_URL}/employments/${id}`);
 }
 
-export async function updateJob(id: string, jobData: any) {
-  try {
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 5000)
+export async function createJob(
+  jobData: CreateEmploymentDTO
+): Promise<Employment> {
+  // Construye el payload, añadiendo sólo lo que falta:
+  const payload = {
+    ...jobData,
+    publication_date: new Date().toISOString(),
+    status: "Open",
+  };
 
-    // Adaptar el formato de datos al que espera la API
-    const apiJobData = {
-      id_type_job: jobData.id_type_job || 0,
-      id_profession: jobData.id_profession || 0,
-      title: jobData.title,
-      description: jobData.description,
-      company: jobData.company,
-      salary: jobData.salary,
-      publication_date: jobData.publication_date || new Date().toISOString(),
-      status: jobData.status || "Open",
-      id_location: jobData.id_location || 0,
-      id_employment: Number.parseInt(id),
-    }
-
-    const response = await fetch(`http://127.0.0.1:8000/employment/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify(apiJobData),
-      signal: controller.signal,
-      mode: "cors",
-    })
-
-    clearTimeout(timeoutId)
-
-    if (!response.ok) {
-      throw new Error(`Error al actualizar el trabajo: ${response.status} ${response.statusText}`)
-    }
-
-    return await response.json()
-  } catch (error) {
-    if (error.name === "AbortError") {
-      throw new Error("La solicitud a la API ha excedido el tiempo de espera")
-    }
-    console.error(`Error updating job ${id}:`, error)
-    throw error
-  }
+  return fetchWithTimeout<Employment>(`${BASE_URL}/employment`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
 }
 
-export async function deleteJob(id: string) {
-  try {
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 5000)
-
-    const response = await fetch(`http://127.0.0.1:8000/employment/${id}`, {
-      method: "DELETE",
-      signal: controller.signal,
-      mode: "cors",
-      headers: {
-        Accept: "application/json",
-      },
-    })
-
-    clearTimeout(timeoutId)
-
-    if (!response.ok) {
-      throw new Error(`Error al eliminar el trabajo: ${response.status} ${response.statusText}`)
-    }
-
-    return await response.json()
-  } catch (error) {
-    if (error.name === "AbortError") {
-      throw new Error("La solicitud a la API ha excedido el tiempo de espera")
-    }
-    console.error(`Error deleting job ${id}:`, error)
-    throw error
-  }
+// Actualizar un trabajo existente
+export async function updateJob(id: string, jobData: Employment): Promise<Employment> {
+  const payload = {
+    ...jobData,
+    id_employment: parseInt(id, 10),
+  };
+  return fetchWithTimeout<Employment>(`${BASE_URL}/employment/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
 }
 
-export async function applyToJob(jobId: string, applicationData: any) {
-  try {
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 5000)
+// Eliminar un trabajo
+export async function deleteJob(id: string): Promise<{ message: string }> {
+  return fetchWithTimeout<{ message: string }>(`${BASE_URL}/employment/${id}`, {
+    method: "DELETE",
+  });
+}
 
-    // Intentar usar el endpoint de aplicación si existe
-    try {
-      const response = await fetch(`http://127.0.0.1:8000/employment/${jobId}/apply`, {
+// Aplicar a un trabajo
+export async function applyToJob(
+  jobId: string,
+  applicationData: CreateApplicationDTO
+): Promise<{ success: boolean; message: string }> {
+  try {
+    return await fetchWithTimeout<{ success: boolean; message: string }>(
+      `${BASE_URL}/employment/${jobId}/apply`,
+      {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(applicationData),
-        signal: controller.signal,
-        mode: "cors",
-      })
-
-      clearTimeout(timeoutId)
-
-      if (!response.ok) {
-        throw new Error(`Error al enviar la aplicación: ${response.status} ${response.statusText}`)
       }
-
-      return await response.json()
-    } catch (error) {
-      // Si el endpoint no existe, simular una respuesta exitosa
-      console.log("Endpoint de aplicación no disponible, simulando respuesta:", error)
-      return { success: true, message: "Aplicación simulada enviada con éxito" }
-    }
+    );
   } catch (error) {
-    if (error.name === "AbortError") {
-      throw new Error("La solicitud a la API ha excedido el tiempo de espera")
-    }
-    console.error(`Error applying to job ${jobId}:`, error)
-    // Simular respuesta exitosa en caso de error
-    return { success: true, message: "Aplicación simulada enviada con éxito" }
+    console.warn("Endpoint de aplicación no disponible, simulando respuesta:", error);
+    return { success: true, message: "Aplicación simulada enviada con éxito" };
   }
 }
 
-// Mapeos para convertir IDs a valores legibles
-export const jobTypeMap = {
+// Mapeos de IDs a descripciones legibles
+export const jobTypeMap: Record<number, string> = {
   0: "Tiempo completo",
   1: "Medio tiempo",
   2: "Freelancer",
   3: "Prácticas",
   4: "Temporal",
-}
+};
 
-export const professionMap = {
+export const professionMap: Record<number, string> = {
   0: "Desarrollo web",
   1: "Diseño",
   2: "Marketing",
@@ -240,9 +116,9 @@ export const professionMap = {
   5: "Administración",
   6: "Ventas",
   7: "Atención al cliente",
-}
+};
 
-export const locationMap = {
+export const locationMap: Record<number, string> = {
   0: "Madrid",
   1: "Barcelona",
   2: "Valencia",
@@ -251,4 +127,4 @@ export const locationMap = {
   5: "Zaragoza",
   6: "Málaga",
   7: "Murcia",
-}
+};

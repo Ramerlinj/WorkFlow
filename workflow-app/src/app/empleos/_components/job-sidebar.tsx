@@ -50,12 +50,11 @@ export function JobSidebar({ filters, setFilters }: JobSidebarProps) {
       salaryMax: 100000,
       search: "",
       sortBy: "newest",
-    })
-  }
-
+    });
+  };
   return (
     <Sidebar className="border-r border-[#EDECEE]">
-      <SidebarHeader className="flex items-center justify-between p-4 border-b mt-20 border-[#EDECEE]">
+      <SidebarHeader className="flex items-center justify-between p-4 border-b border-[#EDECEE]">
         <div className="flex items-center gap-2">
           <Filter className="w-5 h-5 text-[#0979b0]" />
           <h2 className="text-xl font-bold text-[#112D4E]">Filtros</h2>
@@ -72,7 +71,7 @@ export function JobSidebar({ filters, setFilters }: JobSidebarProps) {
               </Label>
             </div>
             <Select value={filters.city} onValueChange={(value) => setFilters({ ...filters, city: value })}>
-              <SelectTrigger id="city" className="bg-white w-full border-[#EDECEE]">
+              <SelectTrigger id="city" className="bg-white border-[#EDECEE]">
                 <SelectValue placeholder="Selecciona una ciudad" />
               </SelectTrigger>
               <SelectContent>
@@ -93,7 +92,7 @@ export function JobSidebar({ filters, setFilters }: JobSidebarProps) {
               </Label>
             </div>
             <Select value={filters.jobType} onValueChange={(value) => setFilters({ ...filters, jobType: value })}>
-              <SelectTrigger id="jobType" className="bg-white w-full border-[#EDECEE]">
+              <SelectTrigger id="jobType" className="bg-white border-[#EDECEE]">
                 <SelectValue placeholder="Selecciona tipo de empleo" />
               </SelectTrigger>
               <SelectContent>
@@ -114,7 +113,7 @@ export function JobSidebar({ filters, setFilters }: JobSidebarProps) {
               </Label>
             </div>
             <Select value={filters.category} onValueChange={(value) => setFilters({ ...filters, category: value })}>
-              <SelectTrigger id="category" className="bg-white w-full border-[#EDECEE]">
+              <SelectTrigger id="category" className="bg-white border-[#EDECEE]">
                 <SelectValue placeholder="Selecciona una categoría" />
               </SelectTrigger>
               <SelectContent>
@@ -133,20 +132,20 @@ export function JobSidebar({ filters, setFilters }: JobSidebarProps) {
               <Label className="text-[#415771] font-medium">Rango salarial</Label>
             </div>
             <div className="px-2">
-              <Slider
-                defaultValue={[filters.salaryMin, filters.salaryMax]}
-                max={100000}
-                step={1000}
-                minStepsBetweenThumbs={1}
-                onValueChange={(value) => {
-                  setFilters({
-                    ...filters,
-                    salaryMin: value[0],
-                    salaryMax: value[1],
-                  })
-                }}
-                className="my-6"
-              />
+            <Slider
+              value={[filters.salaryMin, filters.salaryMax]}  // Controlado con value no defaultValue
+              max={100000}
+              step={1000}
+              minStepsBetweenThumbs={1}
+              onValueChange={(value: number[]) => {  // Agrego tipo explícito
+                setFilters({
+                  ...filters,
+                  salaryMin: value[0],
+                  salaryMax: value[1],
+                });
+              }}
+              className="my-6"
+/>
               <div className="flex justify-between text-sm text-[#8E8E8E]">
                 <span>{formatSalary(filters.salaryMin)}</span>
                 <span>{formatSalary(filters.salaryMax)}</span>

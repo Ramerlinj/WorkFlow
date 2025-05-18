@@ -18,10 +18,10 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { useState } from "react"
-import type { Job } from "@/lib/types"
+import type { Employment } from "@/types/interfaces"
 
 interface JobModalProps {
-  job: Job | null
+  job: Employment | null
   isOpen: boolean
   onClose: () => void
   onApply: (jobId: string) => void
@@ -38,7 +38,7 @@ export function JobModal({ job, isOpen, onClose, onApply, onDelete }: JobModalPr
   }
 
   const confirmDelete = () => {
-    onDelete(job.id)
+    onDelete(job.id_employment.toString())
     setIsDeleteDialogOpen(false)
   }
 
@@ -60,28 +60,28 @@ export function JobModal({ job, isOpen, onClose, onApply, onDelete }: JobModalPr
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex items-center gap-2 bg-[#F5F5F5] p-3 rounded-md">
                 <MapPin className="w-5 h-5 text-[#0979b0]" />
-                <span className="text-[#415771] font-medium">{job.city}</span>
+                <span className="text-[#415771] font-medium">{job.location?.city}</span>
               </div>
 
               <div className="flex items-center gap-2 bg-[#F5F5F5] p-3 rounded-md">
                 <Briefcase className="w-5 h-5 text-[#0979b0]" />
-                <span className="text-[#415771] font-medium">{job.jobType}</span>
+                <span className="text-[#415771] font-medium">{job.type_job?.name}</span>
               </div>
 
               <div className="flex items-center gap-2 bg-[#F5F5F5] p-3 rounded-md">
                 <DollarSign className="w-5 h-5 text-[#0979b0]" />
-                <span className="text-[#415771] font-medium">{job.salary}€</span>
+                <span className="text-[#415771] font-medium">{job.salary_min}€ - {job.salary_max}€</span>
               </div>
 
               <div className="flex items-center gap-2 bg-[#F5F5F5] p-3 rounded-md">
                 <Tag className="w-5 h-5 text-[#0979b0]" />
-                <span className="text-[#415771] font-medium">{job.category}</span>
+                <span className="text-[#415771] font-medium">{job.profession?.name}</span>
               </div>
             </div>
 
             <div className="flex items-center gap-2 text-[#8E8E8E]">
               <Calendar className="w-4 h-4" />
-              <span>Publicado hace {formatDistanceToNow(job.createdAt, { locale: es })}</span>
+              <span>Publicado hace {formatDistanceToNow(job.publication_date, { locale: es })}</span>
             </div>
 
             <Separator className="bg-[#EDECEE]" />
@@ -138,7 +138,7 @@ export function JobModal({ job, isOpen, onClose, onApply, onDelete }: JobModalPr
                   <ExternalLink className="mr-2 h-4 w-4" />
                   Visitar sitio web
                 </Button>
-                <Button className="bg-[#214E83] hover:bg-[#144C8E] text-white" onClick={() => onApply(job.id)}>
+                <Button className="bg-[#214E83] hover:bg-[#144C8E] text-white" onClick={() => onApply(job.id_employment.toString())}>
                   Aplicar ahora
                 </Button>
               </div>

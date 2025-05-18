@@ -27,7 +27,7 @@ interface ConfigurationPanelProps {
   aboutMe: string | null
   email: string | null
   bannerColor: string
-  userConfig: UserConfig
+  userConfig?: UserConfig
   onAvatarChange: (newAvatar: string) => void
   onBannerColorChange: (newColor: string) => void
   onAboutMeChange: (newAboutMe: string) => void
@@ -81,7 +81,7 @@ export function ConfigurationPanel({
 
   // Estados para la configuración
   const [isPublicProfile, setIsPublicProfile] = useState<boolean>(Boolean(userConfig?.public_profile))
-  const [notificationByMail, setNotificationByMail] = useState<boolean>(Boolean(userConfig?.notification_by_mail))
+  const [notificationByMail, setNotificationByMail] = useState<boolean>(Boolean(userConfig?.job_alert))
   const [language, setLanguage] = useState<string>(userConfig?.language || "Español")
   const [theme, setTheme] = useState<string>("claro")
 
@@ -97,7 +97,7 @@ export function ConfigurationPanel({
     setPreviewAboutMe(aboutMe)
     setPreviewBannerColor(bannerColor)
     setIsPublicProfile(Boolean(userConfig?.public_profile))
-    setNotificationByMail(Boolean(userConfig?.notification_by_mail))
+    setNotificationByMail(Boolean(userConfig?.job_alert))
     setLanguage(userConfig?.language || "Español")
   }, [avatar, firstName, secondName, firstSurname, secondSurname, username, email, aboutMe, bannerColor, userConfig])
 
@@ -235,7 +235,7 @@ export function ConfigurationPanel({
               )}
               {activeTab === "skills" && (
                 <SkillsTab
-                  skills={user.skills}
+                  skills={user.skills || []}
                   onSave={(updatedSkills) => {
                     if (onSkillsChange) {
                       onSkillsChange(updatedSkills)
@@ -246,7 +246,7 @@ export function ConfigurationPanel({
               )}
               {activeTab === "links" && (
                 <LinksTab
-                  links={user.links}
+                  links={user.links || []}
                   onSave={async (updatedLinks) => {
                     if (onLinksChange) {
                       await onLinksChange(updatedLinks)

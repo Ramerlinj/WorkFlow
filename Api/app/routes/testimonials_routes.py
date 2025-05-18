@@ -41,7 +41,7 @@ def get_comment(comment_id: int, db: Session = Depends(get_db)):
     return TestimonialCommentResponse(
         id_comment=comment.id_comment,
         id_user=comment.id_user,
-        comment_text=comment.comment,
+        comment=comment.comment,
         created_at=comment.created_at
     )
 
@@ -105,14 +105,14 @@ def update_comment(comment_id: int, updated_data: TestimonialCommentCreate, db: 
     if not comment:
         raise HTTPException(status_code=404, detail="Comentario no encontrado.")
 
-    comment.comment = updated_data.comment_text
-    comment.id_user = updated_data.id_user  # si permites que se actualice el usuario
+    comment.comment = updated_data.comment
+    comment.id_user = updated_data.id_user
     db.commit()
     db.refresh(comment)
     return TestimonialCommentResponse(
         id_comment=comment.id_comment,
         id_user=comment.id_user,
-        comment_text=comment.comment,
+        comment=comment.comment,
         created_at=comment.created_at
     )
 

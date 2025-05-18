@@ -10,7 +10,7 @@ const UserPage = async ({ params }: { params: { usuario: string } }) => {
 
   return (
     <div>
-      <Profile profile={user.profile} user={user} />
+      <Profile profile={user.profile || null} user={user}/>
     </div>
   )
 }

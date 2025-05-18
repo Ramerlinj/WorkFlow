@@ -12,12 +12,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
 import { Building, MapPin, Briefcase, Tag, DollarSign, FileText } from "lucide-react"
-import type { Job } from "@/lib/types"
+import type { CreateEmploymentDTO, Employment } from "@/types/interfaces"
+import { jobTypeMap } from "@/lib/api"
+import { professionMap } from "@/lib/api"
+import { locationMap } from "@/lib/api"
 
 interface AddJobModalProps {
   isOpen: boolean
   onClose: () => void
-  onAddJob: (job: Omit<Job, "id" | "createdAt">) => void
+  onAddJob: (job: Omit<Employment, "id_employment" | "publication_date">) => void
 }
 
 export function AddJobModal({ isOpen, onClose, onAddJob }: AddJobModalProps) {
@@ -26,17 +29,19 @@ export function AddJobModal({ isOpen, onClose, onAddJob }: AddJobModalProps) {
     company: "",
     city: "",
     description: "",
-    salary: "",
+    salary_min: "",
+    salary_max: "",
     jobType: "",
     category: "",
+    status: "Open",
   })
 
   const [activeTab, setActiveTab] = useState("basic")
   const [errors, setErrors] = useState<Record<string, string>>({})
 
-  const jobTypes = ["Tiempo completo", "Medio tiempo", "Freelancer", "Prácticas"]
-  const categories = ["Desarrollo web", "Diseño", "Marketing", "Análisis de datos", "Infraestructura"]
-  const cities = ["Madrid", "Barcelona", "Valencia", "Sevilla", "Bilbao"]
+  const jobTypes = Object.values(jobTypeMap)
+  const categories = Object.values(professionMap)
+  const cities = Object.values(locationMap)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -54,7 +59,7 @@ export function AddJobModal({ isOpen, onClose, onAddJob }: AddJobModalProps) {
   const handleSelectChange = (name: string, value: string) => {
     setFormData((prev) => ({ ...prev, [name]: value }))
 
-      if (errors[name]) {
+    if (errors[name]) {
       setErrors((prev) => {
         const newErrors = { ...prev }
         delete newErrors[name]
@@ -70,7 +75,8 @@ export function AddJobModal({ isOpen, onClose, onAddJob }: AddJobModalProps) {
     if (!formData.company.trim()) newErrors.company = "La empresa es obligatoria"
     if (!formData.city) newErrors.city = "La ciudad es obligatoria"
     if (!formData.description.trim()) newErrors.description = "La descripción es obligatoria"
-    if (!formData.salary.trim()) newErrors.salary = "El salario es obligatorio"
+    if (!formData.salary_min.trim()) newErrors.salary_min = "El salario es obligatorio"
+    if (!formData.salary_max.trim()) newErrors.salary_max = "El salario es obligatorio"
     if (!formData.jobType) newErrors.jobType = "El tipo de empleo es obligatorio"
     if (!formData.category) newErrors.category = "La categoría es obligatoria"
 
@@ -79,32 +85,40 @@ export function AddJobModal({ isOpen, onClose, onAddJob }: AddJobModalProps) {
   }
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (validateForm()) {
-      onAddJob(formData)
-      setFormData({
-        title: "",
-        company: "",
-        city: "",
-        description: "",
-        salary: "",
-        jobType: "",
-        category: "",
-      })
-      setActiveTab("basic")
-    } else {
-      // Switch to the tab with errors
-      if (errors.title || errors.company || errors.city) {
-        setActiveTab("basic")
-      } else if (errors.description) {
-        setActiveTab("description")
-      } else if (errors.salary || errors.jobType || errors.category) {
-        setActiveTab("details")
-      }
+    e.preventDefault();
+  
+    if (!validateForm()) {
+      return;
     }
-  }
 
+    const dto: CreateEmploymentDTO = {
+      id_type_job: Number(formData.jobType),
+      id_profession: Number(formData.category),
+      title: formData.title.trim(),
+      description: formData.description.trim(),
+      company: formData.company.trim(),
+      salary_min: formData.salary_min,
+      salary_max: formData.salary_max,
+      id_location: Number(formData.city),
+      status: "Open",
+    };
+
+    onAddJob(dto);
+    setFormData({
+      title: "",
+      company: "",
+      city: "",
+      description: "",
+      salary_min: "",
+      salary_max: "",
+      jobType: "",
+      category: "",
+      status: "Open",
+    });
+    setErrors({});
+    setActiveTab("basic");
+  };
+  
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
@@ -199,17 +213,28 @@ export function AddJobModal({ isOpen, onClose, onAddJob }: AddJobModalProps) {
               <div className="space-y-2">
                 <Label htmlFor="salary" className="text-[#415771] flex items-center gap-2">
                   <DollarSign className="w-4 h-4 text-[#0979b0]" />
-                  Salario ($)
+                  Salario min ($)
                 </Label>
                 <Input
-                  id="salary"
-                  name="salary"
-                  value={formData.salary}
+                  id="salary_min"
+                  name="salary_min"
+                  value={formData.salary_min}
                   onChange={handleChange}
-                  placeholder="Ej: 30000-40000"
-                  className={`border-[#EDECEE] ${errors.salary ? "border-red-500" : ""}`}
+                  placeholder="Ej: 30000"
+                  className={`border-[#EDECEE] ${errors.salary_min ? "border-red-500" : ""}`}
                 />
-                {errors.salary && <p className="text-red-500 text-sm">{errors.salary}</p>}
+                <Label htmlFor="salary" className="text-[#415771] flex items-center gap-2">
+                  Salario max ($)
+                </Label>
+                <Input
+                  id="salary_max"
+                  name="salary_max"
+                  value={formData.salary_max}
+                  onChange={handleChange}
+                  placeholder="Ej: 50000"
+                  
+                />
+                {errors.salary_min && <p className="text-red-500 text-sm">{errors.salary_min}</p>}
               </div>
 
               <div className="space-y-2">

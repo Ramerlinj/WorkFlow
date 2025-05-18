@@ -9,14 +9,14 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 import { Building, FileText } from "lucide-react"
-import type { Job } from "@/lib/types"
+import type { Employment } from "@/types/interfaces"
 
 interface ApplicationModalProps {
   isOpen: boolean
   onClose: () => void
   jobId: string | null
-  job: Job | null
-  onSubmit: (data: any) => void
+  job: Employment | null
+  onSubmit: (data: { jobId: string; coverLetter: string }) => void
 }
 
 const applicationSchema = z.object({
@@ -64,7 +64,7 @@ export function ApplicationModal({ isOpen, onClose, jobId, job, onSubmit }: Appl
           <div>
             <h3 className="font-medium text-[#112D4E]">{job.title}</h3>
             <p className="text-sm text-[#415771]">
-              {job.company} - {job.city}
+              {job.company} - {job.location?.city}
             </p>
           </div>
         </div>

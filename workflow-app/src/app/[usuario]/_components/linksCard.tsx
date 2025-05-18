@@ -7,6 +7,7 @@ interface LinksCardProps {
 }
 
 export function LinksCard({ links }: LinksCardProps) {
+
   if (!links) {
     return (
       <Card className="mt-10">
@@ -27,9 +28,9 @@ export function LinksCard({ links }: LinksCardProps) {
         ) : (
           <ul className="list-disc ml-5">
             {links.map((link, index) => (
-              <li key={link.id_links || `link-${index}`}>
+              <li key={link.id_link || `link-${index}`}>
                 <Link href={link.url} target="_blank" rel="noopener noreferrer" className="text-secondary hover:underline">
-                  {link.name}
+                  {link.id_link_type === 1 ? 'Github' : link.id_link_type === 2 ? 'LinkedIn' : ''}
                 </Link>
               </li>
             ))}

@@ -27,7 +27,7 @@ export default function SkillsCard({ skills }: SkillsCardProps) {
         ) : (
           skills.map((skill) => (
             <Badge key={skill.id_skill} className="mr-2 mb-2">
-              {skill.nombre}
+              {skill.name}
             </Badge>
           ))
         )}

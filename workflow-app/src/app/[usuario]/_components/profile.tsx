@@ -41,36 +41,30 @@ function Profile({ profile, user }: ProfileFullProps) {
   const skills = user.skills || null
   const first_name = user.first_name || null
   const middle_name = user.middle_name || null
-  // No existe la propiedad last_name en el tipo User
   const first_surname = user.first_surname || null
   const second_surname = user.second_surname || null
   const email = user.email || null
   const links = user.links || null
   const workexperience = user.work_experience || null
-  const configuration = user.user_config || {
-    id_config: 0,
-    public_profile: true,
-    notification_by_mail: true,
-    job_alert: true,
-    language: "es"
-  }
-  const profession = user.profession.name || null
+  const configuration = user.user_config || undefined
+  const profession = user.profession?.name || null
   const direction = user.direction || null
 
   const [isOpenCvDialog, setIsOpenCvDialog] = useState(false)
-  const [avatar, setAvatar] = useState(profile?.avatar || null)
+  const [avatar, setAvatar] = useState(profile?.avatar_url || null)
   const [bannerColor, setBannerColor] = useState<string>("#FF5733")
   const [aboutMe, setAboutMe] = useState(about_me)
   const [firstName, setFirstName] = useState(first_name)
   const [secondName, setSecondName] = useState(middle_name)
   const [firstSurname, setFirstSurname] = useState(first_surname)
+  const [secondSurname, setSecondSurname] = useState(second_surname)
 
   const initial = firstName ? firstName.charAt(0).toUpperCase() : ""
   const backgroundColor = avatarColors[initial] || "#9999"
 
   const handleClick = () => {
-    if (profile?.cv) {
-      window.open(profile?.cv, "_blank")
+    if (profile?.cv_url) {
+      window.open(profile?.cv_url, "_blank")
     } else {
       setIsOpenCvDialog(true)
     }
@@ -81,7 +75,6 @@ function Profile({ profile, user }: ProfileFullProps) {
   }
 
   const handleBannerColorChange = (newColor: string) => {
-    console.log("Nuevo color de banner:", newColor)
     setBannerColor(newColor)
   }
 
@@ -99,6 +92,10 @@ function Profile({ profile, user }: ProfileFullProps) {
 
   const handleSurnameChange = (newSurname: string) => {
     setFirstSurname(newSurname)
+  }
+
+  const handleSecondSurnameChange = (newSecondSurname: string) => {
+    setSecondSurname(newSecondSurname)
   }
 
   const handleSkillsChange = async (newSkills: Skill[]) => {
@@ -125,9 +122,6 @@ function Profile({ profile, user }: ProfileFullProps) {
       await updateUserLinks(user.id_user, newLinks)
       
       // Actualizar la UI o mostrar mensaje de éxito
-      console.log('Enlaces actualizados correctamente')
-      // Refrescar la página para mostrar los cambios
-      router.refresh()
     } catch (error) {
       // Mostrar mensaje de error
       console.error('Error al actualizar los enlaces:', error)
@@ -162,7 +156,7 @@ function Profile({ profile, user }: ProfileFullProps) {
           <div className="w-full p-4 mt-16">
             <div className="flex items-center ml-5">
               <h2 className="text-2xl font-bold text-default-400">
-                {firstName} {secondName} {firstSurname} {second_surname}
+                {firstName} {secondName} {firstSurname} {secondSurname}
               </h2>
               <Badge variant="default" className="ml-3 p-[4.3px] align-middle leading-none translate-y-[2px]">
                 {profession}
@@ -203,7 +197,7 @@ function Profile({ profile, user }: ProfileFullProps) {
                   firstName={firstName}
                   secondName={secondName}
                   firstSurname={firstSurname}
-                  secondSurname={second_surname}
+                  secondSurname={secondSurname}
                   username={username}
                   aboutMe={aboutMe}
                   email={email}
@@ -215,7 +209,7 @@ function Profile({ profile, user }: ProfileFullProps) {
                   onNameChange={handleNameChange}
                   onSecondNameChange={handleSecondNameChange}
                   onSurnameChange={handleSurnameChange}
-                  onSecondSurnameChange={(newSecondSurname) => console.log(newSecondSurname)}
+                  onSecondSurnameChange={handleSecondSurnameChange}
                   onSkillsChange={handleSkillsChange}
                   onLinksChange={handleLinksChange}
                 />
@@ -233,11 +227,11 @@ function Profile({ profile, user }: ProfileFullProps) {
           </Card>
 
           <SkillsCard skills={skills} />
-          <LinksCard links={links} />
+          <LinksCard links={links}  />
         </div>
 
         <div className="flex-1">
-          <ProfileTab workexperience={workexperience} />
+          <ProfileTab workexperience={workexperience || []} />
         </div>
       </div>
     </div>

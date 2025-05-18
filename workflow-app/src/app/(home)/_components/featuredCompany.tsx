@@ -19,8 +19,8 @@ export default function FeaturedCompany() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 items-center">
-            {locale.FEATURE_COMPANY.IMAGES.map(({SRC, ALT, WIDTH, HEIGHT}) => (
-              <div className="flex justify-center mx-5" key={SRC}>
+            {locale.FEATURE_COMPANY.IMAGES.map(({SRC, ALT, WIDTH, HEIGHT}, index) => (
+              <div className="flex justify-center mx-5" key={index}>
                 <Image
                   src={SRC}
                   width={WIDTH}

@@ -1,22 +1,13 @@
-export interface User {
-  id_user: number;
-  username: string;
-  first_name: string;
-  middle_name: string | null;
-  first_surname: string;
-  second_surname: string | null;
-  email: string;
-  date_of_birth: string;
-  creation_date: string;
-  profession: Profession;
-  profile: Profile | null;
-  skills: Skill[];
-  links: Link[];
-  work_experience: WorkExperience[];
-  user_config: UserConfig | null;
-  notification_settings: NotificationSettings | null;
-  applications: JobApplication[];
-  direction: string | null;
+export interface Country {
+  id_country: number;
+  name: string;
+}
+
+export interface Location {
+  id_location: number;
+  id_country: number;
+  city: string;
+  country?: Country;
 }
 
 export interface Profession {
@@ -24,17 +15,41 @@ export interface Profession {
   name: string;
 }
 
+export interface User {
+  id_user: number;
+  id_profession: number;
+  username: string;
+  email: string;
+  hash_password: string;
+  first_name: string;
+  middle_name: string | null;
+  first_surname: string;
+  second_surname: string | null;
+  date_of_birth: string;
+  creation_date: string;
+  direction: string | null;
+  profession?: Profession;
+  profile?: Profile | null;
+  skills?: Skill[];
+  links?: Link[];
+  link_type?: LinkType[];
+  work_experience?: WorkExperience[];
+  user_config?: UserConfig | null;
+  notification_settings?: NotificationSettings | null;
+  applications?: JobApplication[];
+}
+
 export interface Profile {
   id_profile: number;
   id_user: number;
   about_me: string;
-  avatar: string | null;
-  cv: string | null;
+  avatar_url: string | null;
+  cv_url: string | null;
 }
 
 export interface Skill {
   id_skill: number;
-  nombre: string;
+  name: string;
 }
 
 export interface Link {
@@ -42,7 +57,7 @@ export interface Link {
   id_user: number;
   id_link_type: number;
   url: string;
-  link_type?: LinkType;
+  
 }
 
 export interface LinkType {
@@ -60,29 +75,28 @@ export interface WorkExperience {
   description: string | null;
 }
 
+export interface CreateApplicationDTO {
+  coverLetter: string
+}
+
 export interface UserConfig {
   id_config: number;
+  id_user: number;
   public_profile: boolean;
-  notification_by_mail: boolean;
   job_alert: boolean;
-  language: string;
+  language: 'Español' | 'Ingles';
 }
 
 export interface NotificationSettings {
-  id_notification_settings: number;
+  id_notif: number;
   id_user: number;
-  email_notifications: boolean;
-  sms_notifications: boolean;
+  by_email: boolean;
+  by_sms: boolean;
   push_notifications: boolean;
 }
 
 export interface TypeJob {
   id_type_job: number;
-  name: string;
-}
-
-export interface Location {
-  id_location: number;
   name: string;
 }
 
@@ -93,7 +107,8 @@ export interface Employment {
   title: string;
   description: string | null;
   company: string;
-  salary: number | null;
+  salary_min: string | null;
+  salary_max: string | null;
   publication_date: string;
   status: 'Open' | 'Closed';
   id_location: number | null;
@@ -106,8 +121,31 @@ export interface JobApplication {
   id_application: number;
   id_user: number;
   id_employment: number;
-  status: string;
   application_date: string;
-  cover_letter?: string | null;
+  status: 'Pending' | 'Accepted' | 'Rejected';
   employment?: Employment;
 }
+
+export interface Testimonial {
+  id_testimonial: number;
+  id_user_source: number;
+  id_user_target: number;
+  title: string;
+  description: string;
+  rating: number;
+  likes: number;
+  created_at: string;
+}
+
+export interface TestimonialComment {
+  id_comment: number;
+  id_testimonial: number;
+  id_user: number;
+  comment: string;
+  created_at: string;
+}
+
+export type CreateEmploymentDTO = Omit<
+  Employment,
+  "id_employment" | "publication_date" | "type_job" | "profession" | "location"
+>;
