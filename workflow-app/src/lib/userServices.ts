@@ -1,127 +1,94 @@
-import type { Skill, Link, LinkType, User } from "@/types/interfaces";
+import axios from "axios";
+import type { SkillResponse, Link, LinkType, UserLink } from "@/types/interfaces";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-/**
- * Helper genérico para hacer peticiones y parsear JSON, lanzar error si status != 2xx
- */
-async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const res = await fetch(`${API_URL}${endpoint}`, {
-    headers: { "Content-Type": "application/json", ...(options.headers || {}) },
-    ...options,
-  });
+const api = axios.create({
+  baseURL: API_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
-  if (!res.ok) {
-    const text = await res.text().catch(() => res.statusText);
-    throw new Error(`API error ${res.status}: ${text}`);
+// Función genérica para manejar respuestas
+async function request<T>(promise: Promise<{ data: T }>): Promise<T> {
+  try {
+    const { data } = await promise;
+    return data;
+  } catch (error: unknown) {
+    const message =
+      (error as { response: { data: string } })?.response?.data ||
+      (error as { response: { statusText: string } })?.response?.statusText ||
+      (error as { message: string })?.message;
+    throw new Error(`API error: ${message}`);
+  }
+}
+// Ahora recibimos userId como primer parámetro
+export async function saveUserLinks(
+  userId: number,
+  previewLinks: UserLink[],
+  deletedLinks: number[]
+): Promise<void> {
+  // Ya no derivamos userId de previewLinks[0]
+  if (!userId) {
+    throw new Error("ID de usuario no definido");
   }
 
-  // Si no hay body (204), devolvemos un objeto vacío
-  if (res.status === 204) {
-    return {} as T;
+  // 1) Borrar los marcados
+  for (const id_link of deletedLinks) {
+    const res = await fetch(`${API_URL}/link/${id_link}`, { method: "DELETE" });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      console.error("Error al eliminar enlace:", err);
+      throw new Error("Error al eliminar enlace");
+    }
   }
-  return await res.json();
+
+  // 2) Crear los nuevos (id_link === 0)
+  for (const link of previewLinks) {
+    if (!link.id_link || link.id_link === 0) {
+      const body = {
+        id_user: userId,
+        id_link_type: link.id_link_type,
+        url: link.url,
+        id_link: link.id_link, // puedes omitirlo si tu backend no lo necesita
+      };
+      const res = await fetch(`${API_URL}/link`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        console.error("Error al crear enlace:", err);
+        throw new Error("Error al crear nuevo enlace");
+      }
+    }
+  }
 }
 
-// -------------------- Link Types --------------------
 
-/** Obtiene todos los tipos de enlace desde el backend */
 export function getAllLinkTypes(): Promise<LinkType[]> {
-  return request<LinkType[]>("/link-types/");
+  return request(api.get("/link_types"));
 }
 
-// -------------------- Links CRUD --------------------
-
-/** Obtiene todos los links (o los de un usuario concreto si userId != null) */
 export function getLinks(userId?: number): Promise<Link[]> {
-  const endpoint = userId != null ? `/links/user/${userId}` : "/links/";
-  return request<Link[]>(endpoint);
+  const endpoint = userId != null ? `/links/user/${userId}` : "/links";
+  return request(api.get(endpoint));
 }
 
-/** Crea un nuevo link */
 export function createLink(payload: Omit<Link, "id_link">): Promise<Link> {
-  return request<Link>("/links/", {
-    method: "POST",
-    body: JSON.stringify(payload),
-  });
+  return request(api.post("/links", payload));
 }
 
-/** Actualiza un link existente */
-export function updateLink(
-  id_link: number,
-  payload: Omit<Link, "id_link">
-): Promise<Link> {
-  return request<Link>(`/links/${id_link}`, {
-    method: "PUT",
-    body: JSON.stringify(payload),
-  });
-}
 
-/** Elimina un link por su ID */
 export function deleteLink(id_link: number): Promise<void> {
-  return request<void>(`/links/${id_link}`, {
-    method: "DELETE",
-  });
+  return request(api.delete(`/link/${id_link}`));
 }
 
-/** Reemplaza todos los links de un usuario (usa PUT /user/{id}/links/) */
-export async function updateUserLinks(
-  userId: number,
-  links: Link[]
-): Promise<void> {
-  await request<void>(`/user/${userId}/links/`, {
-    method: "PUT",
-    body: JSON.stringify({ links }),
-  });
-}
 
-// -------------------- Skills CRUD --------------------
+// === Skills ===
 
-/** Obtiene todas las skills */
-export function getAllSkills(): Promise<Skill[]> {
-  return request<Skill[]>("/skills/");
-}
-
-/** Crea una nueva skill */
-export function createSkill(payload: Omit<Skill, "id_skill">): Promise<Skill> {
-  return request<Skill>("/skills/", {
-    method: "POST",
-    body: JSON.stringify(payload),
-  });
-}
-
-/** Actualiza una skill existente */
-export function updateSkill(
-  id_skill: number,
-  payload: Partial<Omit<Skill, "id_skill">>
-): Promise<Skill> {
-  return request<Skill>(`/skills/${id_skill}`, {
-    method: "PUT",
-    body: JSON.stringify(payload),
-  });
-}
-
-/** Elimina una skill por su ID */
-export function deleteSkill(id_skill: number): Promise<void> {
-  return request<void>(`/skills/${id_skill}`, {
-    method: "DELETE",
-  });
-}
-
-/** Reemplaza todas las skills de un usuario (usa PUT /user/{id}/skills/) */
-export async function updateUserSkills(
-  userId: number,
-  skills: Skill[]
-): Promise<void> {
-  await request<void>(`/user/${userId}/skills/`, {
-    method: "PUT",
-    body: JSON.stringify({ skills }),
-  });
-}
-
-// -------------------- Usuarios --------------------
-
-/** Obtiene los datos de un usuario por su username */
-export function getUserData(username: string): Promise<User> {
-  return request<User>(`/user/${username}`, { method: "GET" });
+export function getAllSkills(): Promise<SkillResponse[]> {
+  return request(api.get("/skills"));
 }
