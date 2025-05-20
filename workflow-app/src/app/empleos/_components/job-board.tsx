@@ -14,7 +14,7 @@ import {
   createJob,
   deleteJob,
   applyToJob,
-} from "@/lib/api"
+} from "@/lib/employments"
 import type { CreateEmploymentDTO, Employment } from "@/types/interfaces"
 import { Loader2 } from "lucide-react"
 

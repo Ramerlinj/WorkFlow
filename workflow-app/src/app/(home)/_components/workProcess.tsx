@@ -57,14 +57,6 @@ export default function WorkProcess(){
                 >
                   <div className="md:w-1/2 relative">
                     <div
-                      className="hidden md:block absolute top-1/2 w-12 h-1"
-                      style={{
-                        background: "#DDE6F6",
-                        [index % 2 === 1 ? "right" : "left"]: "0",
-                        transform: `translateY(-50%) translateX(${index % 2 === 1 ? "" : "-"}100%)`,
-                      }}
-                    ></div>
-                    <div
                       className="w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold relative z-10 mx-auto md:mx-0"
                       style={{
                         background: "#0979b0",
