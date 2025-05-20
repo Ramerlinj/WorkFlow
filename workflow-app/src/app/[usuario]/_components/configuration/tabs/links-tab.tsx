@@ -1,3 +1,6 @@
+// components/LinksTab.tsx
+'use client'
+
 import React, { useState, useEffect } from "react";
 import {
   Label,
@@ -7,8 +10,14 @@ import {
   DialogDescription,
   Card,
   CardContent,
-  Combobox,
 } from "@/components/ui/";
+import {
+  Select,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+} from "@/components/ui/select";
 import {
   Plus,
   Trash2,
@@ -23,33 +32,35 @@ import type { Link as UserLink, LinkType } from "@/types/interfaces";
 import { getAllLinkTypes } from "@/lib/userServices";
 
 interface LinksTabProps {
+  idUser: number;
   links: UserLink[];
-  onSave: (links: UserLink[]) => Promise<void>;
+  onSave: (previewLinks: UserLink[], deletedLinks: number[]) => Promise<void>;
 }
 
-export function LinksTab({ links, onSave }: LinksTabProps) {
+export function LinksTab({ idUser, links, onSave }: LinksTabProps) {
   const [previewLinks, setPreviewLinks] = useState<UserLink[]>([]);
+  const [deletedLinks, setDeletedLinks] = useState<number[]>([]);
   const [newLinkUrl, setNewLinkUrl] = useState("");
+  const [selectedTypeId, setSelectedTypeId] = useState<number | null>(null);
+  const [linkTypes, setLinkTypes] = useState<LinkType[]>([]);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
-  const [linkTypes, setLinkTypes] = useState<LinkType[]>([]);
-  const [selectedTypeId, setSelectedTypeId] = useState<number | null>(null);
   const [loadingTypes, setLoadingTypes] = useState(true);
 
-  // Initialize preview links on mount
+  // Al montar o cambiar `links`, reiniciamos estados
   useEffect(() => {
     setPreviewLinks(links);
+    setDeletedLinks([]);
   }, [links]);
 
-  // Load link types
+  // Cargamos tipos de enlaces
   useEffect(() => {
     (async () => {
       try {
-        const types = await getAllLinkTypes();
-        setLinkTypes(types);
-      } catch (e) {
-        console.error(e);
+        setLinkTypes(await getAllLinkTypes());
+      } catch {
+        console.error("No se pudieron cargar los tipos");
       } finally {
         setLoadingTypes(false);
       }
@@ -58,9 +69,7 @@ export function LinksTab({ links, onSave }: LinksTabProps) {
 
   const validateUrl = (url: string) => {
     let candidate = url.trim();
-    if (!/^https?:\/\//i.test(candidate)) {
-      candidate = "https://" + candidate;
-    }
+    if (!/^https?:\/\//i.test(candidate)) candidate = "https://" + candidate;
     try {
       new URL(candidate);
       return candidate;
@@ -71,28 +80,21 @@ export function LinksTab({ links, onSave }: LinksTabProps) {
 
   const handleAddLink = () => {
     if (selectedTypeId == null) {
-      setError("Debes seleccionar un tipo de enlace");
-      return;
+      return setError("Debes seleccionar un tipo de enlace");
     }
     const valid = validateUrl(newLinkUrl);
     if (!valid) {
-      setError("La URL no es válida");
-      return;
+      return setError("La URL no es válida");
     }
-    const type = linkTypes.find((lt) => lt.id_link_type === selectedTypeId);
-    if (!type) {
-      setError("Tipo de enlace inválido");
-      return;
-    }
+    const type = linkTypes.find((t) => t.id_link_type === selectedTypeId)!;
     if (previewLinks.some((l) => l.id_link_type === selectedTypeId)) {
-      setError(`Ya existe un enlace de tipo ${type.name}`);
-      return;
+      return setError(`Ya existe un enlace de tipo ${type.name}`);
     }
     setPreviewLinks((prev) => [
       ...prev,
       {
-        id_link: Date.now(),
-        id_user: previewLinks[0]?.id_user || 0,
+        id_link: 0,          // 0 indica “nuevo”
+        id_user: idUser,     // 🔑 usamos prop
         id_link_type: type.id_link_type,
         name: type.name,
         url: valid,
@@ -103,18 +105,22 @@ export function LinksTab({ links, onSave }: LinksTabProps) {
     setError("");
   };
 
-  const handleRemove = (id: number) => {
-    setPreviewLinks((prev) => prev.filter((l) => l.id_link !== id));
+  const handleRemove = (link: UserLink) => {
+    setPreviewLinks((prev) => prev.filter((l) => l.id_link !== link.id_link));
+    if (link.id_link > 0) {
+      setDeletedLinks((prev) => [...prev, link.id_link]);
+    }
   };
 
   const handleSave = async () => {
     setIsLoading(true);
     try {
-      await onSave(previewLinks);
+      // Pasamos ambos arrays al padre
+      await onSave(previewLinks, deletedLinks);
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
-    } catch (e) {
-      console.error(e);
+    } catch (err) {
+      console.error(err);
     } finally {
       setIsLoading(false);
     }
@@ -124,48 +130,52 @@ export function LinksTab({ links, onSave }: LinksTabProps) {
     <div className="space-y-6">
       <div>
         <DialogTitle>Gestionar enlaces</DialogTitle>
-        <DialogDescription>
-          Añade o elimina tus enlaces profesionales.
-        </DialogDescription>
+        <DialogDescription>Añade o elimina tus enlaces profesionales.</DialogDescription>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Formulario de tipo + URL */}
+      <div className="grid md:grid-cols-2 gap-4">
         <div>
           <Label>Tipo de enlace</Label>
           {loadingTypes ? (
-            <div className="py-2 flex items-center gap-2">
-              <Loader2 className="animate-spin" />
-              Cargando...
+            <div className="flex items-center gap-2 py-2">
+              <Loader2 className="animate-spin" /> Cargando...
             </div>
           ) : (
-            <Combobox
-              options={linkTypes.map((t) => ({ value: t.id_link_type.toString(), label: t.name }))}
+            <Select
               value={selectedTypeId?.toString() || ""}
-              onSelect={(v) => setSelectedTypeId(Number(v))}
-              placeholder="Seleccione tipo"
-            />
+              onValueChange={(v) => setSelectedTypeId(Number(v))}
+            >
+              <SelectTrigger className="w-full mt-3">
+                <SelectValue placeholder="Seleccione tipo" />
+              </SelectTrigger>
+              <SelectContent>
+                {linkTypes.map((t) => (
+                  <SelectItem key={t.id_link_type} value={t.id_link_type.toString()}>
+                    {t.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           )}
         </div>
         <div>
           <Label>URL</Label>
           <Input
+            className="mt-3"
             placeholder="https://ejemplo.com"
             value={newLinkUrl}
             onChange={(e) => setNewLinkUrl(e.target.value)}
           />
         </div>
       </div>
-
       {error && <p className="text-destructive">{error}</p>}
 
-      <Button
-       onClick={handleAddLink}
-       className="flex items-center gap-2"
-       disabled={!newLinkUrl || selectedTypeId == null}
-        >
+      <Button onClick={handleAddLink} disabled={!newLinkUrl || !selectedTypeId} className="flex items-center gap-2">
         <Plus /> Añadir
       </Button>
 
+      {/* Lista de preview */}
       <div className="border rounded p-4">
         {previewLinks.length === 0 ? (
           <p>No hay enlaces.</p>
@@ -173,7 +183,7 @@ export function LinksTab({ links, onSave }: LinksTabProps) {
           <AnimatePresence>
             {previewLinks.map((link) => (
               <motion.div
-                key={link.id_link}
+                key={link.id_link > 0 ? link.id_link : link.url}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
@@ -182,13 +192,13 @@ export function LinksTab({ links, onSave }: LinksTabProps) {
                   <CardContent className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
                       <Link2 />
-                      <span>{link.link_type?.name}</span>
+                      <span>{link.id_link_type === 2 ? 'Github' : link.id_link_type === 1 ? 'LinkedIn' : link.id_link_type === 3 ? 'Portfolio' : ''}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <a href={link.url} target="_blank" rel="noopener noreferrer">
                         <ExternalLink />
                       </a>
-                      <Button variant="ghost" onClick={() => handleRemove(link.id_link)}>
+                      <Button variant="ghost" onClick={() => handleRemove(link)}>
                         <Trash2 />
                       </Button>
                     </div>
@@ -200,8 +210,9 @@ export function LinksTab({ links, onSave }: LinksTabProps) {
         )}
       </div>
 
+      {/* Guardar */}
       <div className="flex justify-end">
-        <Button onClick={handleSave} disabled={isLoading}>
+        <Button onClick={handleSave} disabled={isLoading} className="flex items-center gap-2">
           {isLoading ? (
             <Loader2 className="animate-spin" />
           ) : saveSuccess ? (
@@ -209,16 +220,9 @@ export function LinksTab({ links, onSave }: LinksTabProps) {
           ) : (
             <Save />
           )}
-          {isLoading
-            ? "Guardando..."
-            : saveSuccess
-            ? "Guardado"
-            : "Guardar"}
+          {isLoading ? "Guardando..." : saveSuccess ? "Guardado" : "Guardar"}
         </Button>
       </div>
     </div>
   );
 }
-
-
-

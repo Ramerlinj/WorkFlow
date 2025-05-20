@@ -18,7 +18,9 @@ export function AccountTab({
   setIsPublicProfile = () => {},
   onChangePassword = () => {},
   onDeleteAccount = () => {},
-  onSave = () => {},
+  onSave = () => {
+    
+  },
 }: AccountTabProps) {
   return (
     <div className="space-y-6">

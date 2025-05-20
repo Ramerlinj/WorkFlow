@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Settings, User, Shield, Bell, Palette, Link2, BookText } from "lucide-react"
+import { Settings, User, Shield, Bell, Palette, Link2, BookText, Briefcase } from "lucide-react"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
-import type { User as UserType, UserConfig, Skill, Link as UserLink } from "@/types/interfaces"
+import type { User as UserType, UserConfig, SkillResponse, Link as UserLink, WorkExperience } from "@/types/interfaces"
 
 // Importación de los componentes de pestañas
 import { ProfileTab } from "./tabs/profile-tab"
@@ -13,6 +13,7 @@ import { NotificationsTab } from "./tabs/notifications-tab"
 import { AppearanceTab } from "./tabs/appearance-tab"
 import { SkillsTab } from "./tabs/skills-tab"
 import { LinksTab } from "./tabs/links-tab"
+import { ExperienceTab } from "./tabs/experience-tab"
 import { PasswordDialog } from "./dialogs/password-dialog"
 import { DeleteAccountDialog } from "./dialogs/delete-account-dialog"
 
@@ -36,8 +37,9 @@ interface ConfigurationPanelProps {
   onSecondNameChange?: (newSecondName: string) => void
   onSecondSurnameChange?: (newSecondSurname: string) => void
   onEmailChange?: (newEmail: string) => void
-  onSkillsChange?: (skills: Skill[]) => void
+  onSkillsChange?: (skills: SkillResponse[]) => void
   onLinksChange?: (links: UserLink[]) => void
+  onExperiencesChange?: (experiences: WorkExperience[]) => void
 }
 
 export function ConfigurationPanel({
@@ -101,38 +103,15 @@ export function ConfigurationPanel({
     setLanguage(userConfig?.language || "Español")
   }, [avatar, firstName, secondName, firstSurname, secondSurname, username, email, aboutMe, bannerColor, userConfig])
 
-  const handleSaveProfile = () => {
-    if (previewAvatar !== avatar) {
-      onAvatarChange(previewAvatar || "")
-    }
-
-    if (previewName !== firstName) {
-      onNameChange(previewName || "")
-    }
-
-    if (onSecondNameChange && previewSecondName !== secondName) {
-      onSecondNameChange(previewSecondName || "")
-    }
-
-    if (onSurnameChange && previewSurname !== firstSurname) {
-      onSurnameChange(previewSurname || "")
-    }
-
-    if (onSecondSurnameChange && previewSecondSurname !== secondSurname) {
-      onSecondSurnameChange(previewSecondSurname || "")
-    }
-
-    if (onEmailChange && previewEmail !== email) {
-      onEmailChange(previewEmail || "")
-    }
-
-    if (previewAboutMe !== aboutMe) {
-      onAboutMeChange(previewAboutMe || "")
-    }
-
-    if (previewBannerColor !== bannerColor) {
-      onBannerColorChange(previewBannerColor)
-    }
+  const handleSaveProfile = async () => {
+    if (previewName) onNameChange(previewName)
+    if (onSecondNameChange && previewSecondName !== undefined) onSecondNameChange(previewSecondName || '')
+    if (onSurnameChange && previewSurname) onSurnameChange(previewSurname)
+    if (onSecondSurnameChange && previewSecondSurname !== undefined) onSecondSurnameChange(previewSecondSurname || '')
+    if (onEmailChange && previewEmail) onEmailChange(previewEmail)
+    if (previewAboutMe !== null) onAboutMeChange(previewAboutMe || '')
+    if (previewAvatar) onAvatarChange(previewAvatar)
+    onBannerColorChange(previewBannerColor)
     setIsOpen(false)
   }
 
@@ -166,6 +145,14 @@ export function ConfigurationPanel({
                 >
                   <User className="mr-2 h-4 w-4" />
                   Perfil
+                </Button>
+                <Button
+                  variant={activeTab === "experience" ? "secondary" : "ghost"}
+                  className="w-full justify-start"
+                  onClick={() => setActiveTab("experience")}
+                >
+                  <Briefcase className="mr-2 h-4 w-4" />
+                  Experiencia
                 </Button>
                 <Button
                   variant={activeTab === "skills" ? "secondary" : "ghost"}
@@ -235,6 +222,7 @@ export function ConfigurationPanel({
               )}
               {activeTab === "skills" && (
                 <SkillsTab
+                  userId={user.id_user}
                   skills={user.skills || []}
                   onSave={(updatedSkills) => {
                     if (onSkillsChange) {
@@ -246,6 +234,7 @@ export function ConfigurationPanel({
               )}
               {activeTab === "links" && (
                 <LinksTab
+                  idUser={user.id_user}
                   links={user.links || []}
                   onSave={async (updatedLinks) => {
                     if (onLinksChange) {
@@ -276,6 +265,12 @@ export function ConfigurationPanel({
                   setTheme={setTheme}
                   onSave={handleSaveConfig}
                 />
+              )}
+              {activeTab === "experience" && (
+                <div className="space-y-6">
+                  <h3 className="text-lg font-medium">Experiencia Laboral</h3>
+                  <ExperienceTab userId={user.id_user} />
+                </div>
               )}
             </div>
           </div>

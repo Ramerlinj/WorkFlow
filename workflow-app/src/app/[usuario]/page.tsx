@@ -1,3 +1,4 @@
+
 import { getUser } from "@/lib/getUser"
 import Profile from "./_components/profile"
 

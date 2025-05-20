@@ -4,13 +4,12 @@ import { useState } from "react"
 import Image from "next/image"
 import { MapPin, Mail, FileText } from "lucide-react"
 import { useRouter } from "next/navigation"
-import type { Profile as ProfileTypes, User, Skill, Link } from "@/types/interfaces"
-import { updateUserSkills, updateUserLinks } from "@/lib/userServices"
+import type { Profile as ProfileTypes, User, Link } from "@/types/interfaces"
+import {  saveUserLinks } from "@/lib/userServices"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { ProfileTab } from "./WorkExperience"
-import SkillsCard from "./SkillCard"
 import { LinksCard } from "./linksCard"
 import avatarColors from "@/lib/colors/avatar-colors"
 import { ConfigurationPanel } from "./configuration/configuration-panel"
@@ -23,6 +22,7 @@ import {
   DialogHeader,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import SkillsCard from "./SkillCard"
 
 interface ProfileProps {
   profile: ProfileTypes | null
@@ -98,30 +98,19 @@ function Profile({ profile, user }: ProfileFullProps) {
     setSecondSurname(newSecondSurname)
   }
 
-  const handleSkillsChange = async (newSkills: Skill[]) => {
-    if (!user.id_user) return
-    
-    console.log('Actualizando habilidades:', newSkills)
-    try {
-      await updateUserSkills(user.id_user, newSkills)
-      // Actualizar la UI o mostrar mensaje de éxito
-      console.log('Habilidades actualizadas correctamente')
-      // Refrescar la página para mostrar los cambios
-      router.refresh()
-    } catch (error) {
-      // Mostrar mensaje de error
-      console.error('Error al actualizar las habilidades', error)
-    }
-  }
+
 
   const handleLinksChange = async (newLinks: Link[]) => {
     if (!user.id_user) return
     
     console.log('Actualizando enlaces:', newLinks)
     try {
-      await updateUserLinks(user.id_user, newLinks)
+      await saveUserLinks(user.id_user, newLinks, [])
       
       // Actualizar la UI o mostrar mensaje de éxito
+      console.log('Enlaces actualizados correctamente')
+      // Refrescar la página para mostrar los cambios
+      router.refresh()
     } catch (error) {
       // Mostrar mensaje de error
       console.error('Error al actualizar los enlaces:', error)
@@ -210,7 +199,6 @@ function Profile({ profile, user }: ProfileFullProps) {
                   onSecondNameChange={handleSecondNameChange}
                   onSurnameChange={handleSurnameChange}
                   onSecondSurnameChange={handleSecondSurnameChange}
-                  onSkillsChange={handleSkillsChange}
                   onLinksChange={handleLinksChange}
                 />
               </div>
@@ -227,7 +215,7 @@ function Profile({ profile, user }: ProfileFullProps) {
           </Card>
 
           <SkillsCard skills={skills} />
-          <LinksCard links={links}  />
+          <LinksCard links={links} />
         </div>
 
         <div className="flex-1">
