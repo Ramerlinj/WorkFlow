@@ -15,6 +15,20 @@ export interface Profession {
   name: string;
 }
 
+export interface UserCreate {
+  id_profession: number;
+  username: string;
+  email: string;
+  first_name: string;
+  middle_name: string;
+  first_surname: string;
+  second_surname: string;
+  date_of_birth: string;
+  direction: string;
+  password: string;
+}
+
+
 export interface User {
   id_user: number;
   id_profession: number;
@@ -30,7 +44,7 @@ export interface User {
   direction: string | null;
   profession?: Profession;
   profile?: Profile | null;
-  skills?: Skill[];
+  skills?: SkillResponse[];
   links?: Link[];
   link_type?: LinkType[];
   work_experience?: WorkExperience[];
@@ -47,10 +61,7 @@ export interface Profile {
   cv_url: string | null;
 }
 
-export interface Skill {
-  id_skill: number;
-  name: string;
-}
+
 
 export interface Link {
   id_link: number;
@@ -58,6 +69,13 @@ export interface Link {
   id_link_type: number;
   url: string;
   
+}
+
+export interface UserLink {
+  id_link: number;
+  id_user: number;
+  id_link_type: number;
+  url: string;
 }
 
 export interface LinkType {
@@ -145,8 +163,6 @@ export interface TestimonialComment {
   created_at: string;
 }
 
-// src/types/interfaces.ts
-
 export interface CreateEmploymentDTO {
   id_type_job: number;
   id_profession: number;
@@ -155,8 +171,25 @@ export interface CreateEmploymentDTO {
   company: string;
   salary_min: number;
   salary_max: number;
-  // publication_date ha sido eliminada
   status: "Open" | "Closed";
   id_location: number;
 }
 
+export interface SkillCreate {
+  name: string;
+}
+
+export interface SkillResponse {
+  id_skill: number;
+  name: string;
+}
+
+export interface UserSkillCreate {
+  id_user: number;
+  id_skill: number;
+}
+
+export interface UserSkillWithName {
+  id_skill: number;
+  name: string;
+}
