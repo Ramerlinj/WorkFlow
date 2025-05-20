@@ -6,10 +6,10 @@ from app.database.conexion import Base
 class User(Base):
     __tablename__ = 'USERS'
 
-    id_user = Column('ID_USER', Integer, primary_key=True, autoincrement=True)
+    id_user = Column('ID_USER', Integer, primary_key=True, autoincrement=True, index=True)
     id_profession = Column('ID_PROFESSION', Integer, ForeignKey('PROFESSIONS.ID_PROFESSION'), nullable=False)
-    username = Column('USERNAME', String(50), nullable=False, unique=True)
-    email = Column('EMAIL', String(100), nullable=False, unique=True)
+    username = Column('USERNAME', String(50), nullable=False, unique=True, index=True)
+    email = Column('EMAIL', String(100), nullable=False, unique=True, index=True)
     hash_password = Column('HASH_PASSWORD', String(255), nullable=False)
     first_name = Column('FIRST_NAME', String(50), nullable=False)
     middle_name = Column('MIDDLE_NAME', String(50), nullable=True)

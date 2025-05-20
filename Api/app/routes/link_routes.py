@@ -5,6 +5,8 @@ from typing import List
 from app.database.conexion import SessionLocal
 from app.models.link import Link
 from app.schemas.links import LinkCreate, LinkResponse
+from app.models.link_type import LinkType
+from app.schemas.link_types import LinkTypeResponse
 
 
 router = APIRouter()
@@ -14,6 +16,11 @@ def get_db():
         yield db
     finally:
         db.close()
+
+@router.get("/link_types", response_model=List[LinkTypeResponse])
+def get_link_types(db: Session = Depends(get_db)):
+    link_types = db.query(LinkType).all()
+    return link_types
 
 @router.post("/link", response_model=LinkResponse, status_code=status.HTTP_201_CREATED)
 def create_link(link: LinkCreate, db: Session = Depends(get_db)):

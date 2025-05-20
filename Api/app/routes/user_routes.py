@@ -38,9 +38,21 @@ def get_db():
     finally:
         db.close()
 
+
+@router.get("/user/check-availability")
+def check_availability(username: str = None, email: str = None, db: Session = Depends(get_db)):
+    if username:
+        if db.query(User).filter_by(username=username).first():
+            return {"username": "El nombre de usuario ya está en uso"}
+    if email:
+        if db.query(User).filter_by(email=email).first():
+            return {"email": "El correo electrónico ya está en uso"}
+    return {"available": "Disponible"}
+
+
 @router.get("/user/{username}", response_model=UserFullResponse)
 def get_user_full(username: str, db: Session = Depends(get_db)):
-    # 1) Query con joinedload de todas las relaciones
+    
     user = (
         db.query(User)
         .options(
