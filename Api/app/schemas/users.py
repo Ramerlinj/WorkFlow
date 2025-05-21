@@ -33,3 +33,11 @@ class UserUpdate(BaseModel):
     second_surname: Optional[str] = None
     date_of_birth: Optional[date] = None
     direction: Optional[str] = None
+
+class UserLogin(BaseModel):
+    username: str
+    password: str
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str

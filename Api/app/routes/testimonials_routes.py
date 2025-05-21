@@ -1,13 +1,25 @@
+# app/routers/testimonials.py
 
 from fastapi import APIRouter, HTTPException, Depends, status
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from app.database.conexion import SessionLocal
 from app.models.testimonials import Testimonial
-from app.schemas.testimonials import TestimonialCreate, TestimonialUpdate, TestimonialResponse, TestimonialCommentResponse
+from app.models.testimonial_comment import TestimonialComment
 from app.models.user import User
-from app.schemas.testimonial_comment import TestimonialCommentCreate, TestimonialCommentResponse
+from app.schemas.testimonials import (
+    TestimonialCreate,
+    TestimonialUpdate,
+    TestimonialResponse,
+)
+from app.schemas.testimonial_comment import (
+    TestimonialCommentCreate,
+    TestimonialCommentResponse,
+)
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/testimonials",
+    tags=["testimonials"]
+)
 
 def get_db():
     db = SessionLocal()
@@ -16,112 +28,151 @@ def get_db():
     finally:
         db.close()
 
-@router.get("/user/{id_user_source}/testimonials", response_model=list[TestimonialResponse])
-def get_testimonials(id_user_source: int, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.id_user == id_user_source).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+# Listar todos los testimonios
+@router.get("/", response_model=list[TestimonialResponse])
+def get_testimonials(
+    db: Session = Depends(get_db)
+):
+    testimonials = (
+        db.query(Testimonial)
+          .options(
+            joinedload(Testimonial.user_source),
+            joinedload(Testimonial.comments).joinedload(TestimonialComment.user)
+          )
+          .all()
+    )
+    return testimonials  # devuelve [] si no hay
 
-    testimonials = db.query(Testimonial).filter(Testimonial.id_user_source == id_user_source).all()
 
-    return testimonials
-    
-@router.get("/testimonials/{testimonial_id}", response_model=TestimonialResponse)
-def get_testimonial(testimonial_id: int, db: Session = Depends(get_db)):
-    testimonial = db.query(Testimonial).filter(Testimonial.id_testimonial == testimonial_id).first()
+# Obtener detalle de un testimonio
+@router.get("/{testimonial_id}", response_model=TestimonialResponse)
+def get_testimonial(
+    testimonial_id: int,
+    db: Session = Depends(get_db)
+):
+    testimonial = (
+        db.query(Testimonial)
+          .options(
+            joinedload(Testimonial.user_source),
+            joinedload(Testimonial.comments).joinedload(TestimonialComment.user),
+          )
+          .filter(Testimonial.id_testimonial == testimonial_id)
+          .first()
+    )
     if not testimonial:
-        raise HTTPException(status_code=404, detail="Testimonio no encontrado")
+        raise HTTPException(404, "Testimonio no encontrado")
     return testimonial
 
-@router.get("/comment/{comment_id}", response_model=TestimonialCommentResponse)
-def get_comment(comment_id: int, db: Session = Depends(get_db)):
-    comment = db.query(TestimonialComment).filter(TestimonialComment.id_comment == comment_id).first()
-    if not comment:
-        raise HTTPException(status_code=404, detail="Comentario no encontrado.")
-    return TestimonialCommentResponse(
-        id_comment=comment.id_comment,
-        id_user=comment.id_user,
-        comment=comment.comment,
-        created_at=comment.created_at
-    )
 
+# Crear un testimonio
+@router.post("/", response_model=TestimonialResponse, status_code=status.HTTP_201_CREATED)
+def create_testimonial(
+    data: TestimonialCreate,
+    db: Session = Depends(get_db)
+):
+    # Validar usuarios
+    if not db.query(User).filter(User.id_user == data.id_user_source).first():
+        raise HTTPException(404, "Usuario origen no encontrado")
 
-@router.post("/testimonials", response_model=TestimonialResponse)
-def create_testimonial(data: TestimonialCreate, db: Session = Depends(get_db)):
-
-    # Usamos el id_user_source enviado en el cuerpo del request
-    id_user_source = data.id_user_source  # Este ID proviene directamente del frontend
-
-    # Creamos el testimonio
-    new_testimonial = Testimonial(
-        id_user_source=id_user_source,
-        id_user_target=data.id_user_target,
-        title=data.title,
-        description=data.description,
-        rating=data.rating,
-    )
-
-    # Guardamos el nuevo testimonio en la base de datos
+    new_testimonial = Testimonial(**data.dict(exclude_unset=True))
     db.add(new_testimonial)
     db.commit()
     db.refresh(new_testimonial)
-
+    # Recargar relaciones
+    db.refresh(new_testimonial.user_source)
     return new_testimonial
 
-@router.put("/testimonials/{testimonial_id}", response_model=TestimonialResponse)
-def update_testimonial(testimonial_id: int, data: TestimonialUpdate, db: Session = Depends(get_db)):
-    db_testimonial = db.query(Testimonial).filter(Testimonial.id_testimonial == testimonial_id).first()
-    if not db_testimonial:
-        raise HTTPException(status_code=404, detail="Testimonio no encontrado")
 
-    if data.title is not None:
-        db_testimonial.title = data.title
-    if data.description is not None:
-        db_testimonial.description = data.description
-    if data.rating is not None:
-        db_testimonial.rating = data.rating
-    if data.likes is not None:
-        db_testimonial.likes = data.likes
+# Actualizar testimonio
+@router.put("/{testimonial_id}", response_model=TestimonialResponse)
+def update_testimonial(
+    testimonial_id: int,
+    data: TestimonialUpdate,
+    db: Session = Depends(get_db)
+):
+    t = db.query(Testimonial).filter(Testimonial.id_testimonial == testimonial_id).first()
+    if not t:
+        raise HTTPException(404, "Testimonio no encontrado")
+
+    for field, value in data.dict(exclude_unset=True).items():
+        setattr(t, field, value)
 
     db.commit()
-    db.refresh(db_testimonial)
-    return db_testimonial    
+    db.refresh(t)
+    # Recargar relaciones
+    db.refresh(t.user_source)
+    return t
 
-# Eliminar un testimonio
-@router.delete("/testimonials/{id_testimonial}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_testimonial(id_testimonial: int, db: Session = Depends(get_db)):
-    test = db.query(Testimonial).filter(Testimonial.id_testimonial == id_testimonial).first()
-    if not test:
-        raise HTTPException(status_code=404, detail="Testimonio no encontrado")
 
-    db.delete(test)
+# Eliminar testimonio
+@router.delete("/{testimonial_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_testimonial(
+    testimonial_id: int,
+    db: Session = Depends(get_db)
+):
+    t = db.query(Testimonial).filter(Testimonial.id_testimonial == testimonial_id).first()
+    if not t:
+        raise HTTPException(404, "Testimonio no encontrado")
+    db.delete(t)
     db.commit()
-
     return
 
-@router.put("/comment/{comment_id}", response_model=TestimonialCommentResponse)
-def update_comment(comment_id: int, updated_data: TestimonialCommentCreate, db: Session = Depends(get_db)):
-    comment = db.query(TestimonialComment).filter(TestimonialComment.id_comment == comment_id).first()
-    if not comment:
-        raise HTTPException(status_code=404, detail="Comentario no encontrado.")
 
-    comment.comment = updated_data.comment
-    comment.id_user = updated_data.id_user
+# Crear comentar
+
+@router.post("/comment", response_model=TestimonialCommentResponse, status_code=status.HTTP_201_CREATED)
+def create_comment(
+    data: TestimonialCommentCreate,
+    db: Session = Depends(get_db)
+):
+    if not db.query(Testimonial).filter(Testimonial.id_testimonial == data.id_testimonial).first():
+        raise HTTPException(404, "Testimonio no encontrado")
+    if not db.query(User).filter(User.id_user == data.id_user).first():
+        raise HTTPException(404, "Usuario no encontrado")
+
+    new_cm = TestimonialComment(**data.dict())
+    db.add(new_cm)
     db.commit()
-    db.refresh(comment)
-    return TestimonialCommentResponse(
-        id_comment=comment.id_comment,
-        id_user=comment.id_user,
-        comment=comment.comment,
-        created_at=comment.created_at
+    db.refresh(new_cm)
+
+    # Cargar la relación del usuario con joinedload
+    comment_with_user = (
+        db.query(TestimonialComment)
+        .options(joinedload(TestimonialComment.user))
+        .filter(TestimonialComment.id_comment == new_cm.id_comment)
+        .first()
     )
 
+    return comment_with_user
 
+
+# Actualizar comentario
+@router.put("/comment/{comment_id}", response_model=TestimonialCommentResponse)
+def update_comment(
+    comment_id: int,
+    data: TestimonialCommentCreate,
+    db: Session = Depends(get_db)
+):
+    cm = db.query(TestimonialComment).filter(TestimonialComment.id_comment == comment_id).first()
+    if not cm:
+        raise HTTPException(404, "Comentario no encontrado")
+    cm.comment = data.comment
+    cm.id_user = data.id_user
+    db.commit()
+    db.refresh(cm)
+    db.refresh(cm.user)
+    return cm
+
+
+# Eliminar comentario
 @router.delete("/comment/{comment_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_comment(comment_id: int, db: Session = Depends(get_db)):
-    comment = db.query(TestimonialComment).filter(TestimonialComment.id_comment == comment_id).first()
-    if not comment:
-        raise HTTPException(status_code=404, detail="Comentario no encontrado.")
-    db.delete(comment)
+def delete_comment(
+    comment_id: int,
+    db: Session = Depends(get_db)
+):
+    cm = db.query(TestimonialComment).filter(TestimonialComment.id_comment == comment_id).first()
+    if not cm:
+        raise HTTPException(404, "Comentario no encontrado")
+    db.delete(cm)
     db.commit()
     return

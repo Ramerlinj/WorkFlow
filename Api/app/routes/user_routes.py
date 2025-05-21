@@ -5,14 +5,10 @@ from passlib.context import CryptContext
 
 from app.database.conexion import SessionLocal
 from app.models.user import User
-from app.models.skill import Skill
-from app.models.testimonials import Testimonial
 from app.models.user_skills import UserSkill
 
 from app.schemas.user_full import UserFullResponse
 from app.schemas.professions import ProfessionResponse
-from app.schemas.countries import CountryResponse
-from app.schemas.locations import LocationResponse
 from app.schemas.profile import ProfileResponse
 from app.schemas.skills import SkillResponse
 from app.schemas.links import LinkResponse
@@ -121,38 +117,6 @@ def get_user_full(username: str, db: Session = Depends(get_db)):
     ]
 
     return resp
-
-@router.post("/user/", response_model=UserFullResponse, status_code=status.HTTP_201_CREATED)
-def create_user(data: UserCreate, db: Session = Depends(get_db)):
-    # 1. Verifica unicidad
-    if db.query(User).filter_by(username=data.username).first():
-        raise HTTPException(status_code=400, detail="Username ya existe")
-    if db.query(User).filter_by(email=data.email).first():
-        raise HTTPException(status_code=400, detail="Email ya está en uso")
-
-    # 2. Hashea la contraseña
-    hashed_pw = hash_password(data.password)
-
-    # 3. Crea nuevo objeto
-    new_user = User(
-        id_profession=data.id_profession,
-        username=data.username,
-        email=data.email,
-        hash_password=hashed_pw,
-        first_name=data.first_name,
-        middle_name=data.middle_name,
-        first_surname=data.first_surname,
-        second_surname=data.second_surname,
-        date_of_birth=data.date_of_birth,
-        direction=data.direction,
-        creation_date=func.now()
-    )
-
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-
-    return get_user_full(new_user.username, db)
 
 @router.put("/user/{username}", response_model=UserFullResponse)
 def update_user(username: str, data: UserUpdate, db: Session = Depends(get_db)):

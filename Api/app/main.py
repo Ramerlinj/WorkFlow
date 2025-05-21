@@ -7,6 +7,7 @@ from app.routes import work_experience_routes
 from app.routes import employment_routes
 from app.routes import link_routes
 from app.routes import profession_routes
+from app.routes import auth_router
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
@@ -31,5 +32,7 @@ app.include_router(work_experience_routes.router, tags=["work_experience"])
 app.include_router(employment_routes.router, tags=["employments"])
 app.include_router(link_routes.router, tags=["links"])
 app.include_router(profession_routes.router, tags=["professions"])
+app.include_router(auth_router.router, prefix="/auth", tags=["auth"])
+
 
 

@@ -12,6 +12,7 @@ user = 'Ramerlin'
 password = '1234'
 port = os.getenv("DB_PORT")
 driver = os.getenv("ODBC_DRIVER")
+pool_pre_ping=True
 
 if None in [server, database, user, password, port, driver]:
     raise Exception("Faltan variables de entorno. Revisa tu archivo .env")
