@@ -3,14 +3,14 @@
 import { useState } from "react"
 import { Heart, MessageCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import type { Testimonial } from "./testimonials"
+import { TestimonialResponse } from "@/types/interfaces"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils"
 import { CommentsDialog } from "./comments-dialog"
 import { StarRating } from "./star-rating"
 
 interface TestimonialCardProps {
-  testimonial: Testimonial
+  testimonial: TestimonialResponse
   onLike: (id: string) => void
   onAddComment: (id: string, comment: string) => void
 }
@@ -32,11 +32,11 @@ export function TestimonialCard({ testimonial, onLike, onAddComment }: Testimoni
       <div className="flex items-start justify-between p-6">
         <div className="flex items-center gap-3">
           <Avatar className="h-10 w-10 bg-[#DDE6F6] text-[#112D4E]">
-            <AvatarFallback>{getInitials(testimonial.author)}</AvatarFallback>
+            <AvatarFallback>{getInitials(testimonial.user_source.first_name)}</AvatarFallback>
           </Avatar>
           <div>
-            <h3 className="font-medium text-[#112D4E]">{testimonial.author}</h3>
-            <p className="text-sm text-[#8E8E8E]">{testimonial.date}</p>
+            <h3 className="font-medium text-[#112D4E]">{testimonial.user_source.first_name} {testimonial.user_source.second_surname} {testimonial.user_source.first_surname} {testimonial.user_source.second_surname}</h3>
+            <p className="text-sm text-[#8E8E8E]">{testimonial.user_source.username}</p>
           </div>
         </div>
         <StarRating rating={testimonial.rating} />
@@ -51,10 +51,10 @@ export function TestimonialCard({ testimonial, onLike, onAddComment }: Testimoni
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => onLike(testimonial.id)}
-          className={cn("flex items-center gap-1 text-[#8E8E8E]", testimonial.liked && "text-red-500")}
+          onClick={() => onLike(testimonial.id_testimonial.toString())}
+          className={cn("flex items-center gap-1 text-[#8E8E8E]", testimonial.likes && "text-red-500")}
         >
-          <Heart className={cn("h-4 w-4", testimonial.liked && "fill-current")} />
+          <Heart className={cn("h-4 w-4", testimonial.likes && "fill-current")} />
           <span>{testimonial.likes}</span>
         </Button>
 
@@ -65,7 +65,7 @@ export function TestimonialCard({ testimonial, onLike, onAddComment }: Testimoni
           className="flex items-center gap-1 text-[#8E8E8E]"
         >
           <MessageCircle className="h-4 w-4" />
-          <span>{testimonial.comments.length}</span>
+          <span>{testimonial.comments?.length}</span>
         </Button>
       </div>
 

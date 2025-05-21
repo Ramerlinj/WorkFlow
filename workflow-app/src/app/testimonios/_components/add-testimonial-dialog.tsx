@@ -12,16 +12,16 @@ import {
 import { PlusCircle } from "lucide-react"
 import { useState } from "react"
 import { AddTestimonialForm } from "./add-testimonial-form"
-import type { Testimonial } from "./testimonials"
+import { TestimonialResponse } from "@/types/interfaces"
 
 interface AddTestimonialDialogProps {
-  onSubmit: (testimonial: Omit<Testimonial, "id" | "likes" | "liked" | "date" | "comments">) => void
+  onSubmit: (testimonial: TestimonialResponse) => void
 }
 
 export function AddTestimonialDialog({ onSubmit }: AddTestimonialDialogProps) {
   const [open, setOpen] = useState(false)
 
-  const handleSubmit = (testimonial: Omit<Testimonial, "id" | "likes" | "liked" | "date" | "comments">) => {
+  const handleSubmit = (testimonial: TestimonialResponse) => {
     onSubmit(testimonial)
     setOpen(false)
   }

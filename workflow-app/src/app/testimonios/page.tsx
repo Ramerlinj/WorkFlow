@@ -1,4 +1,4 @@
-import { Testimonials } from "@/app/testimonios/_components/testimonials"
+import Testimonials from "@/app/testimonios/_components/testimonials"
 
 export default function TestimonialsPage() {
   return (
@@ -12,7 +12,7 @@ export default function TestimonialsPage() {
           valoramos cada opinión.
         </p>
 
-        <Testimonials />
+        <Testimonials authenticatedUserId={1} />
       </div>
     </main>
   )

@@ -1,171 +1,173 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { TestimonialCard } from "./testimonial-card"
-import { AddTestimonialDialog } from "./add-testimonial-dialog"
+import React, { useState, useEffect } from "react";
+import { TestimonialCard } from "./testimonial-card";
+import { AddTestimonialDialog } from "./add-testimonial-dialog";
+import type { TestimonialResponse, TestimonialComment } from "@/types/interfaces";
+import {
+  getAllTestimonials,
+  createTestimonial as apiCreateTestimonial,
+  createComment as apiCreateComment,
+  updateTestimonial as apiUpdateTestimonial,
+} from "@/lib/testimonialsServices";
+import axios from "axios";
 
-// Tipos para los testimonios
-export type Comment = {
-  id: string
-  author: string
-  content: string
-  date: string
+interface TestimonialsListProps {
+  authenticatedUserId: number;
+}
+// Función de type guard para Comment
+function isTestimonialComment(obj: TestimonialComment): obj is TestimonialComment {
+  return (
+    obj &&
+    typeof obj.id_comment === 'number' &&
+    typeof obj.id_user === 'number' &&
+    typeof obj.id_testimonial === 'number' &&
+    typeof obj.comment === 'string' &&
+    typeof obj.created_at === 'string' &&
+    typeof obj.user === 'object'
+  );
 }
 
-export type Testimonial = {
-  id: string
-  author: string
-  title: string
-  description: string
-  rating: number
-  likes: number
-  liked: boolean
-  date: string
-  comments: Comment[]
-}
+export default function TestimonialsList({ authenticatedUserId }: TestimonialsListProps) {
+  const [testimonials, setTestimonials] = useState<TestimonialResponse[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-// Datos de ejemplo
-const initialTestimonials: Testimonial[] = [
-  {
-    id: "1",
-    author: "María García",
-    title: "Servicio excepcional",
-    description:
-      "La atención al cliente fue impecable. El equipo respondió rápidamente a todas mis preguntas y me ayudó a resolver mi problema en tiempo récord.",
-    rating: 5,
-    likes: 24,
-    liked: false,
-    date: "15 de abril, 2024",
-    comments: [
-      {
-        id: "c1",
-        author: "Carlos Mendoza",
-        content: "Totalmente de acuerdo, su servicio es inigualable.",
-        date: "16 de abril, 2024",
-      },
-    ],
-  },
-  {
-    id: "2",
-    author: "Juan Pérez",
-    title: "Producto de alta calidad",
-    description:
-      "He probado muchos productos similares, pero este supera todas mis expectativas. La calidad es excelente y el precio es muy competitivo.",
-    rating: 4,
-    likes: 18,
-    liked: false,
-    date: "10 de abril, 2024",
-    comments: [],
-  },
-  {
-    id: "3",
-    author: "Ana Martínez",
-    title: "Entrega rápida y segura",
-    description:
-      "Recibí mi pedido antes de lo esperado y en perfectas condiciones. El empaque era seguro y el producto llegó intacto.",
-    rating: 5,
-    likes: 32,
-    liked: true,
-    date: "5 de abril, 2024",
-    comments: [
-      {
-        id: "c2",
-        author: "Roberto Sánchez",
-        content: "También recibí mi pedido muy rápido. ¡Excelente servicio de envío!",
-        date: "6 de abril, 2024",
-      },
-      {
-        id: "c3",
-        author: "Laura Díaz",
-        content: "¿Cuánto tiempo tardó en llegar exactamente?",
-        date: "7 de abril, 2024",
-      },
-    ],
-  },
-]
-
-export function Testimonials() {
-  const [testimonials, setTestimonials] = useState<Testimonial[]>(initialTestimonials)
-  //const [showAddForm, setShowAddForm] = useState(false)
-
-  // Función para añadir un nuevo testimonio
-  const addTestimonial = (newTestimonial: Omit<Testimonial, "id" | "likes" | "liked" | "date" | "comments">) => {
-    const testimonial: Testimonial = {
-      ...newTestimonial,
-      id: Date.now().toString(),
-      likes: 0,
-      liked: false,
-      date: new Date().toLocaleDateString("es-ES", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      }),
-      comments: [],
-    }
-
-    setTestimonials([testimonial, ...testimonials])
-  }
-
-  // Función para dar like a un testimonio
-  const handleLike = (id: string) => {
-    setTestimonials(
-      testimonials.map((testimonial) => {
-        if (testimonial.id === id) {
-          return {
-            ...testimonial,
-            likes: testimonial.liked ? testimonial.likes - 1 : testimonial.likes + 1,
-            liked: !testimonial.liked,
-          }
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
+    getAllTestimonials()
+      .then((data) => {
+        if (!Array.isArray(data)) {
+          console.error("Datos de getAllTestimonials no son un array:", data);
+          setError("Datos inválidos recibidos del servidor");
+          setTestimonials([]);
+          return;
         }
-        return testimonial
-      }),
-    )
-  }
+        const normalized = data.map((t) => ({
+          ...t,
+          comments: Array.isArray(t.comments) ? t.comments : [],
+        }));
+        setTestimonials(normalized);
+      })
+      .catch((error) => {
+        const message = axios.isAxiosError(error)
+          ? error.response?.data?.message || "Error al cargar testimonios"
+          : "Error desconocido al cargar testimonios";
+        setError(message);
+        console.error("Error en getAllTestimonials:", error);
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
-  // Función para añadir un comentario
-  const addComment = (testimonialId: string, comment: string) => {
-    if (!comment.trim()) return
-
-    const newComment: Comment = {
-      id: Date.now().toString(),
-      author: "Usuario",
-      content: comment,
-      date: new Date().toLocaleDateString("es-ES", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      }),
+  const addTestimonial = async (
+    newData: Omit<TestimonialResponse, "id_testimonial" | "likes" | "created_at" | "comments">
+  ) => {
+    try {
+      const created = await apiCreateTestimonial({
+        ...newData,
+        title: newData.title || "",
+        id_user_source: authenticatedUserId,
+        rating: newData.rating || 5,
+        description: newData.description || "",
+      });
+      setTestimonials((prev) => [
+        { ...created, comments: Array.isArray(created.comments) ? created.comments : [] },
+        ...prev,
+      ]);
+      setError(null);
+    } catch (error) {
+      const message = axios.isAxiosError(error)
+        ? error.response?.data?.message || "Error al crear testimonio"
+        : "Error desconocido al crear testimonio";
+      setError(message);
+      console.error("Error al crear testimonio:", error);
     }
+  };
 
-    setTestimonials(
-      testimonials.map((testimonial) => {
-        if (testimonial.id === testimonialId) {
-          return {
-            ...testimonial,
-            comments: [...testimonial.comments, newComment],
-          }
-        }
-        return testimonial
-      }),
-    )
-  }
+  const handleLike = async (id: number) => {
+    const testimonial = testimonials.find((t) => t.id_testimonial === id);
+    if (!testimonial) return;
+
+    const newLikes = testimonial.likes + 1;
+    try {
+      const updated = await apiUpdateTestimonial(id, { likes: newLikes });
+      setTestimonials((prev) =>
+        prev.map((t) => (t.id_testimonial === id ? updated : t))
+      );
+      setError(null);
+    } catch (error) {
+      const message = axios.isAxiosError(error)
+        ? error.response?.data?.message || "Error al actualizar likes"
+        : "Error desconocido al actualizar likes";
+      setError(message);
+      console.error("Error al actualizar likes:", error);
+    }
+  };
+
+  const addComment = async (testimonialId: number, commentText: string) => {
+    if (!commentText.trim()) {
+      setError("El comentario no puede estar vacío");
+      return;
+    }
+  
+    try {
+      const createdComment = await apiCreateComment({
+        id_user: authenticatedUserId,
+        id_testimonial: testimonialId,
+        comment: commentText,
+      });
+  
+      console.log("Comentario recibido:", createdComment);
+  
+      if (!isTestimonialComment(createdComment)) {
+        throw new Error("Estructura de comentario inválida del servidor");
+      }
+  
+      setTestimonials((prev) =>
+        prev.map((t) => 
+          t.id_testimonial === testimonialId
+            ? {
+                ...t,
+                comments: [...(t.comments || []), createdComment]
+              }
+            : t
+        )
+      );
+      setError(null);
+    } catch (error) {
+      const message = error instanceof Error 
+        ? error.message 
+        : "Error desconocido al agregar comentario";
+      setError(message);
+      console.error("Error al crear comentario:", error);
+    }
+  };
+
+  if (loading) return <div className="text-center">Cargando testimonios...</div>;
+  if (error) return <div className="text-red-500 text-center">{error}</div>;
 
   return (
     <div className="space-y-8">
+      {error && <div className="text-red-500 text-center mb-4">{error}</div>}
       <div className="flex justify-end">
         <AddTestimonialDialog onSubmit={addTestimonial} />
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {testimonials.map((testimonial) => (
-          <TestimonialCard
-            key={testimonial.id}
-            testimonial={testimonial}
-            onLike={handleLike}
-            onAddComment={addComment}
-          />
-        ))}
+        {testimonials.length === 0 ? (
+          <div className="text-center">No hay testimonios disponibles.</div>
+        ) : (
+          testimonials.map((testimonial) => (
+            <TestimonialCard
+              key={testimonial.id_testimonial}
+              testimonial={testimonial}
+              onLike={() => handleLike(testimonial.id_testimonial)}
+              onAddComment={(comment) => addComment(testimonial.id_testimonial, comment)}
+            />
+          ))
+        )}
       </div>
     </div>
-  )
+  );
 }
