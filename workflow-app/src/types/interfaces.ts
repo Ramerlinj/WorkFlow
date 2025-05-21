@@ -144,23 +144,26 @@ export interface JobApplication {
   employment?: Employment;
 }
 
-export interface Testimonial {
+
+export interface TestimonialComment {
+  id_comment: number;
+  id_user: number;
+  id_testimonial: number;
+  comment: string;
+  created_at: string;
+  user: User;
+}
+
+export interface TestimonialResponse {
   id_testimonial: number;
   id_user_source: number;
-  id_user_target: number;
   title: string;
   description: string;
   rating: number;
   likes: number;
   created_at: string;
-}
-
-export interface TestimonialComment {
-  id_comment: number;
-  id_testimonial: number;
-  id_user: number;
-  comment: string;
-  created_at: string;
+  user_source: User;
+  comments: TestimonialComment[];
 }
 
 export interface CreateEmploymentDTO {
