@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Building, Clock, Calendar } from "lucide-react"
-import type { WorkExperience } from "@/types/user"
+import type { WorkExperience } from "@/types/interfaces"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Button } from "@/components/ui/button"

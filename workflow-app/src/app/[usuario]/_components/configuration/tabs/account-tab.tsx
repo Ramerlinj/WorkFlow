@@ -6,19 +6,21 @@ import { Button } from "@/components/ui/button"
 import { Lock, Trash2 } from "lucide-react"
 
 interface AccountTabProps {
-  isPublicProfile: boolean
-  setIsPublicProfile: (value: boolean) => void
-  onOpenPasswordDialog: () => void
-  onOpenDeleteAccountDialog: () => void
-  onSave: () => void
+  isPublicProfile?: boolean
+  setIsPublicProfile?: (value: boolean) => void
+  onChangePassword?: () => void
+  onDeleteAccount?: () => void
+  onSave?: () => void
 }
 
 export function AccountTab({
-  isPublicProfile,
-  setIsPublicProfile,
-  onOpenPasswordDialog,
-  onOpenDeleteAccountDialog,
-  onSave,
+  isPublicProfile = false,
+  setIsPublicProfile = () => {},
+  onChangePassword = () => {},
+  onDeleteAccount = () => {},
+  onSave = () => {
+    
+  },
 }: AccountTabProps) {
   return (
     <div className="space-y-6">
@@ -50,10 +52,10 @@ export function AccountTab({
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex gap-4">
-            <Button variant="outline" onClick={onOpenPasswordDialog}>
+            <Button variant="outline" onClick={onChangePassword}>
               <Lock className="mr-2 h-4 w-4" /> Cambiar contraseña
             </Button>
-            <Button variant="destructive" onClick={onOpenDeleteAccountDialog}>
+            <Button variant="destructive" onClick={onDeleteAccount}>
               <Trash2 className="mr-2 h-4 w-4" /> Eliminar cuenta
             </Button>
           </div>

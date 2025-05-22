@@ -10,3 +10,4 @@ class UserSkillCreate(UserSkillBase):
 class UserSkillResponse(UserSkillBase):
     class Config:
         from_attributes = True
+

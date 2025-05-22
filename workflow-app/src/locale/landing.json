@@ -1,0 +1,187 @@
+{
+    "HERO": {
+        "BADGE": "Encuentra tu empleo ideal",
+        "TITLE": "",
+        "DESCRIPTION": "Workflow conecta profesionales talentosos con las mejores empresas. Encuentra el trabajo de tus sueños o el candidato perfecto para tu equipo.",
+        "IMAGES":[
+            {
+                "id":1,
+                "SRC": "/avatars/avatar-1.jpg",
+                "ALT": "Avatar",
+                "WIDTH": 40,
+                "HEIGHT": 40
+            },
+            {
+                "id":2,
+                "SRC": "/avatars/avatar-2.jpg",
+                "ALT": "Avatar",
+                "WIDTH": 40,
+                "HEIGHT": 40
+            },
+            {
+                "id":3,
+                "SRC": "/avatars/avatar-3.jpg",
+                "ALT": "Avatar",
+                "WIDTH": 40,
+                "HEIGHT": 40
+            },
+            {
+                "id":4,
+                "SRC": "/avatars/avatar-4.jpg",
+                "ALT": "Avatar",
+                "WIDTH": 40,
+                "HEIGHT": 40
+            },
+            {
+                "id":5,
+                "SRC": "/avatars/avatar-5.jpg",
+                "ALT": "Avatar",
+                "WIDTH": 40,
+                "HEIGHT": 40
+            }
+        ],
+        "TEXT_BUTTON":[
+            {
+                "TEXT": "Buscar empleo",
+                "LINK": "/empleos"
+            },
+            {
+                "TEXT": "Publicar pasantes",
+                "LINK": "/empleos"
+
+            }
+        ]
+    },
+    "ABOUT_US": {
+        "BADGE": "Sobre WorkFlow",
+        "TITLE": "Conectamos talento con oportunidades laborales excepcionales",
+        "DESCRIPTION": "En Workflow, nos dedicamos a transformar la manera en que las personas encuentran empleo y las empresas descubren talento.",
+        "MISION":[
+            {
+                "TITLE":"Misión",
+                "TEXT": "Nuestra misión es conectar a profesionales talentosos con las mejores oportunidades laborales, facilitando el crecimiento profesional y empresarial."
+            }
+        ],
+        "VISION":[
+            {
+                "TITLE":"Visión",
+                "TEXT": "Ser la plataforma líder en la conexión de talento y oportunidades, transformando positivamente el mercado laboral global."
+            }
+        ],
+        "VALUES":[
+            {
+                "TITLE":"Valores",
+                "TEXT": "Excelencia, transparencia, innovación y compromiso con el éxito de candidatos y empresas son los valores que guían cada acción que tomamos."
+            }
+        ]
+    },
+    "SERVICES": {
+        "DATA":[
+            {
+                "BADGE": "Nuestros Servicios",
+                "TITLE": "Soluciones completas para tu carrera profesional",
+                "DESCRIPTION": "Ofrecemos servicios integrales tanto para candidatos como para empresas que buscan talento."
+            }
+        ],
+        "ITEMS":[
+            {
+              "ID": 1,
+              "ICON": "Search",
+              "TITLE": "Búsqueda de Empleo",
+              "DESCRIPTION": "Accede a miles de ofertas laborales filtradas según tus habilidades y preferencias profesionales."
+            },
+            {
+              "ID": 2,
+              "ICON": "FileText",
+              "TITLE": "Optimización de CV",
+              "DESCRIPTION": "Mejora tu currículum para destacar entre los candidatos y aumentar tus posibilidades."
+            },
+            {
+              "ID": 3,
+              "ICON": "Award",
+              "TITLE": "Evaluación de Habilidades",
+              "DESCRIPTION": "Evalúa y certifica tus competencias para demostrar tu valía a potenciales empleadores."
+            },
+            {
+              "ID": 4,
+              "ICON": "Users",
+              "TITLE": "Reclutamiento", 
+              "DESCRIPTION": "Servicios especializados para empresas que buscan el mejor talento para sus equipos."
+            },
+            {
+              "ID": 5,
+              "ICON": "Building",
+              "TITLE": "Employer Branding",
+              "DESCRIPTION": "Ayudamos a las empresas a construir una marca empleadora atractiva para el talento."
+            },
+            {
+              "ID": 6,
+              "ICON": "MessageSquare",
+              "TITLE": "Coaching Profesional",
+              "DESCRIPTION": "Asesoramiento personalizado para impulsar tu carrera y alcanzar tus metas profesionales."
+            }
+        ]
+    },
+
+    "WORK_PROCESS": {
+        "TITLE": "",
+        "DESCRIPTION": ""
+    },
+    "CATEGORY": {
+        "TITLE": "",
+        "DESCRIPTION": ""
+    },
+    "FEATURE_COMPANY": {
+        "BADGE": "Empresas Destacadas",
+        "TITLE": "Conectamos con las mejores empresas",
+        "SUBTITLE": "Miles de empresas líderes confían en Workflow para encontrar el mejor talento.",
+        "IMAGES": [
+            {
+                "SRC": "/svg/apple.svg",
+                "ALT": "Logo empresa",
+                "WIDTH": 80,
+                "HEIGHT": 60
+            },
+            {
+                "SRC": "/svg/google.svg",
+                "ALT": "Logo empresa",
+                "WIDTH": 70,
+                "HEIGHT": 60
+            },
+            {
+                "SRC": "/svg/microsoft.svg",
+                "ALT": "Logo empresa",
+                "WIDTH": 130,
+                "HEIGHT": 70
+            },
+            {
+                "SRC": "/svg/tesla-9.svg",
+                "ALT": "Logo empresa",
+                "WIDTH": 130,
+                "HEIGHT": 70
+            },
+            {
+                "SRC": "/svg/amazon.svg",
+                "ALT": "Logo empresa",
+                "WIDTH": 120,
+                "HEIGHT": 60
+            },
+            {
+                "SRC": "/svg/airbnb.svg",
+                "ALT": "Logo empresa",
+                "WIDTH": 100,
+                "HEIGHT": 60
+            }
+            
+        ] 
+        
+    },
+    "TESTIMONIALS": {
+        "TITLE": "",
+        "DESCRIPTION": ""
+    },
+    "CTA": {
+        "TITLE": "",
+        "DESCRIPTION": ""
+    }
+}

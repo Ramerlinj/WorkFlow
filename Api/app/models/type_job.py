@@ -9,3 +9,4 @@ class TypeJob(Base):
     name = Column('NAME', String(50), nullable=False, unique=True)
 
     employments = relationship('Employment', back_populates='type_job')
+    

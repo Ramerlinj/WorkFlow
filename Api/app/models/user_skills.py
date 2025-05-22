@@ -12,5 +12,3 @@ class UserSkill(Base):
     skill = relationship('Skill', back_populates='users')
 
 
-
-    #!YA CREE LA DB EN AZURE SOLO FALTA CORREGIR ALGUNOS ERRORES Y HACER LOS DEMAS ENDPOINTS
