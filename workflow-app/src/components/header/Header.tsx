@@ -21,7 +21,7 @@ const Header = () => {
             <div className="grid grid-cols-[auto_1fr_auto] items-center h-18 px-6 md:px-10 gap-4">
 
                 <div className="flex items-center gap-2">
-                    <Link href="/" aria-label="Ir al inicio">
+                    <Link href="/" aria-label="home page">
                         <Image
                             src={locale.NAVBAR.LOGO.SRC}
                             alt={locale.NAVBAR.LOGO.ALT}

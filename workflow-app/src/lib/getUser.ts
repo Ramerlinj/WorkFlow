@@ -1,16 +1,16 @@
-// src/lib/getUser.ts
 
-import { User } from "@/types/user";
+import type { User } from "@/types/interfaces";
 
 /**
- * 
  * @param username 
  * @returns 
  */
 
 export async function getUser(username: string): Promise<User | null> {
   try {
-    const response = await fetch(`http://localhost:5000/user/${username}`, {
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 5000)
+    const response = await fetch(`http://localhost:8000/user/${username}`, {
       cache: 'no-store' 
     });
 
@@ -19,6 +19,7 @@ export async function getUser(username: string): Promise<User | null> {
       return null;
     }
 
+    clearTimeout(timeoutId)
     const user: User = await response.json();
     return user;
   } catch (error) {

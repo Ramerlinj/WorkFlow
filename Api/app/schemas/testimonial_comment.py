@@ -1,16 +1,23 @@
+# app/schemas/testimonial_comment.py
 from pydantic import BaseModel, Field
 from datetime import datetime
+from app.schemas.users import UserResponse
 
 class TestimonialCommentBase(BaseModel):
     id_user: int
-    comment_text: str = Field(..., max_length=500)
+    id_testimonial: int
+    comment: str = Field(..., max_length=500)
 
 class TestimonialCommentCreate(TestimonialCommentBase):
     pass
 
+class TestimonialCommentUpdate(BaseModel):
+    comment: str = Field(..., max_length=500)
+
 class TestimonialCommentResponse(TestimonialCommentBase):
     id_comment: int
     created_at: datetime
+    user: UserResponse
 
     class Config:
         from_attributes = True

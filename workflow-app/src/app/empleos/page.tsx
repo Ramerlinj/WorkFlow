@@ -1,7 +1,13 @@
-export default function Empleos() {
+  "use client"
+
+  import { JobBoard } from "./_components/job-board"
+  import { Toaster } from "sonner"
+
+  export default function Home() {
     return (
-        <div className="">
-            <h1 className="text-secondary">Empleos</h1>
-        </div>
+      <main className="min-h-screen bg-[#F8F9FC]">
+        <JobBoard />
+        <Toaster />
+      </main>
     )
-}
+  } 

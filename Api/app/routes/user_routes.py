@@ -5,14 +5,10 @@ from passlib.context import CryptContext
 
 from app.database.conexion import SessionLocal
 from app.models.user import User
-from app.models.skill import Skill
-from app.models.testimonials import Testimonial
 from app.models.user_skills import UserSkill
 
 from app.schemas.user_full import UserFullResponse
 from app.schemas.professions import ProfessionResponse
-from app.schemas.countries import CountryResponse
-from app.schemas.locations import LocationResponse
 from app.schemas.profile import ProfileResponse
 from app.schemas.skills import SkillResponse
 from app.schemas.links import LinkResponse
@@ -38,9 +34,21 @@ def get_db():
     finally:
         db.close()
 
+
+@router.get("/user/check-availability")
+def check_availability(username: str = None, email: str = None, db: Session = Depends(get_db)):
+    if username:
+        if db.query(User).filter_by(username=username).first():
+            return {"username": "El nombre de usuario ya está en uso"}
+    if email:
+        if db.query(User).filter_by(email=email).first():
+            return {"email": "El correo electrónico ya está en uso"}
+    return {"available": "Disponible"}
+
+
 @router.get("/user/{username}", response_model=UserFullResponse)
 def get_user_full(username: str, db: Session = Depends(get_db)):
-    # 1) Query con joinedload de todas las relaciones
+    
     user = (
         db.query(User)
         .options(
@@ -61,7 +69,6 @@ def get_user_full(username: str, db: Session = Depends(get_db)):
     if not user:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
-    # 2) Mapeo de campos escalares
     resp = UserFullResponse(
         id_user=user.id_user,
         username=user.username,
@@ -72,6 +79,7 @@ def get_user_full(username: str, db: Session = Depends(get_db)):
         email=user.email,
         date_of_birth=user.date_of_birth,
         creation_date=user.creation_date,
+        direction=user.direction,
         profession=(ProfessionResponse.model_validate(user.profession, from_attributes=True)
                     if user.profession else None),
         profile=(ProfileResponse.model_validate(user.profile, from_attributes=True)
@@ -110,45 +118,13 @@ def get_user_full(username: str, db: Session = Depends(get_db)):
 
     return resp
 
-@router.post("/user/", response_model=UserFullResponse, status_code=status.HTTP_201_CREATED)
-def create_user(data: UserCreate, db: Session = Depends(get_db)):
-    # 1. Verifica unicidad
-    if db.query(User).filter_by(username=data.username).first():
-        raise HTTPException(status_code=400, detail="Username ya existe")
-    if db.query(User).filter_by(email=data.email).first():
-        raise HTTPException(status_code=400, detail="Email ya está en uso")
-
-    # 2. Hashea la contraseña
-    hashed_pw = hash_password(data.password)
-
-    # 3. Crea nuevo objeto
-    new_user = User(
-        id_profession=data.id_profession,
-        username=data.username,
-        email=data.email,
-        hash_password=hashed_pw,
-        first_name=data.first_name,
-        middle_name=data.middle_name,
-        first_surname=data.first_surname,
-        second_surname=data.second_surname,
-        date_of_birth=data.date_of_birth,
-        address=data.address,
-        creation_date=func.now()
-    )
-
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-
-    return get_user_full(new_user.username, db)
-
 @router.put("/user/{username}", response_model=UserFullResponse)
 def update_user(username: str, data: UserUpdate, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.username == username).first()
     if not user:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
-    for key, value in data.dict(exclude_unset=True).items():
+    for key, value in data.model_dump(exclude_unset=True).items():
         setattr(user, key, value)
 
     db.commit()

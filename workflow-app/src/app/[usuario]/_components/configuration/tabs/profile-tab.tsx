@@ -19,8 +19,12 @@ interface ProfileTabProps {
   setPreviewAvatar: (avatar: string | null) => void
   previewName: string | null
   setPreviewName: (name: string | null) => void
+  previewSecondName: string | null
+  setPreviewSecondName: (secondName: string | null) => void
   previewSurname: string | null
   setPreviewSurname: (surname: string | null) => void
+  previewSecondSurname: string | null
+  setPreviewSecondSurname: (secondSurname: string | null) => void
   previewUsername: string | null
   previewEmail: string | null
   setPreviewEmail: (email: string | null) => void
@@ -36,8 +40,12 @@ export function ProfileTab({
   setPreviewAvatar,
   previewName,
   setPreviewName,
+  previewSecondName,
+  setPreviewSecondName,
   previewSurname,
   setPreviewSurname,
+  previewSecondSurname,
+  setPreviewSecondSurname,
   previewUsername,
   previewEmail,
   setPreviewEmail,
@@ -87,7 +95,7 @@ export function ProfileTab({
                   {initial}
                 </AvatarFallback>
               </Avatar>
-              <label className="cursor-pointer flex items-center gap-2 px-4 py-2 rounded-md bg-muted hover:bg-muted/80 transition-colors">
+              <Label className="cursor-pointer flex items-center gap-2 px-4 py-2 rounded-md bg-muted hover:bg-muted/80 transition-colors">
                 <Upload className="w-4 h-4" />
                 <span className="text-sm">Subir imagen</span>
                 <Input
@@ -98,7 +106,7 @@ export function ProfileTab({
                   className="hidden"
                   readOnly
                 />
-              </label>
+              </Label>
             </div>
           </div>
 
@@ -130,7 +138,7 @@ export function ProfileTab({
                 >
                   <div className="grid grid-cols-4 gap-2 p-4 border rounded-md">
                     {Object.entries(bannerColors).map(([name, color]) => (
-                      <button
+                      <Button
                         key={name}
                         className="w-12 h-12 rounded-md flex items-center justify-center hover:scale-105 transition-transform"
                         style={{ backgroundColor: color }}
@@ -141,7 +149,7 @@ export function ProfileTab({
                         title={name}
                       >
                         {color === previewBannerColor && <Check className="text-white" />}
-                      </button>
+                      </Button>
                     ))}
                   </div>
                 </motion.div>
@@ -151,12 +159,19 @@ export function ProfileTab({
 
           <div className="space-y-2">
             <Label htmlFor="firstName">Nombre</Label>
-            <Input id="firstName" readOnly value={previewName || ""} onChange={(e) => setPreviewName(e.target.value)} />
+            <Input id="firstName" value={previewName || ""} onChange={(e) => setPreviewName(e.target.value)} />
           </div>
-
+          <div className="space-y-2">
+            <Label htmlFor="secondName">Segundo nombre</Label>
+            <Input id="secondName" value={previewSecondName || ""} onChange={(e) => setPreviewSecondName(e.target.value)} />
+          </div>
           <div className="space-y-2">
             <Label htmlFor="firstSurname">Apellido</Label>
-            <Input id="firstSurname" readOnly value={previewSurname || ""} onChange={(e) => setPreviewSurname(e.target.value)} />
+            <Input id="firstSurname" value={previewSurname || ""} onChange={(e) => setPreviewSurname(e.target.value)} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="secondSurname">Segundo apellido</Label>
+            <Input id="secondSurname" value={previewSecondSurname || ""} onChange={(e) => setPreviewSecondSurname(e.target.value)} />
           </div>
         </div>
 

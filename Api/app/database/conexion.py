@@ -8,10 +8,11 @@ load_dotenv()
 
 server = os.getenv("DB_SERVER")
 database = os.getenv("DB_NAME")
-user = os.getenv("DB_USER")
-password = os.getenv("DB_PASSWORD")
+user = 'Ramerlin'
+password = '1234'
 port = os.getenv("DB_PORT")
 driver = os.getenv("ODBC_DRIVER")
+pool_pre_ping=True
 
 if None in [server, database, user, password, port, driver]:
     raise Exception("Faltan variables de entorno. Revisa tu archivo .env")
