@@ -78,7 +78,7 @@ function Hero(){
               <div className="absolute inset-0 bg-gradient-to-br from-transparent to-white/50 rounded-2xl transform rotate-3 scale-95"></div>
               <div className="relative bg-white rounded-2xl shadow-xl overflow-hidden">
                 <Image
-                  src='/images/820x660.svg'
+                  src='/images/heroi.jpg'
                   width={500}
                   height={500}
                   alt="Plataforma de búsqueda de empleo"

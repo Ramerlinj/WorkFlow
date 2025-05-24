@@ -1,4 +1,5 @@
 import  Image from "next/image"
+import Link from "next/link"
 
 export default function Testimonials(){
     return (
@@ -18,9 +19,11 @@ export default function Testimonials(){
                     </p>
                   </div>
         
+                  <Link className="text-blue-500 hover:underline flex justify-end ml-5" href='/testimonials'>Ver más.</Link>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {[
                       {
+                        src:"/avatars/avatar-1.jpg",
                         quote:
                           "Gracias a Workflow encontré mi trabajo ideal en menos de un mes. El proceso fue sencillo y el equipo me apoyó en cada paso.",
                         name: "Carlos Méndez",
@@ -28,6 +31,7 @@ export default function Testimonials(){
                         company: "TechSolutions",
                       },
                       {
+                        src:"/avatars/avatar-2.jpg",
                         quote:
                           "Como reclutadora, Workflow ha revolucionado nuestra forma de encontrar talento. Hemos reducido nuestro tiempo de contratación en un 40%.",
                         name: "Laura Sánchez",
@@ -35,6 +39,7 @@ export default function Testimonials(){
                         company: "Innovatech",
                       },
                       {
+                        src:"/avatars/avatar-3.jpg",
                         quote:
                           "El coaching profesional de Workflow me ayudó a reorientar mi carrera. Ahora tengo un trabajo que realmente disfruto y con mejor salario.",
                         name: "Miguel Rodríguez",
@@ -56,7 +61,7 @@ export default function Testimonials(){
                         <div className="flex items-center gap-4">
                           <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-200">
                             <Image
-                              src={`https://ui-avatars.com/api/?name=${testimonial.name.charAt(0)}`}
+                              src={testimonial.src}
                               width={48}
                               height={48}
                               alt={testimonial.name}
