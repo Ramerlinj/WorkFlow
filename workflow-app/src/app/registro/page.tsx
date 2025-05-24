@@ -254,35 +254,40 @@ export default function RegisterForm() {
     )
   }, [formData, isEmailValid, isEmailAvailable, isUsernameAvailable, isAdult, isPasswordStrong, passwordsMatch, errors])
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  // En el frontend (RegisterForm.tsx)
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-    if (!isFormValid || isSubmitting) return
+  if (!isFormValid || isSubmitting) return;
 
-    setIsSubmitting(true)
+  setIsSubmitting(true);
 
-    try {
-      await registerUser({
-        id_profession: Number.parseInt(formData.profession),
-        username: formData.username,
-        email: formData.email,
-        first_name: formData.firstName,
-        middle_name: "",
-        first_surname: formData.lastName,
-        second_surname: "",
-        date_of_birth: formData.birthDate.toString(),
-        direction: "",
-        password: formData.password,
-      })
+  try {
+    // Ajustar el payload según lo esperado por el backend
+    await registerUser({
+      username: formData.username,
+      email: formData.email,
+      password: formData.password,
+      first_name: formData.firstName,
+      middle_name: "",
+      first_surname: formData.lastName,
+      second_surname: "",
+      date_of_birth: formData.birthDate.toISOString().split('T')[0],
+      direction: "",
+      id_profession: Number(formData.profession)
+    });
 
-      router.push("/")
-    } catch (error) {
-      console.error("Registration failed:", error)
-      setErrors((prev) => ({ ...prev, general: "Error al registrar usuario" }))
-    } finally {
-      setIsSubmitting(false)
-    }
+    router.push("/");
+  } catch (error) {
+    console.error("Registration failed:", error);
+    setErrors((prev) => ({ 
+      ...prev, 
+      general: error instanceof Error ? error.message : "Error de registro" 
+    }));
+  } finally {
+    setIsSubmitting(false);
   }
+}
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-blue-50">

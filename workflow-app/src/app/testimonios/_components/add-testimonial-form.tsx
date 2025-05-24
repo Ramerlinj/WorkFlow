@@ -15,8 +15,6 @@ interface AddTestimonialFormProps {
 }
 
 export function AddTestimonialForm({ onSubmit }: AddTestimonialFormProps) {
-  const [authorId, setAuthorId] = useState<string>("")
-  const [targetId, setTargetId] = useState<string>("")
   const [title, setTitle] = useState<string>("")
   const [description, setDescription] = useState<string>("")
   const [rating, setRating] = useState<number>(5)
@@ -25,8 +23,6 @@ export function AddTestimonialForm({ onSubmit }: AddTestimonialFormProps) {
     e.preventDefault()
 
     if (
-      !authorId.trim() ||
-      !targetId.trim() ||
       !title.trim() ||
       !description.trim()
     ) {
@@ -34,7 +30,7 @@ export function AddTestimonialForm({ onSubmit }: AddTestimonialFormProps) {
     }
 
     onSubmit({
-      id_user_source: Number(authorId),
+      
       title,
       description,
       rating,
@@ -42,8 +38,6 @@ export function AddTestimonialForm({ onSubmit }: AddTestimonialFormProps) {
     })
 
     // Reset form
-    setAuthorId("")
-    setTargetId("")
     setTitle("")
     setDescription("")
     setRating(5)
@@ -51,35 +45,6 @@ export function AddTestimonialForm({ onSubmit }: AddTestimonialFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="author" className="text-[#112D4E]">
-          Tu ID de usuario
-        </Label>
-        <Input
-          id="author"
-          type="number"
-          value={authorId}
-          onChange={(e) => setAuthorId(e.target.value)}
-          placeholder="Ej. 123"
-          required
-          className="border-[#EDECEE]"
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="target" className="text-[#112D4E]">
-          ID del usuario destinatario
-        </Label>
-        <Input
-          id="target"
-          type="number"
-          value={targetId}
-          onChange={(e) => setTargetId(e.target.value)}
-          placeholder="Ej. 456"
-          required
-          className="border-[#EDECEE]"
-        />
-      </div>
 
       <div className="space-y-2">
         <Label htmlFor="title" className="text-[#112D4E]">

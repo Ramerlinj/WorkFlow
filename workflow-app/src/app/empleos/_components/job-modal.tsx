@@ -2,7 +2,7 @@
 
 import { formatDistanceToNow } from "date-fns"
 import { es } from "date-fns/locale"
-import { Briefcase, MapPin, DollarSign, Building, Tag, Calendar, ExternalLink, Trash2 } from "lucide-react"
+import { Briefcase, MapPin, DollarSign, Building, Tag, Calendar } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
@@ -32,9 +32,6 @@ export function JobModal({ job, isOpen, onClose, onApply, onDelete }: JobModalPr
 
   if (!job) return null
 
-  const handleDelete = () => {
-    setIsDeleteDialogOpen(true)
-  }
 
   const confirmDelete = () => {
     onDelete(job.id_employment.toString())
@@ -92,17 +89,6 @@ export function JobModal({ job, isOpen, onClose, onApply, onDelete }: JobModalPr
               <div className="text-[#415771] whitespace-pre-line leading-relaxed">{job.description}</div>
             </div>
 
-            <Separator className="bg-[#EDECEE]" />
-
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-[#112D4E]">Requisitos</h3>
-              <ul className="list-disc pl-5 text-[#415771] space-y-2">
-                <li>Experiencia mínima de 2 años en posiciones similares</li>
-                <li>Conocimientos avanzados en herramientas específicas del sector</li>
-                <li>Capacidad para trabajar en equipo y bajo presión</li>
-                <li>Excelentes habilidades de comunicación</li>
-              </ul>
-            </div>
 
             <Separator className="bg-[#EDECEE]" />
 
@@ -115,20 +101,9 @@ export function JobModal({ job, isOpen, onClose, onApply, onDelete }: JobModalPr
                 >
                   Volver
                 </Button>
-                <Button
-                  variant="outline"
-                  className="border-red-200 text-red-500 hover:bg-red-50 hover:text-red-600"
-                  onClick={handleDelete}
-                >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Eliminar
-                </Button>
+                
               </div>
               <div className="flex gap-3">
-                <Button variant="outline" className="border-[#0979b0] text-[#0979b0] hover:bg-[#0979b0]/10">
-                  <ExternalLink className="mr-2 h-4 w-4" />
-                  Visitar sitio web
-                </Button>
                 <Button className="bg-[#214E83] hover:bg-[#144C8E] text-white" onClick={() => onApply(job.id_employment.toString())}>
                   Aplicar ahora
                 </Button>

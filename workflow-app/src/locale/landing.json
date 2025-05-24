@@ -178,7 +178,25 @@
     },
     "TESTIMONIALS": {
         "TITLE": "",
-        "DESCRIPTION": ""
+        "DESCRIPTION": "",
+        "AVATAR1":[
+            {
+                "SRC":"/avatars/avatar-1.jpg",
+                "ALT":""
+            }
+        ],
+        "AVATAR2":[
+            {
+                "SRC":"/avatars/avatar-2.jpg",
+                "ALT":""
+            }
+        ],
+        "AVATAR3":[
+            {
+                "SRC":"/avatars/avatar-3.jpg",
+                "ALT":""
+            }
+        ]
     },
     "CTA": {
         "TITLE": "",
