@@ -13,6 +13,11 @@ import { Check, Upload } from "lucide-react"
 import { AnimatePresence, motion } from "framer-motion"
 import avatarColors from "@/lib/colors/avatar-colors"
 import bannerColors from "@/lib/colors/banner-colors"
+import { updateUser } from "@/lib/getUser"
+import { getProfile, updateProfile } from "@/lib/profileServices"
+import { useEffect } from "react"
+import { Profile } from "@/types/interfaces"
+
 
 interface ProfileTabProps {
   previewAvatar: string | null
@@ -56,6 +61,8 @@ export function ProfileTab({
   onSave,
 }: ProfileTabProps) {
   const [colorPickerOpen, setColorPickerOpen] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [currentProfile, setCurrentProfile] = useState<Profile | null>(null);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -70,12 +77,73 @@ export function ProfileTab({
   }
 
   const handleBannerColorChange = (color: string) => {
-    setPreviewBannerColor(color)
+    setPreviewBannerColor(color)  
     setColorPickerOpen(false)
   }
 
   const initial = previewName ? previewName.charAt(0).toUpperCase() : ""
   const backgroundColor = avatarColors[initial] || "#999"
+
+
+ 
+
+  useEffect(() => {
+  const loadProfile = async () => {
+    if (previewUsername) {
+      const profileData = await getProfile(previewUsername);
+      if (profileData) {
+        setCurrentProfile(profileData);
+        setPreviewAvatar(profileData.avatar_url);
+        setPreviewAboutMe(profileData.about_me);
+      }
+    }
+  };
+  loadProfile();
+}, [previewUsername]);
+
+
+
+const handleSave = async () => {
+  if (!previewUsername || !currentProfile) {
+    console.error("Datos incompletos para guardar");
+    return;
+  }
+
+  setIsSaving(true);
+
+  try {
+    // 1. Actualizar usuario
+    const userPayload = {
+      first_name: previewName || "",
+      middle_name: previewSecondName || "",
+      first_surname: previewSurname || "",
+      second_surname: previewSecondSurname || "",
+      email: previewEmail || ""
+    };
+    
+    const updatedUser = await updateUser(previewUsername, userPayload);
+
+    // 2. Actualizar perfil
+    const profilePayload = {
+      about_me: previewAboutMe || "",
+      avatar_url: previewAvatar || "",
+      cv_url: currentProfile.cv_url || "",
+      id_profile: currentProfile.id_profile,
+      id_user: currentProfile.id_user
+    };
+
+    const updatedProfile = await updateProfile(previewUsername, profilePayload);
+
+    if (updatedUser && updatedProfile) {
+      console.log("Actualización exitosa!");
+      onSave();
+    }
+  } catch (error) {
+    console.error("Error al guardar:", error);
+  } finally {
+    setIsSaving(false);
+  }
+};
 
   return (
     <div className="space-y-6">
@@ -112,8 +180,6 @@ export function ProfileTab({
 
           <div className="space-y-2">
             <Label>Color del banner</Label>
-
-            {/* Botón que abre/cierra la paleta */}
             <Button
               variant="outline"
               className="w-full flex justify-between items-center"
@@ -125,7 +191,6 @@ export function ProfileTab({
               </div>
             </Button>
 
-            {/* Animación de aparición */}
             <AnimatePresence>
               {colorPickerOpen && (
                 <motion.div
@@ -207,7 +272,9 @@ export function ProfileTab({
       </div>
 
       <div className="flex justify-end">
-        <Button  onClick={onSave}>Guardar cambios</Button>
+        <Button onClick={handleSave} disabled={isSaving}>
+          {isSaving ? "Guardando..." : "Guardar cambios"}
+        </Button>
       </div>
     </div>
   )
