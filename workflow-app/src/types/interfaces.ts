@@ -62,7 +62,6 @@ export interface Profile {
 }
 
 
-
 export interface Link {
   id_link: number;
   id_user: number;
