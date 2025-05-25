@@ -25,6 +25,6 @@ connection_string = (
     f"?driver={driver_encoded}&Encrypt=yes&TrustServerCertificate=yes"
 )
 
-engine = create_engine(connection_string, echo=True, future=True)
+engine = create_engine(connection_string, echo=True, future=True, implicit_returning=False)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
