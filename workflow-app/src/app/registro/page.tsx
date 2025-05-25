@@ -9,9 +9,9 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Link from "next/link"
 import { professions } from "@/data/profession"
-import { registerUser, checkEmailAvailability, checkUsernameAvailability } from "@/lib/register"
 import { useRouter } from "next/navigation"
 import { useDebounce } from "@/hooks/use-debounce"
+import { AuthService } from "@/lib/authServices"
 
 type FormData = {
   firstName: string
@@ -144,7 +144,7 @@ export default function RegisterForm() {
     if (debouncedEmail && isEmailValid && debouncedEmail.includes("@")) {
       const checkEmail = async () => {
         try {
-          const available = await checkEmailAvailability(debouncedEmail)
+          const available = await AuthService.checkEmailAvailability(debouncedEmail)
           setIsEmailAvailable(available)
           setErrors((prev) => ({
             ...prev,
@@ -163,7 +163,7 @@ export default function RegisterForm() {
     if (debouncedUsername && debouncedUsername.length >= 5) {
       const checkUsername = async () => {
         try {
-          const available = await checkUsernameAvailability(debouncedUsername)
+          const available = await AuthService.checkUsernameAvailability(debouncedUsername)
           setIsUsernameAvailable(available)
           setErrors((prev) => ({
             ...prev,
@@ -255,39 +255,38 @@ export default function RegisterForm() {
   }, [formData, isEmailValid, isEmailAvailable, isUsernameAvailable, isAdult, isPasswordStrong, passwordsMatch, errors])
 
   // En el frontend (RegisterForm.tsx)
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-
-  if (!isFormValid || isSubmitting) return;
-
-  setIsSubmitting(true);
-
-  try {
-    // Ajustar el payload según lo esperado por el backend
-    await registerUser({
-      username: formData.username,
-      email: formData.email,
-      password: formData.password,
-      first_name: formData.firstName,
-      middle_name: "",
-      first_surname: formData.lastName,
-      second_surname: "",
-      date_of_birth: formData.birthDate.toISOString().split('T')[0],
-      direction: "",
-      id_profession: Number(formData.profession)
-    });
-
-    router.push("/");
-  } catch (error) {
-    console.error("Registration failed:", error);
-    setErrors((prev) => ({ 
-      ...prev, 
-      general: error instanceof Error ? error.message : "Error de registro" 
-    }));
-  } finally {
-    setIsSubmitting(false);
-  }
-}
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isFormValid || isSubmitting) return;
+  
+    setIsSubmitting(true);
+    setErrors((prev) => ({ ...prev, general: "" }));
+  
+    try {
+      await AuthService.register({
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+        first_name: formData.firstName,
+        middle_name: "",
+        first_surname: formData.lastName,
+        second_surname: "",
+        date_of_birth: formData.birthDate.toISOString().split("T")[0],
+        direction: "",
+        id_profession: Number(formData.profession),
+      });
+  
+      router.push("/login");
+    } catch (error: unknown) {
+      console.error("Error al registrar usuario:", error);
+      setErrors((prev) => ({
+        ...prev,
+        general: "Error de registro",
+      }));
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-blue-50">
