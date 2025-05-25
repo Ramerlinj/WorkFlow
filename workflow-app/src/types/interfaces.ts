@@ -10,6 +10,11 @@ export interface Location {
   country?: Country;
 }
 
+export interface AuthResponse {
+  access_token: string;
+  token_type: string;
+}
+
 export interface Profession {
   id_profession: number;
   name: string;
@@ -151,6 +156,12 @@ export interface TestimonialComment {
   comment: string;
   created_at: string;
   user: User;
+}
+
+export interface TestimonialCreate {
+  title: string
+  description: string
+  rating: number
 }
 
 export interface TestimonialResponse {

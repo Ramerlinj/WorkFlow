@@ -5,7 +5,7 @@ const API_URL = 'http://localhost:8000/user/';
 
 export const registerUser = async (userData: UserCreate): Promise<void> => {
   try {
-    const response = await axios.post(API_URL, userData, {
+    const response = await axios.post("http://localhost:8000/auth/register", userData, {
       headers: {
         'Content-Type': 'application/json',
       },
