@@ -21,6 +21,8 @@ export function CommentsDialog({ open, onOpenChange, testimonial, currentUserId 
   const [comment, setComment] = useState("")
   const [error, setError] = useState("")
 
+  const isAuthenticated = currentUserId > 0
+
   const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault()
     const trimmedComment = comment.trim()
@@ -29,15 +31,19 @@ export function CommentsDialog({ open, onOpenChange, testimonial, currentUserId 
       setError("El comentario no puede estar vacío")
       return
     }
-
+    const token = localStorage.getItem("auth_token")
+    if (!token) {
+      setError("No autenticado")
+      return
+    }
     try {
       const response = await fetch("http://localhost:8000/testimonials/comment", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
         },
-        body: JSON.stringify({
-          id_user: 1, // Usar el ID del usuario actual
+        body: JSON.stringify({  
           id_testimonial: Number(testimonial.id_testimonial),
           comment: trimmedComment
         })
@@ -52,8 +58,8 @@ export function CommentsDialog({ open, onOpenChange, testimonial, currentUserId 
       setError("")
       
       // Forzar recarga de los comentarios
-      onOpenChange(false)
-      onOpenChange(true)
+      const newComment = await response.json()
+      testimonial.comments.push(newComment)
 
     } catch (err) {
       console.error("Error al enviar el comentario:", err)
@@ -62,13 +68,12 @@ export function CommentsDialog({ open, onOpenChange, testimonial, currentUserId 
   }
 
   const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((part) => part[0])
-      .join("")
-      .toUpperCase()
-      .substring(0, 2)
-  }
+  if (!name) return "??"
+  const parts = name.trim().split(" ").filter(Boolean)
+  const initials = parts.map(part => part[0].toUpperCase())
+  return initials.slice(0, 2).join("")
+}
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -87,7 +92,8 @@ export function CommentsDialog({ open, onOpenChange, testimonial, currentUserId 
                   <div key={comment.id_comment} className="rounded-lg border border-[#EDECEE] bg-[#F5F5F5] p-4">
                     <div className="mb-2 flex items-center gap-2">
                       <Avatar className="h-8 w-8 bg-[#DDE6F6] text-[#112D4E]">
-                        <AvatarFallback>{getInitials(comment.user.first_name)}</AvatarFallback>
+                        <AvatarFallback>{getInitials(`${comment.user.first_name} ${comment.user.first_surname}`)
+                      }</AvatarFallback>
                       </Avatar>
                       <div>
                         <div className="font-medium text-[#112D4E]">
@@ -115,30 +121,38 @@ export function CommentsDialog({ open, onOpenChange, testimonial, currentUserId 
             )}
           </ScrollArea>
 
-          <form onSubmit={handleSubmitComment} className="mt-2 flex gap-2">
-            <div className="flex-1 space-y-1">
-              <Textarea
-                value={comment}
-                onChange={(e) => {
-                  setComment(e.target.value)
-                  setError("")
-                }}
-                placeholder="Añade un comentario..."
-                className="min-h-[80px] resize-none border-[#EDECEE] text-sm"
-                required
-              />
-              {error && <p className="text-sm text-red-500">{error}</p>}
-            </div>
-            <Button
-              type="submit"
-              size="icon"
-              disabled={!comment.trim()}
-              className="h-[80px] bg-[#214E83] hover:bg-[#144C8E] disabled:opacity-50 disabled:cursor-not-allowed"
-              aria-label="Enviar comentario"
-            >
-              <Send className="h-4 w-4" />
-            </Button>
-          </form>
+          {isAuthenticated ? (
+      <form onSubmit={handleSubmitComment} className="mt-2 flex gap-2">
+        <div className="flex-1 space-y-1">
+          <Textarea
+            autoFocus
+            value={comment}
+            onChange={(e) => {
+              setComment(e.target.value)
+              setError("")
+            }}
+            placeholder="Añade un comentario..."
+            className="min-h-[80px] resize-none border-[#EDECEE] text-sm"
+            required
+          />
+          {error && <p className="text-sm text-red-500">{error}</p>}
+        </div>
+        <Button
+          type="submit"
+          size="icon"
+          disabled={!comment.trim()}
+          className="h-[80px] bg-[#214E83] hover:bg-[#144C8E] disabled:opacity-50 disabled:cursor-not-allowed"
+          aria-label="Enviar comentario"
+        >
+          <Send className="h-4 w-4" />
+        </Button>
+      </form>
+) : (
+  <div className="text-center text-sm text-[#8E8E8E] mt-2">
+    Debes iniciar sesión para comentar.
+  </div>
+)}
+
         </div>
       </DialogContent>
     </Dialog>
