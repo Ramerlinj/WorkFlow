@@ -9,6 +9,7 @@ from app.routes import profession_routes
 from app.routes import auth_router
 from fastapi.middleware.cors import CORSMiddleware
 from app.routes import profile_router
+from app.routes import job_aplication_router
 
 app = FastAPI(
     title="Mi API workflow",
@@ -33,6 +34,7 @@ app.include_router(link_routes.router, tags=["links"])
 app.include_router(profession_routes.router, tags=["professions"])
 app.include_router(auth_router.router, prefix="/auth", tags=["auth"])
 app.include_router(profile_router.router, prefix="/profile", tags=["profile"])
+app.include_router(job_aplication_router.router, tags=["job_applications"])
 
 
 

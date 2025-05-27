@@ -8,8 +8,8 @@ load_dotenv()
 
 server = os.getenv("DB_SERVER")
 database = os.getenv("DB_NAME")
-user = 'Ramerlin'
-password = '1234'
+user = os.getenv("DB_USER")
+password = os.getenv("DB_PASSWORD")
 port = os.getenv("DB_PORT")
 driver = os.getenv("ODBC_DRIVER")
 pool_pre_ping=True
