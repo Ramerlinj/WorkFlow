@@ -13,11 +13,9 @@ import {
   fetchJobs,
   createJob,
   deleteJob,
-  applyToJob,
 } from "@/lib/employments"
 import type { CreateEmploymentDTO, Employment } from "@/types/interfaces"
 import { Loader2 } from "lucide-react"
-
 
 export function JobBoard() {
   const { toast } = useToast()
@@ -48,7 +46,7 @@ export function JobBoard() {
     setIsLoading(true)
     setError(null)
     try {
-      const data = await fetchJobs() // devuelve Employment[]
+      const data = await fetchJobs()
       setJobs(data)
     } catch (err) {
       console.error("Error loading jobs:", err)
@@ -63,43 +61,27 @@ export function JobBoard() {
     setIsJobModalOpen(true)
   }
 
-  const handleAddJob = async (
-    newJobData: CreateEmploymentDTO
-  ) => {
+  const handleAddJob = async (newJobData: CreateEmploymentDTO) => {
     try {
-      const created: Employment = await createJob(newJobData);
-      setJobs([created, ...jobs]);
-      setIsAddJobModalOpen(false);
-      toast({ 
-        title: "Oferta publicada",
-        description: "La oferta de trabajo ha sido publicada correctamente.",
-      });
+      const created: Employment = await createJob(newJobData)
+      setJobs([created, ...jobs])
+      setIsAddJobModalOpen(false)
+      toast({ title: "Oferta publicada", description: "La oferta de trabajo ha sido publicada correctamente." })
     } catch (err) {
-      console.error("Error al crear la oferta:", err);
-      toast({
-        title: "Error",
-        description: "No se pudo publicar la oferta.",
-        variant: "destructive",
-      });
+      console.error("Error al crear la oferta:", err)
+      toast({ title: "Error", description: "No se pudo publicar la oferta.", variant: "destructive" })
     }
-  };
+  }
 
   const handleDeleteJob = async (jobId: string) => {
     try {
       await deleteJob(jobId)
-      setJobs((prev) => prev.filter((j) => j.id_employment.toString() !== jobId))
+      setJobs(prev => prev.filter(j => j.id_employment.toString() !== jobId))
       setIsJobModalOpen(false)
-      toast({
-        title: "Oferta eliminada",
-        description: "La oferta de trabajo ha sido eliminada correctamente.",
-      })
+      toast({ title: "Oferta eliminada", description: "La oferta de trabajo ha sido eliminada correctamente." })
     } catch (err) {
       console.error("Error al eliminar:", err)
-      toast({
-        title: "Error",
-        description: "No se pudo eliminar la oferta.",
-        variant: "destructive",
-      })
+      toast({ title: "Error", description: "No se pudo eliminar la oferta.", variant: "destructive" })
     }
   }
 
@@ -107,24 +89,6 @@ export function JobBoard() {
     setApplyingToJobId(jobId)
     setIsJobModalOpen(false)
     setIsApplicationModalOpen(true)
-  }
-
-  const handleSubmitApplication = async (applicationData: { jobId: string; coverLetter: string }) => {
-    try {
-      await applyToJob(applicationData.jobId, { coverLetter: applicationData.coverLetter })
-      setIsApplicationModalOpen(false)
-      toast({
-        title: "Aplicación enviada",
-        description: "Tu aplicación ha sido enviada correctamente.",
-      })
-    } catch (err) {
-      console.error("Error al enviar la aplicación:", err)
-      toast({
-        title: "Error",
-        description: "No se pudo enviar la aplicación.",
-        variant: "destructive",
-      })
-    }
   }
 
   if (isLoading) {
@@ -168,14 +132,13 @@ export function JobBoard() {
         <AddJobModal
           isOpen={isAddJobModalOpen}
           onClose={() => setIsAddJobModalOpen(false)}
-          onAddJob={handleAddJob} 
+          onAddJob={handleAddJob}
         />
         <ApplicationModal
           isOpen={isApplicationModalOpen}
           onClose={() => setIsApplicationModalOpen(false)}
           jobId={applyingToJobId}
-          onSubmit={handleSubmitApplication}
-          job={jobs.find((j) => j.id_employment.toString() === applyingToJobId) ?? null}
+          job={jobs.find(j => j.id_employment.toString() === applyingToJobId) ?? null}
         />
       </div>
     </SidebarProvider>

@@ -1,4 +1,4 @@
-import type { CreateApplicationDTO, CreateEmploymentDTO, Employment } from "@/types/interfaces";
+import type { CreateEmploymentDTO, Employment } from "@/types/interfaces";
 
 // URL base de la API
 const BASE_URL = "http://localhost:8000";
@@ -72,22 +72,3 @@ export async function deleteJob(id: string): Promise<{ message: string }> {
   });
 }
 
-// Aplicar a un trabajo
-export async function applyToJob(
-  jobId: string,
-  applicationData: CreateApplicationDTO
-): Promise<{ success: boolean; message: string }> {
-  try {
-    return await fetchWithTimeout<{ success: boolean; message: string }>(
-      `${BASE_URL}/employment/${jobId}/apply`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(applicationData),
-      }
-    );
-  } catch (error) {
-    console.warn("Endpoint de aplicación no disponible, simulando respuesta:", error);
-    return { success: true, message: "Aplicación simulada enviada con éxito" };
-  }
-}

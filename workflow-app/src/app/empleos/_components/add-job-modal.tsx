@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
 import { Building, MapPin, Briefcase, Tag, DollarSign, FileText } from "lucide-react"
-import type { CreateEmploymentDTO, Employment } from "@/types/interfaces"
+import type { CreateEmploymentDTO } from "@/types/interfaces"
 import { professions } from "@/data/profession"
 import { locations } from "@/data/location"
 import { type_jobs } from "@/data/type-job"
@@ -18,7 +18,7 @@ import { type_jobs } from "@/data/type-job"
 interface AddJobModalProps {
   isOpen: boolean
   onClose: () => void
-  onAddJob: (job: Omit<Employment, "id_employment" | "publication_date">) => Promise<void>
+  onAddJob: (job: CreateEmploymentDTO) => Promise<void>
 }
 
 type JobFormData = {
@@ -100,7 +100,7 @@ export function AddJobModal({ isOpen, onClose, onAddJob }: AddJobModalProps) {
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
     const { title, company, city, description, salary_min, salary_max, jobType, category } = formData;
-  
+
     if (!title.trim()) newErrors.title = "El título es obligatorio";
     if (!company.trim()) newErrors.company = "La empresa es obligatoria";
     if (!city) newErrors.city = "La ciudad es obligatoria";
@@ -125,7 +125,7 @@ export function AddJobModal({ isOpen, onClose, onAddJob }: AddJobModalProps) {
     else if (!professions.some((prof) => prof.id_profession.toString() === category)) {
       newErrors.category = "Categoría no válida";
     }
-  
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -133,23 +133,29 @@ export function AddJobModal({ isOpen, onClose, onAddJob }: AddJobModalProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
-  
+
     const dto: CreateEmploymentDTO = {
       id_type_job: parseInt(formData.jobType, 10),
       id_profession: parseInt(formData.category, 10),
       title: formData.title.trim(),
       description: formData.description.trim(),
       company: formData.company.trim(),
-      salary_min: formData.salary_min,
-      salary_max: formData.salary_max,
+      salary_min: Number(formData.salary_min),
+      salary_max: Number(formData.salary_max),
       id_location: parseInt(formData.city, 10),
       status: formData.status as "Open" | "Closed",
     };
 
-    
-  
-    console.log("Submitting DTO:", dto);
-  
+    // Validaciones adicionales de tipos
+    if (isNaN(dto.salary_min) || isNaN(dto.salary_max)) {
+      setErrors((prev) => ({
+        ...prev,
+        salary_min: isNaN(dto.salary_min) ? "El salario mínimo debe ser un número" : undefined,
+        salary_max: isNaN(dto.salary_max) ? "El salario máximo debe ser un número" : undefined
+      }));
+      return;
+    }
+
     if (isNaN(dto.id_type_job)) {
       setErrors((prev) => ({ ...prev, jobType: "Selecciona un tipo de empleo válido" }));
       return;
@@ -162,18 +168,21 @@ export function AddJobModal({ isOpen, onClose, onAddJob }: AddJobModalProps) {
       setErrors((prev) => ({ ...prev, city: "Selecciona una ciudad válida" }));
       return;
     }
-  
+
     setIsSubmitting(true);
+    setFormError(null);
+
     try {
-      console.log("Llamando a onAddJob...");
       await onAddJob(dto);
-      console.log("onAddJob completado exitosamente");
       onClose();
     } catch (error) {
       console.error("Error al crear empleo:", error);
-      setFormError("Error al crear la oferta. Inténtalo de nuevo.");
+      if (error instanceof Error) {
+        setFormError(`Error al crear la oferta: ${error.message}`);
+      } else {
+        setFormError("Error al crear la oferta. Por favor, inténtalo de nuevo.");
+      }
     } finally {
-      console.log("Finalizando submit");
       setIsSubmitting(false);
     }
   };
@@ -205,7 +214,7 @@ export function AddJobModal({ isOpen, onClose, onAddJob }: AddJobModalProps) {
                   value={formData.title}
                   onChange={handleChange}
                   placeholder="Ej: Desarrollador Frontend"
-                  className={`border-[#EDECEE] ${errors.title ? "border-red-500" : ""}`}                
+                  className={`border-[#EDECEE] ${errors.title ? "border-red-500" : ""}`}
                 />
                 {errors.title && <p className="text-red-500 text-sm">{errors.title}</p>}
               </div>
@@ -222,7 +231,7 @@ export function AddJobModal({ isOpen, onClose, onAddJob }: AddJobModalProps) {
                   value={formData.company}
                   onChange={handleChange}
                   placeholder="Ej: TechSolutions Inc."
-                  className={`border-[#EDECEE] ${errors.company ? "border-red-500" : ""}`}                
+                  className={`border-[#EDECEE] ${errors.company ? "border-red-500" : ""}`}
                 />
                 {errors.company && <p className="text-red-500 text-sm">{errors.company}</p>}
               </div>
@@ -238,7 +247,7 @@ export function AddJobModal({ isOpen, onClose, onAddJob }: AddJobModalProps) {
                 >
                   <SelectTrigger
                     id="city"
-                    className={`border-[#EDECEE] ${errors.city ? "border-red-500" : ""}`}                  
+                    className={`border-[#EDECEE] ${errors.city ? "border-red-500" : ""}`}
                   >
                     <SelectValue placeholder="Selecciona una ciudad" />
                   </SelectTrigger>
@@ -266,7 +275,7 @@ export function AddJobModal({ isOpen, onClose, onAddJob }: AddJobModalProps) {
                   aria-label="Descripción del puesto"
                   value={formData.description}
                   onChange={handleChange}
-                  placeholder="Describe los detalles del puesto, requisitos, responsabilidades, etc."                  
+                  placeholder="Describe los detalles del puesto, requisitos, responsabilidades, etc."
                   className={`min-h-[250px] border-[#EDECEE] ${errors.description ? "border-red-500" : ""}`}
                 />
                 {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
@@ -317,7 +326,7 @@ export function AddJobModal({ isOpen, onClose, onAddJob }: AddJobModalProps) {
                 >
                   <SelectTrigger
                     id="jobType"
-                    className={`border-[#EDECEE] ${errors.jobType ? "border-red-500" : ""}`}                  
+                    className={`border-[#EDECEE] ${errors.jobType ? "border-red-500" : ""}`}
                   >
                     <SelectValue placeholder="Selecciona tipo de empleo" />
                   </SelectTrigger>
@@ -343,7 +352,7 @@ export function AddJobModal({ isOpen, onClose, onAddJob }: AddJobModalProps) {
                 >
                   <SelectTrigger
                     id="category"
-                    className={`border-[#EDECEE] ${errors.category ? "border-red-500" : ""}`}                  
+                    className={`border-[#EDECEE] ${errors.category ? "border-red-500" : ""}`}
                   >
                     <SelectValue placeholder="Selecciona una categoría" />
                   </SelectTrigger>

@@ -1,3 +1,6 @@
+import { professions } from "@/data/profession"
+
+
 export default function Category(){
     return(
         <section className="w-full py-20" style={{ background: "#FFFFFF" }}>
@@ -18,25 +21,16 @@ export default function Category(){
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {[
-              { name: "Tecnología", count: 1240 },
-              { name: "Marketing", count: 850 },
-              { name: "Finanzas", count: 620 },
-              { name: "Salud", count: 540 },
-              { name: "Educación", count: 480 },
-              { name: "Ingeniería", count: 390 },
-              { name: "Diseño", count: 320 },
-              { name: "Ventas", count: 290 },
-            ].map((category, index) => (
+            {professions.map((profesion, id_profession) => (
               <div
-                key={index}
+                key={id_profession}
                 className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer"
                 style={{ border: "1px solid #EDECEE" }}
               >
                 <h3 className="text-lg font-bold mb-2" style={{ color: "#112D4E" }}>
-                  {category.name}
+                  {profesion.name}
                 </h3>
-                <p style={{ color: "#3F72AF" }}>{category.count} empleos disponibles</p>
+                <p style={{ color: "#3F72AF" }}>{profesion.id_profession} empleos disponibles</p>
               </div>
             ))}
           </div>

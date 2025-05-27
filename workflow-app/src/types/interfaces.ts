@@ -62,8 +62,9 @@ export interface Profile {
   id_profile: number;
   id_user: number;
   about_me: string;
-  avatar_url: string | null;
-  cv_url: string | null;
+  avatar_url?: string | null;
+  cv_url?: string | null;
+  banner_url?: string | null;
 }
 
 
@@ -146,6 +147,7 @@ export interface JobApplication {
   application_date: string;
   status: 'Pending' | 'Accepted' | 'Rejected';
   employment?: Employment;
+  cover_letter: string;
 }
 
 

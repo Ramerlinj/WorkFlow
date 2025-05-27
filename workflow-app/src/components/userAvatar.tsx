@@ -6,7 +6,7 @@ import avatarColors from "@/lib/colors/avatar-colors";
 
 interface UserAvatarProps {
   user: User;
-  size?: number; // opcional para definir tamaño
+  size?: number; 
 }
 import { useEffect, useState } from "react";
 
