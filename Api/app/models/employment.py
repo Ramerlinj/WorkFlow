@@ -9,6 +9,7 @@ class Employment(Base):
     id_employment = Column('ID_EMPLOYMENT', Integer, primary_key=True, autoincrement=True)
     id_type_job = Column('ID_TYPE_JOB', Integer, ForeignKey('TYPE_JOBS.ID_TYPE_JOB'), nullable=False)
     id_profession = Column('ID_PROFESSION', Integer, ForeignKey('PROFESSIONS.ID_PROFESSION'), nullable=False)
+    id_user = Column('ID_USER', Integer, ForeignKey('USERS.ID_USER'), nullable=False)
     title = Column('TITLE', String(100), nullable=False)
     description = Column('DESCRIPTION', String(1000), nullable=True)
     company = Column('COMPANY', String(100), nullable=False)
@@ -21,6 +22,6 @@ class Employment(Base):
     # Relaciones
     type_job = relationship('TypeJob', back_populates='employments')
     profession = relationship('Profession', back_populates='employments') 
-    location = relationship('Location')
     applications = relationship('JobApplication', back_populates='employment', cascade='all, delete-orphan')
     location = relationship('Location', back_populates='employments') 
+    user = relationship('User', back_populates='employments') 

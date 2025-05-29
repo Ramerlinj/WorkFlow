@@ -1,11 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import { MapPin, Mail, FileText } from "lucide-react"
 import { useRouter } from "next/navigation"
 import type { Profile as ProfileTypes, User, Link } from "@/types/interfaces"
-import {  saveUserLinks } from "@/lib/userServices"
+import { saveUserLinks } from "@/lib/userServices"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -13,6 +13,7 @@ import { ProfileTab } from "./WorkExperience"
 import { LinksCard } from "./linksCard"
 import avatarColors from "@/lib/colors/avatar-colors"
 import { ConfigurationPanel } from "./configuration/configuration-panel"
+import { AuthService } from "@/lib/authServices"
 import {
   Dialog,
   DialogTitle,
@@ -32,10 +33,11 @@ interface UserProps {
   user: User
 }
 
-interface ProfileFullProps extends ProfileProps, UserProps {}
+interface ProfileFullProps extends ProfileProps, UserProps { }
 
 function Profile({ profile, user }: ProfileFullProps) {
   const router = useRouter()
+  const [currentUserId, setCurrentUserId] = useState<number | null>(null)
   const username = user.username || null
   const about_me = profile?.about_me || null
   const skills = user.skills || null
@@ -52,12 +54,21 @@ function Profile({ profile, user }: ProfileFullProps) {
 
   const [isOpenCvDialog, setIsOpenCvDialog] = useState(false)
   const [avatar, setAvatar] = useState(profile?.avatar_url || null)
-  const [bannerColor, setBannerColor] = useState<string>("#FF5733")
+  const [bannerColor, setBannerColor] = useState<string>(
+    profile?.banner_color ? `#${profile.banner_color}` : "#FFFFFF"
+  )
   const [aboutMe, setAboutMe] = useState(about_me)
   const [firstName, setFirstName] = useState(first_name)
   const [secondName, setSecondName] = useState(middle_name)
   const [firstSurname, setFirstSurname] = useState(first_surname)
   const [secondSurname, setSecondSurname] = useState(second_surname)
+
+  useEffect(() => {
+    const userId = AuthService.getCurrentUserId()
+    setCurrentUserId(userId)
+  }, [])
+
+  const isOwnProfile = currentUserId !== null && user.id_user === currentUserId
 
   const initial = firstName ? firstName.charAt(0).toUpperCase() : ""
   const backgroundColor = avatarColors[initial] || "#9999"
@@ -75,7 +86,7 @@ function Profile({ profile, user }: ProfileFullProps) {
   }
 
   const handleBannerColorChange = (newColor: string) => {
-    setBannerColor(newColor)
+    setBannerColor(newColor.startsWith('#') ? newColor : `#${newColor}`)
   }
 
   const handleAboutMeChange = (newAboutMe: string) => {
@@ -98,15 +109,13 @@ function Profile({ profile, user }: ProfileFullProps) {
     setSecondSurname(newSecondSurname)
   }
 
-
-
   const handleLinksChange = async (newLinks: Link[]) => {
     if (!user.id_user) return
-    
+
     console.log('Actualizando enlaces:', newLinks)
     try {
       await saveUserLinks(user.id_user, newLinks, [])
-      
+
       // Actualizar la UI o mostrar mensaje de éxito
       console.log('Enlaces actualizados correctamente')
       // Refrescar la página para mostrar los cambios
@@ -180,27 +189,29 @@ function Profile({ profile, user }: ProfileFullProps) {
                   </DialogContent>
                 </Dialog>
 
-                <ConfigurationPanel
-                  user={user}
-                  avatar={avatar}
-                  firstName={firstName}
-                  secondName={secondName}
-                  firstSurname={firstSurname}
-                  secondSurname={secondSurname}
-                  username={username}
-                  aboutMe={aboutMe}
-                  email={email}
-                  bannerColor={bannerColor}
-                  userConfig={configuration}
-                  onAvatarChange={handleAvatarChange}
-                  onBannerColorChange={handleBannerColorChange}
-                  onAboutMeChange={handleAboutMeChange}
-                  onNameChange={handleNameChange}
-                  onSecondNameChange={handleSecondNameChange}
-                  onSurnameChange={handleSurnameChange}
-                  onSecondSurnameChange={handleSecondSurnameChange}
-                  onLinksChange={handleLinksChange}
-                />
+                {isOwnProfile && (
+                  <ConfigurationPanel
+                    user={user}
+                    avatar={avatar}
+                    firstName={firstName}
+                    secondName={secondName}
+                    firstSurname={firstSurname}
+                    secondSurname={secondSurname}
+                    username={username}
+                    aboutMe={aboutMe}
+                    email={email}
+                    bannerColor={bannerColor}
+                    userConfig={configuration}
+                    onAvatarChange={handleAvatarChange}
+                    onBannerColorChange={handleBannerColorChange}
+                    onAboutMeChange={handleAboutMeChange}
+                    onNameChange={handleNameChange}
+                    onSecondNameChange={handleSecondNameChange}
+                    onSurnameChange={handleSurnameChange}
+                    onSecondSurnameChange={handleSecondSurnameChange}
+                    onLinksChange={handleLinksChange}
+                  />
+                )}
               </div>
             </div>
           </div>
@@ -219,7 +230,7 @@ function Profile({ profile, user }: ProfileFullProps) {
         </div>
 
         <div className="flex-1">
-          <ProfileTab workexperience={workexperience || []} />
+          <ProfileTab workexperience={workexperience || []} isOwnProfile={isOwnProfile} />
         </div>
       </div>
     </div>

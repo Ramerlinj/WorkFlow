@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { X, Save, Plus, Loader2, CheckCircle } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import type { WorkExperience } from "@/types/interfaces";
-import { DatePicker } from "@/components/ui/datepicker";
+import { DatePicker } from "@/components/ui/DatePicker";
 import {
   getUserExperiences,
   createExperience,

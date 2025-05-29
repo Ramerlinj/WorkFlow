@@ -10,6 +10,11 @@ export interface Location {
   country?: Country;
 }
 
+export interface AuthResponse {
+  access_token: string;
+  token_type: string;
+}
+
 export interface Profession {
   id_profession: number;
   name: string;
@@ -57,10 +62,10 @@ export interface Profile {
   id_profile: number;
   id_user: number;
   about_me: string;
-  avatar_url: string | null;
-  cv_url: string | null;
+  avatar_url?: string | null;
+  cv_url?: string | null;
+  banner_color?: string | null;
 }
-
 
 
 export interface Link {
@@ -122,6 +127,7 @@ export interface Employment {
   id_employment: number;
   id_type_job: number;
   id_profession: number;
+  id_user: number;
   title: string;
   description: string | null;
   company: string;
@@ -133,6 +139,7 @@ export interface Employment {
   type_job?: TypeJob;
   profession?: Profession;
   location?: Location;
+  user?: User;
 }
 
 export interface JobApplication {
@@ -142,6 +149,7 @@ export interface JobApplication {
   application_date: string;
   status: 'Pending' | 'Accepted' | 'Rejected';
   employment?: Employment;
+  cover_letter: string;
 }
 
 
@@ -152,6 +160,12 @@ export interface TestimonialComment {
   comment: string;
   created_at: string;
   user: User;
+}
+
+export interface TestimonialCreate {
+  title: string
+  description: string
+  rating: number
 }
 
 export interface TestimonialResponse {
@@ -169,6 +183,7 @@ export interface TestimonialResponse {
 export interface CreateEmploymentDTO {
   id_type_job: number;
   id_profession: number;
+  id_user?: number;
   title: string;
   description: string;
   company: string;

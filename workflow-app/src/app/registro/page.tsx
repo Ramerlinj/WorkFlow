@@ -9,9 +9,9 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Link from "next/link"
 import { professions } from "@/data/profession"
-import { registerUser, checkEmailAvailability, checkUsernameAvailability } from "@/lib/register"
 import { useRouter } from "next/navigation"
 import { useDebounce } from "@/hooks/use-debounce"
+import { AuthService } from "@/lib/authServices"
 
 type FormData = {
   firstName: string
@@ -22,6 +22,7 @@ type FormData = {
   password: string
   confirmPassword: string
   profession: string
+  location: string
 }
 
 type FormErrors = {
@@ -33,8 +34,27 @@ type FormErrors = {
   password: string
   confirmPassword: string
   profession: string
+  location: string
   general: string
 }
+
+// Añadir estas constantes al inicio del archivo, después de los tipos
+const days = Array.from({ length: 31 }, (_, i) => i + 1)
+const months = [
+  { value: 1, label: "Enero" },
+  { value: 2, label: "Febrero" },
+  { value: 3, label: "Marzo" },
+  { value: 4, label: "Abril" },
+  { value: 5, label: "Mayo" },
+  { value: 6, label: "Junio" },
+  { value: 7, label: "Julio" },
+  { value: 8, label: "Agosto" },
+  { value: 9, label: "Septiembre" },
+  { value: 10, label: "Octubre" },
+  { value: 11, label: "Noviembre" },
+  { value: 12, label: "Diciembre" },
+]
+const years = Array.from({ length: 60 }, (_, i) => 2009 - i)
 
 export default function RegisterForm() {
   const router = useRouter()
@@ -47,6 +67,7 @@ export default function RegisterForm() {
     password: "",
     confirmPassword: "",
     profession: "",
+    location: "",
   })
 
   const [showPassword, setShowPassword] = useState(false)
@@ -60,6 +81,7 @@ export default function RegisterForm() {
     password: "",
     confirmPassword: "",
     profession: "",
+    location: "",
     general: "",
   })
 
@@ -144,7 +166,7 @@ export default function RegisterForm() {
     if (debouncedEmail && isEmailValid && debouncedEmail.includes("@")) {
       const checkEmail = async () => {
         try {
-          const available = await checkEmailAvailability(debouncedEmail)
+          const available = await AuthService.checkEmailAvailability(debouncedEmail)
           setIsEmailAvailable(available)
           setErrors((prev) => ({
             ...prev,
@@ -163,7 +185,7 @@ export default function RegisterForm() {
     if (debouncedUsername && debouncedUsername.length >= 5) {
       const checkUsername = async () => {
         try {
-          const available = await checkUsernameAvailability(debouncedUsername)
+          const available = await AuthService.checkUsernameAvailability(debouncedUsername)
           setIsUsernameAvailable(available)
           setErrors((prev) => ({
             ...prev,
@@ -182,27 +204,41 @@ export default function RegisterForm() {
     if (formData.birthDate) {
       const birthDate = new Date(formData.birthDate)
       const today = new Date()
-      let age = today.getFullYear() - birthDate.getFullYear()
-      const monthDiff = today.getMonth() - birthDate.getMonth()
 
-      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-        age--
+      // Verificar si se ha seleccionado una fecha válida
+      const hasSelectedDate =
+        birthDate.getDate() > 0 &&
+        birthDate.getMonth() >= 0 &&
+        birthDate.getFullYear() > 1900;
+
+      if (hasSelectedDate) {
+        let age = today.getFullYear() - birthDate.getFullYear()
+        const monthDiff = today.getMonth() - birthDate.getMonth()
+
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+          age--
+        }
+
+        const isAdultNow = age >= 16
+        setIsAdult(isAdultNow)
+
+        setErrors((prev) => ({
+          ...prev,
+          birthDate: !isAdultNow ? "Debes tener al menos 16 años para registrarte" : "",
+        }))
+      } else {
+        setErrors((prev) => ({
+          ...prev,
+          birthDate: ""
+        }))
+        setIsAdult(false)
       }
-
-      const isAdultNow = age >= 16
-      setIsAdult(isAdultNow)
-
-      setErrors((prev) => ({
-        ...prev,
-        birthDate:
-          !isAdultNow && formData.birthDate.toString() !== "" ? "Debes tener al menos 16 años para registrarte" : "",
-      }))
     }
   }, [formData.birthDate])
 
   // Validate password strength
   useEffect(() => {
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/
     const isStrong = passwordRegex.test(formData.password)
     setIsPasswordStrong(formData.password === "" || isStrong)
 
@@ -254,35 +290,39 @@ export default function RegisterForm() {
     )
   }, [formData, isEmailValid, isEmailAvailable, isUsernameAvailable, isAdult, isPasswordStrong, passwordsMatch, errors])
 
+  // En el frontend (RegisterForm.tsx)
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
+    if (!isFormValid || isSubmitting) return;
 
-    if (!isFormValid || isSubmitting) return
-
-    setIsSubmitting(true)
+    setIsSubmitting(true);
+    setErrors((prev) => ({ ...prev, general: "" }));
 
     try {
-      await registerUser({
-        id_profession: Number.parseInt(formData.profession),
+      await AuthService.register({
         username: formData.username,
         email: formData.email,
+        password: formData.password,
         first_name: formData.firstName,
         middle_name: "",
         first_surname: formData.lastName,
         second_surname: "",
-        date_of_birth: formData.birthDate.toString(),
-        direction: "",
-        password: formData.password,
-      })
+        date_of_birth: formData.birthDate.toISOString().split("T")[0],
+        direction: formData.location,
+        id_profession: Number(formData.profession),
+      });
 
-      router.push("/")
-    } catch (error) {
-      console.error("Registration failed:", error)
-      setErrors((prev) => ({ ...prev, general: "Error al registrar usuario" }))
+      router.push("/login");
+    } catch (error: unknown) {
+      console.error("Error al registrar usuario:", error);
+      setErrors((prev) => ({
+        ...prev,
+        general: "Error de registro",
+      }));
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-blue-50">
@@ -425,43 +465,61 @@ export default function RegisterForm() {
             </label>
             <div className="grid grid-cols-3 gap-2">
               <div>
-                <Input
-                  type="number"
-                  min={1}
-                  max={31}
-                  value={formData.birthDate.getDate()}
-                  onChange={(e) => handleDateChange("day", e.target.value)}
-                  placeholder="Día"
-                  className={`w-full ${errors.birthDate ? "border-red-300 focus:ring-red-500 focus:border-red-500" : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"}`}
-                  aria-label="Día de nacimiento"
-                  required
-                />
+                <Select
+                  value={formData.birthDate.getDate().toString()}
+                  onValueChange={(value) => handleDateChange("day", value)}
+                >
+                  <SelectTrigger
+                    className={`w-full ${errors.birthDate ? "border-red-300 focus:ring-red-500 focus:border-red-500" : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"}`}
+                  >
+                    <SelectValue placeholder="Día" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {days.map((day) => (
+                      <SelectItem key={day} value={day.toString()}>
+                        {day}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div>
-                <Input
-                  type="number"
-                  min={1}
-                  max={12}
-                  value={formData.birthDate.getMonth() + 1} // Months are 0-indexed in JS
-                  onChange={(e) => handleDateChange("month", e.target.value)}
-                  placeholder="Mes"
-                  className={`w-full ${errors.birthDate ? "border-red-300 focus:ring-red-500 focus:border-red-500" : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"}`}
-                  aria-label="Mes de nacimiento"
-                  required
-                />
+                <Select
+                  value={(formData.birthDate.getMonth() + 1).toString()}
+                  onValueChange={(value) => handleDateChange("month", value)}
+                >
+                  <SelectTrigger
+                    className={`w-full ${errors.birthDate ? "border-red-300 focus:ring-red-500 focus:border-red-500" : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"}`}
+                  >
+                    <SelectValue placeholder="Mes" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {months.map((month) => (
+                      <SelectItem key={month.value} value={month.value.toString()}>
+                        {month.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div>
-                <Input
-                  type="number"
-                  min={1900}
-                  max={new Date().getFullYear()}
-                  value={formData.birthDate.getFullYear()}
-                  onChange={(e) => handleDateChange("year", e.target.value)}
-                  placeholder="Año"
-                  className={`w-full ${errors.birthDate ? "border-red-300 focus:ring-red-500 focus:border-red-500" : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"}`}
-                  aria-label="Año de nacimiento"
-                  required
-                />
+                <Select
+                  value={formData.birthDate.getFullYear().toString()}
+                  onValueChange={(value) => handleDateChange("year", value)}
+                >
+                  <SelectTrigger
+                    className={`w-full ${errors.birthDate ? "border-red-300 focus:ring-red-500 focus:border-red-500" : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"}`}
+                  >
+                    <SelectValue placeholder="Año" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {years.map((year) => (
+                      <SelectItem key={year} value={year.toString()}>
+                        {year}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             {errors.birthDate && <p className="mt-1 text-sm text-red-600">{errors.birthDate}</p>}
@@ -494,6 +552,31 @@ export default function RegisterForm() {
             {errors.profession && (
               <p id="profession-error" className="mt-1 text-sm text-red-600">
                 {errors.profession}
+              </p>
+            )}
+          </div>
+
+          {/* Ubicación */}
+          <div>
+            <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">
+              Ubicación
+            </label>
+            <Input
+              id="location"
+              name="location"
+              type="text"
+              value={formData.location}
+              onChange={handleChange}
+              placeholder="Ingrese su ubicación"
+              className={`block w-full ${errors.location ? "border-red-300 focus:ring-red-500 focus:border-red-500" : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                }`}
+              aria-invalid={!!errors.location}
+              aria-describedby={errors.location ? "location-error" : undefined}
+              required
+            />
+            {errors.location && (
+              <p id="location-error" className="mt-1 text-sm text-red-600">
+                {errors.location}
               </p>
             )}
           </div>

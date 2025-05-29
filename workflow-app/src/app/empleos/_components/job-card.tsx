@@ -29,13 +29,27 @@ export function JobCard({ job, onClick }: JobCardProps) {
   const description = job.description ?? "Anonimo"
   const professionName = profession?.name ?? "Anonimo"
 
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "Open":
+        return <Badge variant="outline" className="bg-green-100 text-green-700">Abierta</Badge>
+      case "Closed":
+        return <Badge variant="destructive">Cerrada</Badge>
+      default:
+        return <Badge variant="secondary">Desconocido</Badge>
+    }
+  }
+
   return (
     <div
       className="bg-white rounded-lg border border-[#EDECEE] p-5 hover:shadow-md transition-all cursor-pointer hover:border-[#B8C0CA]"
       onClick={onClick}
     >
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-3">
-        <h3 className="text-lg font-semibold text-[#112D4E]">{job.title}</h3>
+        <div className="flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-[#112D4E]">{job.title}</h3>
+          {getStatusBadge(job.status)}
+        </div>
         <div className="flex items-center text-sm text-[#8E8E8E]">
           <Calendar className="w-4 h-4 mr-1" />
           <span>Hace {formatDistanceToNow(pubDate, { locale: es })}</span>

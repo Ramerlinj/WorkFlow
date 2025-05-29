@@ -11,6 +11,8 @@ class JobApplication(Base):
     id_employment = Column('ID_EMPLOYMENT', Integer, ForeignKey('EMPLOYMENTS.ID_EMPLOYMENT', ondelete='CASCADE'), nullable=False)
     application_date = Column('APPLICATION_DATE', DateTime, default=datetime.utcnow, nullable=False)
     status = Column('STATUS', String(20), nullable=False, default='Pending')
+    cover_letter = Column('COVER_LETTER', String, nullable=True)
+
 
     user = relationship('User', back_populates='applications')
     employment = relationship('Employment', back_populates='applications')

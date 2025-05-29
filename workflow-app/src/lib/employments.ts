@@ -1,4 +1,4 @@
-import type { CreateApplicationDTO, CreateEmploymentDTO, Employment } from "@/types/interfaces";
+import type { CreateEmploymentDTO, Employment } from "@/types/interfaces";
 
 // URL base de la API
 const BASE_URL = "http://localhost:8000";
@@ -12,6 +12,26 @@ async function handleResponse<T>(response: Response): Promise<T> {
   return response.json();
 } 
 
+// Función para obtener el token de autenticación
+function getAuthHeader(): { Authorization: string } | undefined {
+  const token = localStorage.getItem("auth_token");
+  return token ? { Authorization: `Bearer ${token}` } : undefined;
+}
+
+// Función para decodificar el token y obtener el ID del usuario
+function getUserIdFromToken(): number | null {
+  const token = localStorage.getItem("auth_token");
+  if (!token) return null;
+  
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.sub || null;
+  } catch (error) {
+    console.error("Error decodificando token:", error);
+    return null;
+  }
+}
+
 // lib/api.ts
 export async function fetchWithTimeout<T>(
   url: string,
@@ -20,6 +40,16 @@ export async function fetchWithTimeout<T>(
 ): Promise<T> {
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeout);
+  
+  // Agregar headers de autorización si existen
+  const authHeader = getAuthHeader();
+  if (authHeader) {
+    options.headers = {
+      ...options.headers,
+      ...authHeader,
+    };
+  }
+
   try {
     const response = await fetch(url, { ...options, signal: controller.signal });
     return await handleResponse<T>(response);
@@ -30,7 +60,6 @@ export async function fetchWithTimeout<T>(
   }
 }
 
-
 // Obtener todos los trabajos
 export async function fetchJobs(): Promise<Employment[]> {
   return fetchWithTimeout<Employment[]>(`${BASE_URL}/employments`);
@@ -38,56 +67,168 @@ export async function fetchJobs(): Promise<Employment[]> {
 
 // Obtener trabajo por ID
 export async function fetchJobById(id: string): Promise<Employment> {
-  return fetchWithTimeout<Employment>(`${BASE_URL}/employments/${id}`);
-}
+  const token = localStorage.getItem("auth_token");
+  if (!token) {
+    throw new Error("No estás autenticado");
+  }
 
-export async function createJob(
-  jobData: CreateEmploymentDTO
-): Promise<Employment> {
-  return fetchWithTimeout<Employment>(`${BASE_URL}/employment`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(jobData),  // sólo lo que pide el DTO
+  return fetchWithTimeout<Employment>(`${BASE_URL}/employment/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   });
 }
 
+// Obtener trabajos por usuario
+export async function fetchJobsByUser(userId: number): Promise<Employment[]> {
+  const token = localStorage.getItem("auth_token");
+  if (!token) {
+    throw new Error("No estás autenticado");
+  }
+
+  try {
+    return fetchWithTimeout<Employment[]>(`${BASE_URL}/user/${userId}/employments`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Error al obtener empleos: ${error.message}`);
+    }
+    throw new Error("Error desconocido al obtener empleos");
+  }
+}
+
+// Crear un nuevo trabajo
+export async function createJob(jobData: CreateEmploymentDTO): Promise<Employment> {
+  const token = localStorage.getItem("auth_token");
+  if (!token) {
+    throw new Error("No estás autenticado");
+  }
+
+  const userId = getUserIdFromToken();
+  if (!userId) {
+    throw new Error("No se pudo obtener el ID del usuario");
+  }
+
+  try {
+    const fullJobData = {
+      ...jobData,
+      id_user: userId
+    };
+
+    return fetchWithTimeout<Employment>(`${BASE_URL}/employment`, {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(fullJobData),
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Error al crear el empleo: ${error.message}`);
+    }
+    throw new Error("Error desconocido al crear el empleo");
+  }
+}
 
 // Actualizar un trabajo existente
-export async function updateJob(id: string, jobData: Employment): Promise<Employment> {
-  const payload = {
-    ...jobData,
-    id_employment: parseInt(id, 10),
-  };
-  return fetchWithTimeout<Employment>(`${BASE_URL}/employment/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
+export async function updateJob(id: string, jobData: Partial<Employment>): Promise<Employment> {
+  const token = localStorage.getItem("auth_token");
+  if (!token) {
+    throw new Error("No estás autenticado");
+  }
+
+  try {
+    // Verificar que el usuario sea el propietario del empleo
+    const currentJob = await fetchJobById(id);
+    const userId = getUserIdFromToken();
+    if (!userId || currentJob.id_user !== userId) {
+      throw new Error("No tienes permiso para editar este empleo");
+    }
+
+    return fetchWithTimeout<Employment>(`${BASE_URL}/employment/${id}`, {
+      method: "PUT",
+      headers: { 
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        ...jobData,
+        id_employment: parseInt(id, 10),
+      }),
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Error al actualizar el empleo: ${error.message}`);
+    }
+    throw new Error("Error desconocido al actualizar el empleo");
+  }
 }
 
 // Eliminar un trabajo
 export async function deleteJob(id: string): Promise<{ message: string }> {
-  return fetchWithTimeout<{ message: string }>(`${BASE_URL}/employment/${id}`, {
-    method: "DELETE",
-  });
-}
+  const token = localStorage.getItem("auth_token");
+  if (!token) {
+    throw new Error("No estás autenticado");
+  }
 
-// Aplicar a un trabajo
-export async function applyToJob(
-  jobId: string,
-  applicationData: CreateApplicationDTO
-): Promise<{ success: boolean; message: string }> {
   try {
-    return await fetchWithTimeout<{ success: boolean; message: string }>(
-      `${BASE_URL}/employment/${jobId}/apply`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(applicationData),
-      }
-    );
+    // Verificar que el usuario sea el propietario del empleo
+    const currentJob = await fetchJobById(id);
+    const userId = getUserIdFromToken();
+    if (!userId || currentJob.id_user !== userId) {
+      throw new Error("No tienes permiso para eliminar este empleo");
+    }
+
+    return fetchWithTimeout<{ message: string }>(`${BASE_URL}/employment/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
   } catch (error) {
-    console.warn("Endpoint de aplicación no disponible, simulando respuesta:", error);
-    return { success: true, message: "Aplicación simulada enviada con éxito" };
+    if (error instanceof Error) {
+      throw new Error(`Error al eliminar el empleo: ${error.message}`);
+    }
+    throw new Error("Error desconocido al eliminar el empleo");
   }
 }
+
+// Cambiar el estado de un empleo (Open/Closed)
+export async function updateJobStatus(id: string, status: 'Open' | 'Closed'): Promise<Employment> {
+  const token = localStorage.getItem("auth_token");
+  if (!token) {
+    throw new Error("No estás autenticado");
+  }
+
+  try {
+    // Verificar que el usuario sea el propietario del empleo
+    const currentJob = await fetchJobById(id);
+    const userId = getUserIdFromToken();
+    if (!userId || currentJob.id_user !== userId) {
+      throw new Error("No tienes permiso para modificar este empleo");
+    }
+
+    return fetchWithTimeout<Employment>(`${BASE_URL}/employment/${id}`, {
+      method: "PUT",
+      headers: { 
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ 
+        ...currentJob,
+        status,
+        id_employment: parseInt(id, 10)
+      }),
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Error al actualizar el estado: ${error.message}`);
+    }
+    throw new Error("Error desconocido al actualizar el estado");
+  }
+}
+

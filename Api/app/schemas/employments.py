@@ -6,10 +6,12 @@ from typing import Literal
 from app.schemas.type_jobs import TypeJobBase
 from app.schemas.professions import ProfessionBase
 from app.schemas.locations import LocationBase
+from app.schemas.users import UserBase
 
 class EmploymentBase(BaseModel):
     id_type_job: int
     id_profession: int 
+    id_user: int
     title: str = Field(..., max_length=100)
     description: Optional[str] = Field(None, max_length=1000)
     company: str = Field(..., max_length=100)
@@ -31,10 +33,10 @@ class EmploymentResponse(EmploymentBase):
     salary_max: Optional[Decimal]
     publication_date: Optional[datetime]
     status: Literal['Open', 'Closed']
-    
     type_job: TypeJobBase
     profession: ProfessionBase
     location: Optional[LocationBase]
+    user: UserBase
 
     class Config:
         from_attributes = True

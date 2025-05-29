@@ -18,6 +18,8 @@ from app.schemas.notification_settings import NotificationSettingsResponse
 from app.schemas.job_applications import JobApplicationResponse
 from app.schemas.testimonials import TestimonialResponse
 from app.schemas.users import UserUpdate, UserCreate
+from sqlalchemy.exc import SQLAlchemyError
+from fastapi.responses import Response
 
 # Contexto para hashing de contraseñas
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -59,7 +61,6 @@ def get_user_full(username: str, db: Session = Depends(get_db)):
             joinedload(User.work_experience),
             joinedload(User.user_config),
             joinedload(User.notification_settings),
-            joinedload(User.testimonials_received),
             joinedload(User.testimonials_given),
         )
         .filter(func.lower(User.username) == username.lower())
@@ -107,9 +108,72 @@ def get_user_full(username: str, db: Session = Depends(get_db)):
         JobApplicationResponse.model_validate(app, from_attributes=True)
         for app in getattr(user, 'applications', [])
     ]
-    resp.testimonials_received = [
+    resp.testimonials_given = [
         TestimonialResponse.model_validate(t, from_attributes=True)
-        for t in user.testimonials_received
+        for t in user.testimonials_given
+    ]
+
+    return resp
+
+
+@router.get("/user/id/{id_user}", response_model=UserFullResponse)
+def get_user_full_by_id(id_user: int, db: Session = Depends(get_db)):
+    user = (
+        db.query(User)
+        .options(
+            joinedload(User.profession),
+            joinedload(User.profile),
+            joinedload(User.skills).joinedload(UserSkill.skill),
+            joinedload(User.links),
+            joinedload(User.work_experience),
+            joinedload(User.user_config),
+            joinedload(User.notification_settings),
+            joinedload(User.testimonials_given),
+        )
+        .filter(User.id_user == id_user)
+        .first()
+    )
+
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+    resp = UserFullResponse(
+        id_user=user.id_user,
+        username=user.username,
+        first_name=user.first_name,
+        middle_name=user.middle_name,
+        first_surname=user.first_surname,
+        second_surname=user.second_surname,
+        email=user.email,
+        date_of_birth=user.date_of_birth,
+        creation_date=user.creation_date,
+        direction=user.direction,
+        profession=(ProfessionResponse.model_validate(user.profession, from_attributes=True)
+                    if user.profession else None),
+        profile=(ProfileResponse.model_validate(user.profile, from_attributes=True)
+                 if user.profile else None),
+        user_config=(UserConfigResponse.model_validate(user.user_config, from_attributes=True)
+                     if user.user_config else None),
+        notification_settings=(NotificationSettingsResponse.model_validate(user.notification_settings, from_attributes=True)
+                               if user.notification_settings else None),
+    )
+
+    # Listas
+    resp.skills = [
+        SkillResponse.model_validate(us.skill, from_attributes=True)
+        for us in user.skills
+    ]
+    resp.links = [
+        LinkResponse.model_validate(link, from_attributes=True)
+        for link in user.links
+    ]
+    resp.work_experience = [
+        WorkExperienceResponse.model_validate(exp, from_attributes=True)
+        for exp in user.work_experience
+    ]
+    resp.applications = [
+        JobApplicationResponse.model_validate(app, from_attributes=True)
+        for app in getattr(user, 'applications', [])
     ]
     resp.testimonials_given = [
         TestimonialResponse.model_validate(t, from_attributes=True)
@@ -117,6 +181,8 @@ def get_user_full(username: str, db: Session = Depends(get_db)):
     ]
 
     return resp
+
+    
 
 @router.put("/user/{username}", response_model=UserFullResponse)
 def update_user(username: str, data: UserUpdate, db: Session = Depends(get_db)):
@@ -134,10 +200,19 @@ def update_user(username: str, data: UserUpdate, db: Session = Depends(get_db)):
 
 @router.delete("/user/{username}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_user(username: str, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.username == username).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    try:
+        # Buscar usuario con perfil relacionado
+        user = db.query(User).options(joinedload(User.profile)).filter(User.username == username).first()
+        
+        if not user:
+            raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
-    db.delete(user)
-    db.commit()
-    return
+        
+        return Response(status_code=204)
+    
+    except SQLAlchemyError as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error en la base de datos: {str(e)}"
+        )

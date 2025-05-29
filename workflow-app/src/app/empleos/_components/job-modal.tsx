@@ -2,7 +2,7 @@
 
 import { formatDistanceToNow } from "date-fns"
 import { es } from "date-fns/locale"
-import { Briefcase, MapPin, DollarSign, Building, Tag, Calendar, ExternalLink, Trash2 } from "lucide-react"
+import { Briefcase, MapPin, DollarSign, Building, Tag, Calendar } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
@@ -16,8 +16,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import type { Employment } from "@/types/interfaces"
+import { AuthService } from "@/lib/authServices"
 
 interface JobModalProps {
   job: Employment | null
@@ -29,12 +30,17 @@ interface JobModalProps {
 
 export function JobModal({ job, isOpen, onClose, onApply, onDelete }: JobModalProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [currentUserId, setCurrentUserId] = useState<number | null>(null)
+
+  useEffect(() => {
+    const userId = AuthService.getCurrentUserId()
+    setCurrentUserId(userId)
+  }, [])
 
   if (!job) return null
 
-  const handleDelete = () => {
-    setIsDeleteDialogOpen(true)
-  }
+  const isOwnJob = currentUserId !== null && job.id_user === currentUserId
+  const canApply = !isOwnJob && job.status === "Open"
 
   const confirmDelete = () => {
     onDelete(job.id_employment.toString())
@@ -69,8 +75,8 @@ export function JobModal({ job, isOpen, onClose, onApply, onDelete }: JobModalPr
 
               <div className="flex items-center gap-2 bg-[#F5F5F5] p-3 rounded-md">
                 <DollarSign className="w-5 h-5 text-[#0979b0]" />
-                <span className="text-[#415771] font-medium">{job.salary_min ? Number(job.salary_min).toFixed(2) : "0.00"}$ - {job.salary_max ? Number(job.salary_max).toFixed(2) : "0.00"}$
-
+                <span className="text-[#415771] font-medium">
+                  {job.salary_min ? Number(job.salary_min).toFixed(2) : "0.00"}$ - {job.salary_max ? Number(job.salary_max).toFixed(2) : "0.00"}$
                 </span>
               </div>
 
@@ -94,19 +100,7 @@ export function JobModal({ job, isOpen, onClose, onApply, onDelete }: JobModalPr
 
             <Separator className="bg-[#EDECEE]" />
 
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-[#112D4E]">Requisitos</h3>
-              <ul className="list-disc pl-5 text-[#415771] space-y-2">
-                <li>Experiencia mínima de 2 años en posiciones similares</li>
-                <li>Conocimientos avanzados en herramientas específicas del sector</li>
-                <li>Capacidad para trabajar en equipo y bajo presión</li>
-                <li>Excelentes habilidades de comunicación</li>
-              </ul>
-            </div>
-
-            <Separator className="bg-[#EDECEE]" />
-
-            <div className="pt-4 flex flex-col sm:flex-row gap-3 justify-center sm:justify-between">
+            <div className="flex justify-between items-center">
               <div className="flex gap-2">
                 <Button
                   variant="outline"
@@ -115,23 +109,29 @@ export function JobModal({ job, isOpen, onClose, onApply, onDelete }: JobModalPr
                 >
                   Volver
                 </Button>
-                <Button
-                  variant="outline"
-                  className="border-red-200 text-red-500 hover:bg-red-50 hover:text-red-600"
-                  onClick={handleDelete}
-                >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Eliminar
-                </Button>
+                {isOwnJob && (
+                  <Button
+                    variant="destructive"
+                    onClick={() => setIsDeleteDialogOpen(true)}
+                  >
+                    Eliminar oferta
+                  </Button>
+                )}
               </div>
-              <div className="flex gap-3">
-                <Button variant="outline" className="border-[#0979b0] text-[#0979b0] hover:bg-[#0979b0]/10">
-                  <ExternalLink className="mr-2 h-4 w-4" />
-                  Visitar sitio web
-                </Button>
-                <Button className="bg-[#214E83] hover:bg-[#144C8E] text-white" onClick={() => onApply(job.id_employment.toString())}>
-                  Aplicar ahora
-                </Button>
+              <div className="flex gap-3 items-center">
+                {job.status === "Closed" ? (
+                  <p className="text-red-500 text-sm">Esta oferta está cerrada y no acepta más aplicaciones</p>
+                ) : isOwnJob ? (
+                  <p className="text-yellow-600 text-sm">No puedes aplicar a tu propia oferta de empleo</p>
+                ) : (
+                  <Button
+                    className="bg-[#214E83] hover:bg-[#144C8E] text-white"
+                    onClick={() => onApply(job.id_employment.toString())}
+                    disabled={!canApply}
+                  >
+                    Aplicar ahora
+                  </Button>
+                )}
               </div>
             </div>
           </div>

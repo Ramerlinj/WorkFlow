@@ -5,45 +5,34 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import type {
-  TestimonialResponse
-} from "@/types/interfaces"
+import type { TestimonialCreate } from "@/types/interfaces"
 import { Star } from "lucide-react"
 
 interface AddTestimonialFormProps {
-  onSubmit: (testimonial: TestimonialResponse) => void
+  onSubmit: (testimonial: TestimonialCreate) => void
 }
 
 export function AddTestimonialForm({ onSubmit }: AddTestimonialFormProps) {
-  const [authorId, setAuthorId] = useState<string>("")
-  const [targetId, setTargetId] = useState<string>("")
   const [title, setTitle] = useState<string>("")
   const [description, setDescription] = useState<string>("")
   const [rating, setRating] = useState<number>(5)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    const trimmedTitle = title.trim()
+    const trimmedDescription = description.trim()
 
-    if (
-      !authorId.trim() ||
-      !targetId.trim() ||
-      !title.trim() ||
-      !description.trim()
-    ) {
+    if (!trimmedTitle || !trimmedDescription) {
       return
     }
-
     onSubmit({
-      id_user_source: Number(authorId),
-      title,
-      description,
-      rating,
-      
+      title: trimmedTitle,
+      description: trimmedDescription,
+      rating
+
     })
 
     // Reset form
-    setAuthorId("")
-    setTargetId("")
     setTitle("")
     setDescription("")
     setRating(5)
@@ -51,42 +40,15 @@ export function AddTestimonialForm({ onSubmit }: AddTestimonialFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="author" className="text-[#112D4E]">
-          Tu ID de usuario
-        </Label>
-        <Input
-          id="author"
-          type="number"
-          value={authorId}
-          onChange={(e) => setAuthorId(e.target.value)}
-          placeholder="Ej. 123"
-          required
-          className="border-[#EDECEE]"
-        />
-      </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="target" className="text-[#112D4E]">
-          ID del usuario destinatario
-        </Label>
-        <Input
-          id="target"
-          type="number"
-          value={targetId}
-          onChange={(e) => setTargetId(e.target.value)}
-          placeholder="Ej. 456"
-          required
-          className="border-[#EDECEE]"
-        />
-      </div>
-
+      {/* Título */}
       <div className="space-y-2">
         <Label htmlFor="title" className="text-[#112D4E]">
           Título de tu opinión
         </Label>
         <Input
           id="title"
+          aria-label="Título"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Resumen de tu experiencia"
@@ -95,12 +57,14 @@ export function AddTestimonialForm({ onSubmit }: AddTestimonialFormProps) {
         />
       </div>
 
+      {/* Descripción */}
       <div className="space-y-2">
         <Label htmlFor="description" className="text-[#112D4E]">
           Descripción
         </Label>
         <Textarea
           id="description"
+          aria-label="Descripción"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Comparte los detalles de tu experiencia"
@@ -109,6 +73,7 @@ export function AddTestimonialForm({ onSubmit }: AddTestimonialFormProps) {
         />
       </div>
 
+      {/* Calificación */}
       <div className="space-y-2">
         <Label className="text-[#112D4E]">Calificación</Label>
         <div className="flex items-center gap-4">
@@ -116,7 +81,9 @@ export function AddTestimonialForm({ onSubmit }: AddTestimonialFormProps) {
             {[1, 2, 3, 4, 5].map((value) => (
               <Star
                 key={value}
-                className={`h-6 w-6 ${
+                role="button"
+                aria-label={`${value} estrellas`}
+                className={`h-6 w-6 transition-colors ${
                   value <= rating
                     ? "fill-[#0979b0] text-[#0979b0]"
                     : "text-[#B8C0CA]"
@@ -131,6 +98,7 @@ export function AddTestimonialForm({ onSubmit }: AddTestimonialFormProps) {
         </div>
       </div>
 
+      {/* Botón */}
       <Button
         type="submit"
         className="mt-6 w-full bg-[#214E83] hover:bg-[#144C8E] text-white"

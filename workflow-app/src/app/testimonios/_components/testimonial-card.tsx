@@ -4,38 +4,30 @@ import { useState } from "react"
 import { Heart, MessageCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { TestimonialResponse } from "@/types/interfaces"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils"
 import { CommentsDialog } from "./comments-dialog"
 import { StarRating } from "./star-rating"
+import { UserAvatar } from "@/components/userAvatar"
 
 interface TestimonialCardProps {
   testimonial: TestimonialResponse
   onLike: (id: string) => void
-  onAddComment: (id: string, comment: string) => void
+  currentUserId: number
 }
 
-export function TestimonialCard({ testimonial, onLike, onAddComment }: TestimonialCardProps) {
+export function TestimonialCard({ testimonial, onLike, currentUserId }: TestimonialCardProps) {
   const [showCommentsDialog, setShowCommentsDialog] = useState(false)
-
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((part) => part[0])
-      .join("")
-      .toUpperCase()
-      .substring(0, 2)
-  }
 
   return (
     <div className="flex flex-col rounded-lg border border-[#EDECEE] bg-white shadow-sm transition-all hover:shadow-md">
       <div className="flex items-start justify-between p-6">
         <div className="flex items-center gap-3">
-          <Avatar className="h-10 w-10 bg-[#DDE6F6] text-[#112D4E]">
-            <AvatarFallback>{getInitials(testimonial.user_source.first_name)}</AvatarFallback>
-          </Avatar>
+          <UserAvatar user={testimonial.user_source} />
           <div>
-            <h3 className="font-medium text-[#112D4E]">{testimonial.user_source.first_name} {testimonial.user_source.second_surname} {testimonial.user_source.first_surname} {testimonial.user_source.second_surname}</h3>
+          <h3 className="font-medium text-[#112D4E]">
+          {testimonial.user_source.first_name} {testimonial.user_source.first_surname} {testimonial.user_source.second_surname}
+
+          </h3>
             <p className="text-sm text-[#8E8E8E]">{testimonial.user_source.username}</p>
           </div>
         </div>
@@ -73,7 +65,7 @@ export function TestimonialCard({ testimonial, onLike, onAddComment }: Testimoni
         open={showCommentsDialog}
         onOpenChange={setShowCommentsDialog}
         testimonial={testimonial}
-        onAddComment={onAddComment}
+        currentUserId={currentUserId || 0}
       />
     </div>
   )

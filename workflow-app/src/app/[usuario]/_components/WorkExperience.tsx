@@ -7,9 +7,10 @@ import { Button } from "@/components/ui/button"
 
 interface WorkExperienceTabsProps {
   workexperience: WorkExperience[]
+  isOwnProfile?: boolean
 }
 
-export function ProfileTab({ workexperience }: WorkExperienceTabsProps) {
+export function ProfileTab({ workexperience, isOwnProfile = false }: WorkExperienceTabsProps) {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
     return date.toLocaleDateString("es-ES", {
@@ -81,10 +82,16 @@ export function ProfileTab({ workexperience }: WorkExperienceTabsProps) {
           ))
         ) : (
           <div className="text-center py-6">
-            <p className="text-muted-foreground">No hay experiencia laboral registrada.</p>
-            <Button variant="outline" className="mt-4">
-              Añadir experiencia
-            </Button>
+            <p className="text-muted-foreground">
+              {isOwnProfile
+                ? "No has registrado experiencia laboral aún."
+                : "Este usuario no tiene experiencia laboral registrada."}
+            </p>
+            {isOwnProfile && (
+              <Button variant="outline" className="mt-4">
+                Añadir experiencia
+              </Button>
+            )}
           </div>
         )}
       </CardContent>

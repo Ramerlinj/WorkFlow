@@ -13,6 +13,12 @@ import { Check, Upload } from "lucide-react"
 import { AnimatePresence, motion } from "framer-motion"
 import avatarColors from "@/lib/colors/avatar-colors"
 import bannerColors from "@/lib/colors/banner-colors"
+import { updateUser } from "@/lib/getUser"
+import { getProfile, updateProfile } from "@/lib/profileServices"
+import { useEffect } from "react"
+import { Profile } from "@/types/interfaces"
+import { uploadImage } from "@/lib/uploadServices"
+
 
 interface ProfileTabProps {
   previewAvatar: string | null
@@ -56,26 +62,113 @@ export function ProfileTab({
   onSave,
 }: ProfileTabProps) {
   const [colorPickerOpen, setColorPickerOpen] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [currentProfile, setCurrentProfile] = useState<Profile | null>(null);
+  const [isUploading, setIsUploading] = useState(false)
+  const [uploadError, setUploadError] = useState<string | null>(null)
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
-    const reader = new FileReader()
-    reader.onloadend = () => {
-      const imageUrl = reader.result as string
-      setPreviewAvatar(imageUrl)
+    // Validar el tipo de archivo
+    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
+      setUploadError('Solo se permiten imágenes en formato JPG, PNG, GIF o WebP');
+      return;
     }
-    reader.readAsDataURL(file)
+
+    // Validar el tamaño (5MB máximo)
+    const maxSize = 5 * 1024 * 1024; // 5MB en bytes
+    if (file.size > maxSize) {
+      setUploadError('La imagen no debe superar los 5MB');
+      return;
+    }
+
+    setIsUploading(true)
+    setUploadError(null)
+
+    try {
+      const imageUrl = await uploadImage(file)
+      setPreviewAvatar(imageUrl)
+      setUploadError(null)
+    } catch (error) {
+      console.error('Error al subir la imagen:', error)
+      setUploadError(error instanceof Error ? error.message : 'Error al subir la imagen')
+      setPreviewAvatar(null)
+    } finally {
+      setIsUploading(false)
+    }
   }
 
   const handleBannerColorChange = (color: string) => {
-    setPreviewBannerColor(color)
-    setColorPickerOpen(false)
+    setPreviewBannerColor(color);
+    setColorPickerOpen(false);
   }
 
   const initial = previewName ? previewName.charAt(0).toUpperCase() : ""
   const backgroundColor = avatarColors[initial] || "#999"
+
+
+
+
+  useEffect(() => {
+    const loadProfile = async () => {
+      if (previewUsername) {
+        const profileData = await getProfile(previewUsername);
+        if (profileData) {
+          setCurrentProfile(profileData);
+          setPreviewAvatar(profileData.avatar_url || null);
+          setPreviewAboutMe(profileData.about_me || "");
+          setPreviewBannerColor(profileData.banner_color ? `#${profileData.banner_color}` : "#FFFFFF");
+        }
+      }
+    };
+    loadProfile();
+  }, [previewUsername]);
+
+
+
+  const handleSave = async () => {
+    if (!previewUsername || !currentProfile) {
+      console.error("Datos incompletos para guardar")
+      return
+    }
+
+    setIsSaving(true)
+
+    try {
+      // 1. Actualizar usuario
+      const userPayload = {
+        first_name: previewName || "",
+        middle_name: previewSecondName || "",
+        first_surname: previewSurname || "",
+        second_surname: previewSecondSurname || "",
+        email: previewEmail || ""
+      }
+
+      const updatedUser = await updateUser(previewUsername, userPayload)
+
+      // 2. Actualizar perfil
+      const profilePayload = {
+        about_me: previewAboutMe || "No tiene descripción...",
+        avatar_url: previewAvatar || "",
+        cv_url: currentProfile.cv_url || "",
+        banner_color: (previewBannerColor || "#000000").replace("#", "")
+      }
+
+      const updatedProfile = await updateProfile(previewUsername, profilePayload)
+
+      if (updatedUser && updatedProfile) {
+        console.log("Actualización exitosa!")
+        onSave()
+      }
+    } catch (error) {
+      console.error("Error al guardar:", error)
+    } finally {
+      setIsSaving(false)
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -97,23 +190,24 @@ export function ProfileTab({
               </Avatar>
               <Label className="cursor-pointer flex items-center gap-2 px-4 py-2 rounded-md bg-muted hover:bg-muted/80 transition-colors">
                 <Upload className="w-4 h-4" />
-                <span className="text-sm">Subir imagen</span>
+                <span className="text-sm">{isUploading ? "Subiendo..." : "Subir imagen"}</span>
                 <Input
                   id="avatar-upload"
                   type="file"
                   accept="image/*"
                   onChange={handleImageChange}
                   className="hidden"
-                  readOnly
+                  disabled={isUploading}
                 />
               </Label>
+              {uploadError && (
+                <p className="text-sm text-red-600">{uploadError}</p>
+              )}
             </div>
           </div>
 
           <div className="space-y-2">
             <Label>Color del banner</Label>
-
-            {/* Botón que abre/cierra la paleta */}
             <Button
               variant="outline"
               className="w-full flex justify-between items-center"
@@ -125,7 +219,6 @@ export function ProfileTab({
               </div>
             </Button>
 
-            {/* Animación de aparición */}
             <AnimatePresence>
               {colorPickerOpen && (
                 <motion.div
@@ -207,7 +300,9 @@ export function ProfileTab({
       </div>
 
       <div className="flex justify-end">
-        <Button  onClick={onSave}>Guardar cambios</Button>
+        <Button onClick={handleSave} disabled={isSaving}>
+          {isSaving ? "Guardando..." : "Guardar cambios"}
+        </Button>
       </div>
     </div>
   )

@@ -6,6 +6,7 @@ from app.database.conexion import SessionLocal
 from app.models.testimonials import Testimonial
 from app.models.testimonial_comment import TestimonialComment
 from app.models.user import User
+from app.auth import get_current_user
 from app.schemas.testimonials import (
     TestimonialCreate,
     TestimonialUpdate,
@@ -118,24 +119,28 @@ def delete_testimonial(
     return
 
 
-# Crear comentar
-
 @router.post("/comment", response_model=TestimonialCommentResponse, status_code=status.HTTP_201_CREATED)
 def create_comment(
     data: TestimonialCommentCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)  # <-- usuario autenticado
 ):
     if not db.query(Testimonial).filter(Testimonial.id_testimonial == data.id_testimonial).first():
         raise HTTPException(404, "Testimonio no encontrado")
-    if not db.query(User).filter(User.id_user == data.id_user).first():
-        raise HTTPException(404, "Usuario no encontrado")
 
-    new_cm = TestimonialComment(**data.dict())
+    # Ya no verificamos id_user del body, usamos current_user
+    if not current_user:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "No autenticado")
+
+    new_cm = TestimonialComment(
+        comment=data.comment,
+        id_testimonial=data.id_testimonial,
+        id_user=current_user.id_user  # <-- Aquí el id del usuario autenticado
+    )
     db.add(new_cm)
     db.commit()
     db.refresh(new_cm)
 
-    # Cargar la relación del usuario con joinedload
     comment_with_user = (
         db.query(TestimonialComment)
         .options(joinedload(TestimonialComment.user))
@@ -144,6 +149,7 @@ def create_comment(
     )
 
     return comment_with_user
+
 
 
 # Actualizar comentario

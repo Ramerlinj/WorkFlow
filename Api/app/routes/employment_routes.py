@@ -70,3 +70,22 @@ def delete_employment(employment_id: int, db: Session = Depends(get_db)):
     db.delete(employment)
     db.commit()
     return {"detail": "Employment deleted successfully. The data will be removed from the database after a while."}
+
+
+@router.get("/user/{user_id}/employments", response_model=List[EmploymentResponse])
+def get_employments_by_user(user_id: int, db: Session = Depends(get_db)):
+    employments = db.query(Employment)\
+        .options(
+            joinedload(Employment.type_job),
+            joinedload(Employment.profession),
+            joinedload(Employment.location),
+            joinedload(Employment.user)  
+        )\
+        .filter(Employment.id_user == user_id)\
+        .all()
+
+    if not employments:
+        raise HTTPException(status_code=404, detail="Este usuario no ha publicado empleos")
+    
+    return employments
+
