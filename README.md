@@ -1,6 +1,7 @@
 # 💼 WorkFlow
 
-> Una plataforma intuitiva que centraliza oportunidades laborales para facilitar el acceso al empleo en tu país. Diseñada para ser clara, rápida y útil.
+ **Una plataforma intuitiva que centraliza oportunidades laborales para facilitar el acceso al empleo en tu país. Diseñada para ser clara, rápida y útil.**
+
 
 ---
 
