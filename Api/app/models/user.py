@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.database.conexion import Base
 
+
 class User(Base):
     __tablename__ = 'USERS'
 
@@ -28,6 +29,7 @@ class User(Base):
     notification_settings = relationship('NotificationSettings', back_populates='user', uselist=False, cascade='all, delete-orphan')
     
     comments = relationship("TestimonialComment", back_populates="user")
+    employments = relationship('Employment', back_populates='user')
 
     testimonials_given = relationship(
         'Testimonial',
@@ -41,4 +43,3 @@ class User(Base):
     back_populates='user',
     cascade='all, delete-orphan'
     )
-

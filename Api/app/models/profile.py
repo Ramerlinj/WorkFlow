@@ -10,6 +10,7 @@ class Profile(Base):
     about_me = Column('ABOUT_ME', String(500), nullable=False, default='No tiene descripción...')
     avatar_url = Column('AVATAR_URL', String(255), nullable=True)
     cv_url = Column('CV_URL', String(255), nullable=True)
-    banner_color = Column('BANNER_COLOR', String(50), nullable=False)
+    banner_color = Column('BANNER_COLOR', String(10))
+    
 
     user = relationship('User', back_populates='profile')

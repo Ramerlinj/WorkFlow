@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
-
+from sqlalchemy.orm import joinedload
 from app.database.conexion import SessionLocal
 from app.models.job_application import JobApplication
 from app.schemas.job_applications import JobApplicationCreate, JobApplicationResponse
+from app.models.employment import Employment
 
 router = APIRouter()
 
@@ -77,3 +78,30 @@ def delete_job_application(application_id: int, db: Session = Depends(get_db)):
     db.delete(application)
     db.commit()
     return {"detail": "Solicitud eliminada correctamente"}
+
+
+@router.get("/user/{user_id}/received-applications", response_model=List[JobApplicationResponse])
+def get_received_applications(user_id: int, db: Session = Depends(get_db)):
+    # Obtener todos los empleos que publicó el usuario
+    employments = db.query(Employment).filter(Employment.id_user == user_id).all()
+    if not employments:
+        raise HTTPException(status_code=404, detail="El usuario no ha publicado empleos")
+
+    # Obtener los ids de esos empleos
+    employment_ids = [e.id_employment for e in employments]
+
+    # Obtener todas las postulaciones para esos empleos
+    applications = db.query(JobApplication)\
+        .options(
+            joinedload(JobApplication.user),  # Datos del postulante
+            joinedload(JobApplication.employment).joinedload(Employment.type_job),
+            joinedload(JobApplication.employment).joinedload(Employment.profession),
+            joinedload(JobApplication.employment).joinedload(Employment.location),
+        )\
+        .filter(JobApplication.id_employment.in_(employment_ids))\
+        .all()
+
+    if not applications:
+        raise HTTPException(status_code=404, detail="No hay postulaciones para los empleos publicados por este usuario")
+
+    return applications

@@ -115,6 +115,75 @@ def get_user_full(username: str, db: Session = Depends(get_db)):
 
     return resp
 
+
+@router.get("/user/id/{id_user}", response_model=UserFullResponse)
+def get_user_full_by_id(id_user: int, db: Session = Depends(get_db)):
+    user = (
+        db.query(User)
+        .options(
+            joinedload(User.profession),
+            joinedload(User.profile),
+            joinedload(User.skills).joinedload(UserSkill.skill),
+            joinedload(User.links),
+            joinedload(User.work_experience),
+            joinedload(User.user_config),
+            joinedload(User.notification_settings),
+            joinedload(User.testimonials_given),
+        )
+        .filter(User.id_user == id_user)
+        .first()
+    )
+
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+    resp = UserFullResponse(
+        id_user=user.id_user,
+        username=user.username,
+        first_name=user.first_name,
+        middle_name=user.middle_name,
+        first_surname=user.first_surname,
+        second_surname=user.second_surname,
+        email=user.email,
+        date_of_birth=user.date_of_birth,
+        creation_date=user.creation_date,
+        direction=user.direction,
+        profession=(ProfessionResponse.model_validate(user.profession, from_attributes=True)
+                    if user.profession else None),
+        profile=(ProfileResponse.model_validate(user.profile, from_attributes=True)
+                 if user.profile else None),
+        user_config=(UserConfigResponse.model_validate(user.user_config, from_attributes=True)
+                     if user.user_config else None),
+        notification_settings=(NotificationSettingsResponse.model_validate(user.notification_settings, from_attributes=True)
+                               if user.notification_settings else None),
+    )
+
+    # Listas
+    resp.skills = [
+        SkillResponse.model_validate(us.skill, from_attributes=True)
+        for us in user.skills
+    ]
+    resp.links = [
+        LinkResponse.model_validate(link, from_attributes=True)
+        for link in user.links
+    ]
+    resp.work_experience = [
+        WorkExperienceResponse.model_validate(exp, from_attributes=True)
+        for exp in user.work_experience
+    ]
+    resp.applications = [
+        JobApplicationResponse.model_validate(app, from_attributes=True)
+        for app in getattr(user, 'applications', [])
+    ]
+    resp.testimonials_given = [
+        TestimonialResponse.model_validate(t, from_attributes=True)
+        for t in user.testimonials_given
+    ]
+
+    return resp
+
+    
+
 @router.put("/user/{username}", response_model=UserFullResponse)
 def update_user(username: str, data: UserUpdate, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.username == username).first()

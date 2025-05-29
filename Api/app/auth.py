@@ -4,8 +4,10 @@ from sqlalchemy.orm import Session
 from jwt import PyJWTError
 from app.database.conexion import SessionLocal
 from app.models.user import User
+from app.models.profile import Profile
 from app.schemas.users import UserCreate, UserLogin
 from app.utils.hashing import Hash
+
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
@@ -24,9 +26,14 @@ def login_user(db: Session, payload: UserLogin) -> str:
     return Hash.create_access_token(user.id_user)
 
 def register_user(db: Session, payload: UserCreate) -> User:
+    # Verificar existencia de usuario
     if db.query(User).filter(User.username == payload.username).first():
         raise HTTPException(status_code=400, detail="El usuario ya existe")
+
+    # Hashear la contraseña
     hashed_pw = Hash.get_password_hash(payload.password)
+
+    # Crear instancia de User
     new = User(
         id_profession=payload.id_profession,
         username=payload.username,
@@ -43,6 +50,13 @@ def register_user(db: Session, payload: UserCreate) -> User:
     db.add(new)
     db.commit()
     db.refresh(new)
+
+    # Crear perfil vacío para el nuevo usuario
+    profile = Profile(id_user=new.id_user)
+    db.add(profile)
+    db.commit()
+    db.refresh(profile)
+
     return new
 
 def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)) -> User:
