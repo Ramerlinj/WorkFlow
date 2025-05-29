@@ -22,6 +22,7 @@ type FormData = {
   password: string
   confirmPassword: string
   profession: string
+  location: string
 }
 
 type FormErrors = {
@@ -33,6 +34,7 @@ type FormErrors = {
   password: string
   confirmPassword: string
   profession: string
+  location: string
   general: string
 }
 
@@ -47,6 +49,7 @@ export default function RegisterForm() {
     password: "",
     confirmPassword: "",
     profession: "",
+    location: "",
   })
 
   const [showPassword, setShowPassword] = useState(false)
@@ -60,6 +63,7 @@ export default function RegisterForm() {
     password: "",
     confirmPassword: "",
     profession: "",
+    location: "",
     general: "",
   })
 
@@ -202,7 +206,7 @@ export default function RegisterForm() {
 
   // Validate password strength
   useEffect(() => {
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/
     const isStrong = passwordRegex.test(formData.password)
     setIsPasswordStrong(formData.password === "" || isStrong)
 
@@ -258,10 +262,10 @@ export default function RegisterForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isFormValid || isSubmitting) return;
-  
+
     setIsSubmitting(true);
     setErrors((prev) => ({ ...prev, general: "" }));
-  
+
     try {
       await AuthService.register({
         username: formData.username,
@@ -272,10 +276,10 @@ export default function RegisterForm() {
         first_surname: formData.lastName,
         second_surname: "",
         date_of_birth: formData.birthDate.toISOString().split("T")[0],
-        direction: "",
+        direction: formData.location,
         id_profession: Number(formData.profession),
       });
-  
+
       router.push("/login");
     } catch (error: unknown) {
       console.error("Error al registrar usuario:", error);
@@ -498,6 +502,31 @@ export default function RegisterForm() {
             {errors.profession && (
               <p id="profession-error" className="mt-1 text-sm text-red-600">
                 {errors.profession}
+              </p>
+            )}
+          </div>
+
+          {/* Ubicación */}
+          <div>
+            <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">
+              Ubicación
+            </label>
+            <Input
+              id="location"
+              name="location"
+              type="text"
+              value={formData.location}
+              onChange={handleChange}
+              placeholder="Ingrese su ubicación"
+              className={`block w-full ${errors.location ? "border-red-300 focus:ring-red-500 focus:border-red-500" : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                }`}
+              aria-invalid={!!errors.location}
+              aria-describedby={errors.location ? "location-error" : undefined}
+              required
+            />
+            {errors.location && (
+              <p id="location-error" className="mt-1 text-sm text-red-600">
+                {errors.location}
               </p>
             )}
           </div>

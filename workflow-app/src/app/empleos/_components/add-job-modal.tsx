@@ -178,7 +178,14 @@ export function AddJobModal({ isOpen, onClose, onAddJob }: AddJobModalProps) {
     } catch (error) {
       console.error("Error al crear empleo:", error);
       if (error instanceof Error) {
-        setFormError(`Error al crear la oferta: ${error.message}`);
+        // Manejo específico de errores de autenticación
+        if (error.message.includes("No estás autenticado")) {
+          setFormError("Debes iniciar sesión para publicar una oferta de trabajo");
+        } else if (error.message.includes("ID del usuario")) {
+          setFormError("Error de autenticación. Por favor, cierra sesión y vuelve a iniciar sesión");
+        } else {
+          setFormError(`Error al crear la oferta: ${error.message}`);
+        }
       } else {
         setFormError("Error al crear la oferta. Por favor, inténtalo de nuevo.");
       }

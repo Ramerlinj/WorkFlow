@@ -16,7 +16,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
-import { Building, FileText, CheckCircle2 } from "lucide-react"
+import { Building, FileText, CheckCircle2, AlertCircle } from "lucide-react"
 import type { Employment } from "@/types/interfaces"
 import { createJobApplication } from "@/lib/applicationServices"
 import { AuthService } from "@/lib/authServices"
@@ -41,6 +41,7 @@ export function ApplicationModal({ isOpen, onClose, jobId, job }: ApplicationMod
   const [userId, setUserId] = useState<number | null>(null)
   const [charCount, setCharCount] = useState(0)
   const [submitted, setSubmitted] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const form = useForm<z.infer<typeof applicationSchema>>({
     resolver: zodResolver(applicationSchema),
@@ -52,31 +53,83 @@ export function ApplicationModal({ isOpen, onClose, jobId, job }: ApplicationMod
     if (id) setUserId(id)
   }, [])
 
+  useEffect(() => {
+    // Verificar si el empleo está cerrado cuando se abre el modal
+    if (isOpen && job && job.status === "Closed") {
+      setError("Esta oferta está cerrada y no acepta más aplicaciones")
+      setTimeout(onClose, 3000) // Cerrar el modal después de 3 segundos
+    } else {
+      setError(null)
+    }
+  }, [isOpen, job])
+
   const handleSubmit = async (values: z.infer<typeof applicationSchema>) => {
-    if (!job || !jobId || !userId) return
+    if (!job || !jobId || !userId) {
+      setError("No se pudo procesar la aplicación. Falta información necesaria.")
+      return
+    }
+
+    // Verificar nuevamente el estado del empleo antes de enviar la aplicación
+    if (job.status === "Closed") {
+      setError("Esta oferta está cerrada y no acepta más aplicaciones")
+      return
+    }
 
     setIsSubmitting(true)
+    setError(null)
+
     try {
-      await createJobApplication({
+      const response = await createJobApplication({
         id_user: userId,
         id_employment: parseInt(jobId, 10),
         cover_letter: values.cover_letter,
         status: "Pending",
         application_date: new Date().toISOString(),
       })
+
+      console.log("Respuesta de la API:", response)
       setSubmitted(true)
       setTimeout(() => {
         onClose()
       }, 2000)
     } catch (err) {
+      console.error("Error detallado al enviar la aplicación:", {
+        error: err,
+        type: err instanceof Error ? 'Error nativo' : 'Error desconocido',
+        message: err instanceof Error ? err.message : 'Error desconocido',
+        axios: axios.isAxiosError(err) ? {
+          status: err.response?.status,
+          data: err.response?.data,
+          message: err.message
+        } : null
+      })
+
       if (axios.isAxiosError(err)) {
-        console.error("Respuesta completa del 400:", err.response?.data)
-        form.setError("cover_letter", {
-          type: "manual",
-          message: "Error al enviar la aplicación. Por favor, inténtalo de nuevo.",
-        })
+        if (err.response?.status === 400) {
+          if (err.response.data?.detail?.includes("closed")) {
+            setError("Esta oferta está cerrada y no acepta más aplicaciones")
+          } else if (err.response.data?.detail?.includes("already applied")) {
+            setError("Ya has aplicado a esta oferta anteriormente")
+          } else {
+            setError(err.response.data?.detail || "Error al procesar la aplicación")
+          }
+        } else if (err.response?.status === 401) {
+          setError("Debes iniciar sesión para aplicar a esta oferta")
+        } else if (err.response?.status === 403) {
+          setError("No tienes permiso para aplicar a esta oferta")
+        } else if (err.response?.status === 404) {
+          setError("La oferta de trabajo no fue encontrada")
+        } else if (err.response?.status === 409) {
+          setError("Ya has aplicado a esta oferta anteriormente")
+        } else if (!err.response) {
+          setError("Error de conexión. Por favor, verifica tu conexión a internet")
+        } else {
+          setError(`Error ${err.response.status}: ${err.response.data?.detail || 'Error al enviar la aplicación'}`)
+        }
+      } else if (err instanceof Error) {
+        setError(`Error: ${err.message}`)
       } else {
-        console.error("Error desconocido:", err)
+        setError("Error inesperado al enviar la aplicación")
       }
     } finally {
       setIsSubmitting(false)
@@ -94,7 +147,14 @@ export function ApplicationModal({ isOpen, onClose, jobId, job }: ApplicationMod
           </DialogTitle>
         </DialogHeader>
 
-        {!submitted ? (
+        {error ? (
+          <div className="flex flex-col items-center justify-center py-8">
+            <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
+            <p className="text-lg font-medium text-red-600 text-center">
+              {error}
+            </p>
+          </div>
+        ) : !submitted ? (
           <>
             <div className="bg-[#F8F9FC] p-4 rounded-md mb-4 flex items-center gap-3">
               <Building className="w-5 h-5 text-[#0979b0]" />
@@ -137,7 +197,7 @@ export function ApplicationModal({ isOpen, onClose, jobId, job }: ApplicationMod
                   )}
                 />
 
-                <div className="flex justify-end gap-3 pt-2">
+                <div className="flex justify-end gap-3">
                   <Button
                     type="button"
                     variant="outline"
@@ -150,7 +210,7 @@ export function ApplicationModal({ isOpen, onClose, jobId, job }: ApplicationMod
                   <Button
                     type="submit"
                     className="bg-[#214E83] hover:bg-[#144C8E] text-white"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || job.status === "Closed"}
                   >
                     <FileText className="mr-2 h-4 w-4" />
                     {isSubmitting ? "Enviando..." : "Enviar aplicación"}
@@ -163,9 +223,8 @@ export function ApplicationModal({ isOpen, onClose, jobId, job }: ApplicationMod
           <div className="flex flex-col items-center justify-center py-8">
             <CheckCircle2 className="h-12 w-12 text-green-500 mb-4" />
             <p className="text-lg font-medium text-[#112D4E] text-center">
-              Gracias por tu aplicación. ¡Te contactaremos pronto!
+              ¡Gracias por tu aplicación! Te contactaremos pronto.
             </p>
-            <p>Se paciente, te contactaremos pronto!</p>
           </div>
         )}
       </DialogContent>

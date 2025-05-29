@@ -23,6 +23,7 @@ export async function updateProfile(
     about_me: string;
     avatar_url: string;
     cv_url: string;
+    banner_color: string;
     id_profile?: number;  // Hacer opcional si no se usará
     id_user?: number;     // Hacer opcional si no se usará
   }

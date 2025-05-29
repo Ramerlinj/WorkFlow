@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Settings, User, Shield, Bell, Palette, Link2, BookText, Briefcase } from "lucide-react"
+import { Settings, User, Shield, Bell, Palette, Link2, BookText, Briefcase, FileCheck, Building } from "lucide-react"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import type { User as UserType, UserConfig, SkillResponse, Link as UserLink, WorkExperience } from "@/types/interfaces"
 
@@ -14,8 +14,10 @@ import { AppearanceTab } from "./tabs/appearance-tab"
 import { SkillsTab } from "./tabs/skills-tab"
 import { LinksTab } from "./tabs/links-tab"
 import { ExperienceTab } from "./tabs/experience-tab"
+import { ApplicationsTab } from "./tabs/applications-tab"
 import { PasswordDialog } from "./dialogs/password-dialog"
 import { DeleteAccountDialog } from "./dialogs/delete-account-dialog"
+import { PublishedJobsTab } from "./tabs/published-jobs-tab"
 
 interface ConfigurationPanelProps {
   user: UserType
@@ -155,6 +157,14 @@ export function ConfigurationPanel({
                   Experiencia
                 </Button>
                 <Button
+                  variant={activeTab === "applications" ? "secondary" : "ghost"}
+                  className="w-full justify-start"
+                  onClick={() => setActiveTab("applications")}
+                >
+                  <FileCheck className="mr-2 h-4 w-4" />
+                  Aplicaciones
+                </Button>
+                <Button
                   variant={activeTab === "skills" ? "secondary" : "ghost"}
                   className="w-full justify-start"
                   onClick={() => setActiveTab("skills")}
@@ -194,6 +204,14 @@ export function ConfigurationPanel({
                   <Palette className="mr-2 h-4 w-4" />
                   Apariencia
                 </Button>
+                <Button
+                  variant={activeTab === "published-jobs" ? "secondary" : "ghost"}
+                  className="w-full justify-start"
+                  onClick={() => setActiveTab("published-jobs")}
+                >
+                  <Building className="mr-2 h-4 w-4" />
+                  Empleos Publicados
+                </Button>
               </div>
             </div>
 
@@ -219,6 +237,9 @@ export function ConfigurationPanel({
                   setPreviewBannerColor={setPreviewBannerColor}
                   onSave={handleSaveProfile}
                 />
+              )}
+              {activeTab === "applications" && (
+                <ApplicationsTab userId={user.id_user} />
               )}
               {activeTab === "skills" && (
                 <SkillsTab
@@ -272,13 +293,20 @@ export function ConfigurationPanel({
                   <ExperienceTab userId={user.id_user} />
                 </div>
               )}
+              {activeTab === "published-jobs" && (
+                <PublishedJobsTab userId={user.id_user} />
+              )}
             </div>
           </div>
         </DialogContent>
       </Dialog>
 
       <PasswordDialog open={passwordDialogOpen} onOpenChange={setPasswordDialogOpen} />
-      <DeleteAccountDialog open={deleteAccountDialogOpen} onOpenChange={setDeleteAccountDialogOpen} />
+      <DeleteAccountDialog
+        open={deleteAccountDialogOpen}
+        onOpenChange={setDeleteAccountDialogOpen}
+        username={username || ""}
+      />
     </>
   )
 }

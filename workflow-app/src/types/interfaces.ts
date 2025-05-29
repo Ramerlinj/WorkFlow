@@ -64,7 +64,7 @@ export interface Profile {
   about_me: string;
   avatar_url?: string | null;
   cv_url?: string | null;
-  banner_url?: string | null;
+  banner_color?: string | null;
 }
 
 
@@ -127,6 +127,7 @@ export interface Employment {
   id_employment: number;
   id_type_job: number;
   id_profession: number;
+  id_user: number;
   title: string;
   description: string | null;
   company: string;
@@ -138,6 +139,7 @@ export interface Employment {
   type_job?: TypeJob;
   profession?: Profession;
   location?: Location;
+  user?: User;
 }
 
 export interface JobApplication {
@@ -181,6 +183,7 @@ export interface TestimonialResponse {
 export interface CreateEmploymentDTO {
   id_type_job: number;
   id_profession: number;
+  id_user?: number;
   title: string;
   description: string;
   company: string;
