@@ -1,11 +1,11 @@
-# 💼 WorkFlow
+# WorkFlow
 
  **Una plataforma intuitiva que centraliza oportunidades laborales para facilitar el acceso al empleo en tu país. Diseñada para ser clara, rápida y útil.**
 
 
 ---
 
-## 📌 Descripción
+## Descripción
 
 **WorkFlow** es una aplicación web creada para reunir todas las oportunidades de empleo en un solo lugar. Su objetivo es ayudar a personas a encontrar trabajos de manera fácil y rápida, eliminando barreras y conectando talentos con oportunidades reales.
 
@@ -13,7 +13,7 @@ Está dirigida exclusivamente a **personas que buscan empleo**, ofreciendo una e
 
 ---
 
-## 🚀 Funcionalidades principales
+## Funcionalidades principales
 
 - 🔐 Autenticación de usuarios (cookies + JWT)
 - 👤 Perfil de usuario
@@ -23,7 +23,7 @@ Está dirigida exclusivamente a **personas que buscan empleo**, ofreciendo una e
 
 ---
 
-## 🛠️ Tecnologías utilizadas
+## Tecnologías utilizadas
 
 ### Frontend
 - [Next.js](https://nextjs.org/)
@@ -44,7 +44,7 @@ Está dirigida exclusivamente a **personas que buscan empleo**, ofreciendo una e
 
 ---
 
-## 🔗 Conexión frontend-backend
+## Conexión frontend-backend
 
 El frontend consume los servicios de la API REST desarrollada con FastAPI, disponible en el mismo repositorio. La comunicación se realiza a través de solicitudes seguras entre ambos entornos.
 
